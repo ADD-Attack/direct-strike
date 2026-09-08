@@ -76,9 +76,11 @@
   .ubtn .icw{width:50px;height:46px;flex:0 0 50px;display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(circle at 50% 70%, #16264a 0%, rgba(13,22,44,.1) 70%);border-radius:8px;border:1px solid #22365e;overflow:hidden}
   .ubtn .icw canvas{display:block;width:46px;height:42px;image-rendering:auto}
   .ubtn .nm2{font-weight:700;font-size:14px;line-height:1.1}
-  .ubtn .tg{font-size:9px;color:#7b8db3;text-transform:uppercase;letter-spacing:.6px}
-  .ubtn .co{font-size:12px;margin-top:5px;font-weight:600}
+  .ubtn .tg{font-size:10px;color:#8fa3cc;text-transform:uppercase;letter-spacing:.6px;margin-top:2px}
+  .ubtn .co{font-size:13px;margin-top:6px;font-weight:700;display:flex;align-items:center;gap:7px}
   .co b.mc{color:var(--min)} .co b.gc{color:var(--gas)}
+  .ubtn .co::after{content:'⤴ deploy';margin-left:auto;font-size:9px;font-weight:600;color:#4d7bd9;letter-spacing:.4px;text-transform:uppercase;opacity:0;transition:opacity .12s}
+  .ubtn:hover:not(:disabled) .co::after{opacity:1}
   .ubtn .own{position:absolute;margin-left:auto;font-size:11px;color:#7ee0a3;font-weight:700;text-align:right}
   #battleHud{display:none;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:2px}
   .stat{font-weight:700;font-size:13px}
@@ -1956,6 +1958,21 @@ function draw(){
   ctx.fillStyle='#3d568a';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
   ctx.fillText('YOUR FRONT',C.PCORE_X+100,C.GROUND-44);
   ctx.fillText('ENEMY FRONT',C.ECORE_X-100,C.GROUND-44);
+  // battlefield ambience: soft side territory tints + a contested-line glow so the two halves of the
+  // lane and the likely engagement point read at a glance (pure canvas wash, behind everything else).
+  ctx.save(); ctx.globalCompositeOperation='lighter';
+  // ally (left) approach washes teal, enemy (right) approach washes ember, fading toward mid
+  const allyT=ctx.createLinearGradient(C.MID,0,C.PCORE_X,0);
+  allyT.addColorStop(0,'rgba(63,224,170,0)'); allyT.addColorStop(1,'rgba(63,224,170,.10)');
+  ctx.fillStyle=allyT; ctx.fillRect(0,C.GROUND-70,C.MID,70);
+  const emyT=ctx.createLinearGradient(C.MID,0,C.ECORE_X,0);
+  emyT.addColorStop(0,'rgba(255,107,107,0)'); emyT.addColorStop(1,'rgba(255,107,107,.10)');
+  ctx.fillStyle=emyT; ctx.fillRect(C.MID,C.GROUND-70,cv.width-C.MID,70);
+  // a faint warm glow where the two fronts commonly grind together (mid-lane)
+  const mg=ctx.createLinearGradient(0,C.GROUND-70,0,C.GROUND);
+  mg.addColorStop(0,'rgba(160,150,255,.05)'); mg.addColorStop(1,'rgba(180,160,255,.10)');
+  ctx.fillStyle=mg; ctx.fillRect(C.MID-70,C.GROUND-70,140,70);
+  ctx.restore();
   // resource nodes — OBJ-4 visuals: minerals read as blue ◆ crystal PATCHES low to the ground,
   // gas geysers as violet ◈ VENTS with a rising plume/glow, so the precious node is obvious at a glance.
   for(const n of C.NODES){
