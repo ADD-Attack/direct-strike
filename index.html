@@ -129,7 +129,18 @@
     #upgRow button.upg{width:100%;max-width:none;min-width:0;flex:0 0 auto}
     #upgRow,.again{margin:6px 0 4px}
     #againBtn,#copyLog{width:100%;margin:4px 0}
+    #mapSection .mapWrap{flex-direction:column;align-items:stretch}
+    #mapSection .routep{width:100%;max-width:none}
   }
+  /* P2a next-leg ROUTE PREVIEW strip (#mapSection, shown on a non-finale win): three lane cards
+     previewing which enemy playstyle the next escalation could throw. Read-only (.peek buttons). */
+  #mapSection{border-top:1px dashed #2a3d63;margin-top:6px;padding-top:6px;text-align:left}
+  #mapSection .mapHead{font-size:12px;color:#9fb2d6;font-weight:600;margin-bottom:6px;text-align:center}
+  #mapSection .mapWrap{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  #mapSection .routep{flex:1 1 150px;min-width:140px;max-width:230px;text-align:left;padding:8px 10px;border:1px solid #3c4f7a;background:#0f1830;color:#b9c8e6;border-radius:10px;font-size:12px;cursor:default;opacity:.85}
+  #mapSection .routep.peek{border-style:dashed;opacity:.75}
+  #mapSection .routep b{color:#dbe6ff}
+  #mapSection .routep .hint{color:#8fa3cc;font-size:11px;font-weight:400;margin-top:2px;display:block}
 </style>
 </head>
 <body>
@@ -178,6 +189,7 @@
     </div>
     <div id="endOv" class="card"><h2 id="endTxt"></h2><p id="endSub"></p>
       <div id="upgRow" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:6px 0 12px"></div>
+      <div id="mapSection" style="display:none"></div>
       <button id="againBtn">▶ Battle again</button>
       <button id="copyLog">Copy match log</button>
     </div>
@@ -2376,6 +2388,7 @@ function campsWin(){
     showUpgradePicker();
     showCardPicker();
     showRelicRow();   // P2-C: a relic is an alternate reward while any remain unclaimed
+    renderNextLegs(); // P2a: next-leg route preview strip between battles
   }
 }
 function showUpgradePicker(){
@@ -2534,6 +2547,44 @@ if(typeof window!=='undefined'){
   // P2-D: expose the pure run helpers to the test bridge (drive a per-battle AI archetype headlessly)
   window.__ds.archetypes = { set:setArchetype, get:archetypeFor };
 }
+// ---- Phase-2a BRANCH MAP (between-battle next-leg preview + opt-in re-route). ----
+// §2.5 wants a "next-choice preview" so a run feels like a journey rather than isolated fights, AND a
+// branching node choice (diverge toward different enemy archetypes / rewards). map.mjs + the per-battle
+// archetype knob (run.setArchetype) already exist + are headlessly tested; this is the UI paint.
+// The strip ALWAYS renders (preview) on a non-finale win. When branching is toggled ON (branchRun), the
+// ---- Phase-2a BRANCH MAP — between-battle NEXT-LEG PREVIEW (informational, always on). ----
+// §2.5 wants the "next-choice preview" so a run feels like a journey rather than isolated fights.
+// The full choose-a-path player flow (click a lane -> diverge toward that enemy archetype/reward) is the
+// next Phase-2a step; the archetype knob it drives (run.setArchetype) is already live+tested. For now a
+// non-finale WIN renders a read-only strip under the reward rows showing the 3 route lanes (what each
+// next-battle enemy playstyle would be). Pure display: it never changes state or advances on its own, so
+// the reward rows keep owning the win->advance flow and every DOM test stays green.
+const _ROUTE_ARCHE=[
+  { arche:'rusher',   ic:'🗡', nm:'RUSH FLANK', ds:'fast, cheap early assault — pressure before your line stabilises' },
+  { arche:'economist',ic:'🏭', nm:'ECONOMY LINE',ds:'harvests hard, then throws a heavier mid-wave' },
+  { arche:'balanced', ic:'⚖', nm:'BALANCED',   ds:'even build, no early tell' },
+];
+function renderNextLegs(){
+  const sec=$('mapSection'); if(!sec||!camp||!camp.run) return;
+  const winningBattle = camp.battle;                 // battle we just won (reward rows still pending)
+  sec.textContent='';
+  if(winningBattle>=CAMP_BATTLES){ sec.style.display='none'; return; } // finale has no next-leg preview
+  const header=document.createElement('div');
+  header.className='mapHead';
+  header.textContent='🛣 Next escalation · '+(['2nd','3rd','4th'][Math.min(2,winningBattle)])+' engagement — the enemy will push one of these:';
+  sec.appendChild(header);
+  const wrap=document.createElement('div'); wrap.className='mapWrap';
+  for(const n of _ROUTE_ARCHE){
+    const b=document.createElement('button');
+    b.className='routep peek'; b.type='button'; b.disabled=true;
+    b.innerHTML='<div class="rowUpg"><span style="font-size:18px">'+n.ic+'</span><div><b>'+n.nm+'</b><br><span class="hint">'+n.ds+'</span></div></div>';
+    wrap.appendChild(b);
+  }
+  sec.appendChild(wrap);
+  sec.style.display='block';
+}
+
+// ---- end Phase-2a branch-map helpers ----
 
 </script>
 </body>
