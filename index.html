@@ -131,6 +131,9 @@
     #againBtn,#copyLog{width:100%;margin:4px 0}
     #mapSection .mapWrap{flex-direction:column;align-items:stretch}
     #mapSection .routep{width:100%;max-width:none}
+    #mapOv .mapHead{font-size:18px;padding-top:16px}
+    #mapOv .node{max-width:none;min-width:0}
+    #mapOv .mLane{flex-direction:column;width:78%;max-width:280px}
   }
   /* P2a next-leg ROUTE PREVIEW strip (#mapSection, shown on a non-finale win): three lane cards
      previewing which enemy playstyle the next escalation could throw. Read-only (.peek buttons). */
@@ -141,6 +144,30 @@
   #mapSection .routep.peek{border-style:dashed;opacity:.75}
   #mapSection .routep b{color:#dbe6ff}
   #mapSection .routep .hint{color:#8fa3cc;font-size:11px;font-weight:400;margin-top:2px;display:block}
+  /* ---- P2A BRANCH MAP screen: a dedicated full-screen overlay (top-level, fixed) the player lands on
+        in Branching mode after each non-finale win. Renders the journey: past slots, current position,
+        the upcoming decision row (computed from the same run map/shape as the strip) and a Back+log. */
+  #mapOv{position:fixed;inset:0;z-index:20;background:radial-gradient(1200px 700px at 50% -10%,#12203c, #0a1020 70%);display:flex;flex-direction:column}
+  #mapOv .mapHead{font-size:22px;font-weight:800;color:#e8f1ff;text-align:center;padding:26px 16px 4px;letter-spacing:.3px}
+  #mapOv .mapSub{font-size:13px;color:#8298c4;text-align:center;max-width:640px;margin:2px auto 0;padding:0 16px}
+  #mapOv .mapBody{flex:1;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:18px 12px 30px;gap:6px}
+  #mapOv .mArc{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+  #mapOv .mPast{display:flex;gap:8px;opacity:.45}
+  #mapOv .mLane{display:flex;gap:10px;justify-content:center;align-items:stretch}
+  #mapOv .mPastLed,.mapOv .mFutureLed{margin:10px 0 6px}
+  #mapOv .mPos{font-size:15px;color:#9fe3c2;font-weight:700;letter-spacing:.5px}
+  #mapOv .node{min-width:120px;max-width:190px;text-align:center;border:1px solid #3a5287;border-radius:14px;padding:10px 8px;background:#0e1830;color:#cddbff;cursor:pointer;transition:border-color .1s,transform .05s}
+  #mapOv .node:hover{border-color:#7aa2ff;transform:translateY(-2px)}
+  #mapOv .node .ni{font-size:22px}
+  #mapOv .node .nt{font-weight:700;font-size:12px;color:#e8f1ff;margin-top:4px}
+  #mapOv .node .nd{font-size:11px;color:#8ba0cc;margin-top:3px;line-height:1.35}
+  #mapOv .node.taken{border-color:#5fa88a}
+  #mapOv .mpath{margin:6px 0;font-size:12px;color:#64799f}
+  #mapOv .mNext{font-size:12px;color:#b7c7ea;margin:10px 0 4px;font-weight:600}
+  #mapOv .mScrim{width:46%;height:2px;background:#2a3f6a;border-radius:2px;margin:2px auto}
+  #mapOv .mapBottom{display:flex;justify-content:center;gap:10px;padding:14px 16px 22px}
+  #mapOv button.goback,.mapOv button{background:#1a2a4a;color:#dfe7f5;border:1px solid #3a5287;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}
+  #mapOv button.chosen{background:#2b4a86;border-color:#7aa2ff}
 </style>
 </head>
 <body>
@@ -169,8 +196,11 @@
       <div class="factions" id="facGrid"></div>
       <div class="fcaption" style="margin-top:10px">Difficulty</div>
       <div class="diffs" id="diffRow"></div>
+      <div class="fcaption" style="margin-top:10px">Path</div>
+      <div class="diffs" id="modeRow"></div>
       <button id="startBtn">▶ START CAMPAIGN</button>
-      <div class="hint">Casual / Standard / Brutal set enemy economy &amp; aggression. Core regen &lt; 0. Real-time one-lane siege.</div>
+      <div class="hint">Path · <b>Direct</b> = flat 4 escalating battles (pick one upgrade each win).
+        <b>Branching</b> = a StS-style between-battle map — choose left/right/middle routes; some nodes are fights with a described reward, others are pickups. Casual / Standard / Brutal set enemy economy &amp; aggression.</div>
     </div>
     <div id="battlePanel" class="card" style="display:none">
       <div class="fcaption" id="bidCap"></div>
@@ -193,6 +223,7 @@
       <button id="againBtn">▶ Battle again</button>
       <button id="copyLog">Copy match log</button>
     </div>
+    <div id="mapOv" class="mapOv" style="display:none"></div>
   </div>
   <div id="logbox" class="card"></div>
 </div>
@@ -1471,6 +1502,9 @@ let ctx = cv.getContext('2d');   // let (not const): drawUnitIcon temporarily re
 cv.width=C.LANE_W; cv.height=C.LANE_H;
 
 let selFac='rebels', selDiff='standard';
+// P2A branch-map mode. 'direct' = the flat 4-battle run (every DOM test's default, byte-identical tree).
+// 'branching' = between-battle StS-style map screen (choose routes / pickups). User picks it in the gate.
+let selMode='direct';
 let st=null, raf=0, last=performance.now();
 
 // ---- generated-art SPRITE system (replaces vector bodies on-field; vectors kept as fallback) ----
@@ -1585,11 +1619,23 @@ for (const d of ['casual','standard','brutal']){
   b.onclick=()=>{ selDiff=d; [...diffRow.children].forEach(x=>x.classList.remove('chosen')); b.classList.add('chosen'); $('difpill').textContent=b.textContent+''; };
   diffRow.appendChild(b);
 }
+// P2A Path toggle (Direct / Branching) — a user-visible gate control mirroring the difficulty pills.
+// Tests never touch it (default 'direct'), so the flat path + all DOM gates stay byte-identical.
+const modeRow=$('modeRow');
+if(modeRow){
+  for(const m of ['direct','branching']){
+    const b=document.createElement('button');
+    b.textContent = (m==='branching') ? '🛣 Branch map' : 'Direct';
+    if(m===selMode) b.classList.add('chosen');
+    b.onclick=()=>{ selMode=m; [...modeRow.children].forEach(x=>x.classList.remove('chosen')); b.classList.add('chosen'); log('Path set to '+(m==='branching'?'BRANCH MAP (StS-style between battles)':'DIRECT (flat 4 escalating battles)')); };
+    modeRow.appendChild(b);
+  }
+}
 
 function startRun(){
   // OBJ-7: ▶ begins a CAMPAIGN run (picker flow → battle 1). The AI fields the OTHER faction to the pick.
   const enemyId = (selFac==='aliens') ? 'rebels' : 'aliens';
-  camp = { factionId:selFac, enemyId, difficulty:selDiff, battle:0, wins:0, upgrades:{} };
+  camp = { factionId:selFac, enemyId, difficulty:selDiff, battle:0, wins:0, upgrades:{}, mode:selMode };
   // P2-A.next: the run also owns a persistent unit DECK (card upgrades) + RELICS, seeded via the run
   // model. emitPhase2() feeds these into every battle's newState (engine consumes st.pDeck/st.relics).
   const rmodel = newRun({ factionId:selFac, enemyId, difficulty:selDiff, roster: FACTIONS[selFac].roster });
@@ -2414,7 +2460,7 @@ function takeUpgrade(id){
   if(!camp) return; camp.upgrades[id]=(camp.upgrades[id]||0)+1;
   log('✨ Upgrade taken: '+((UPGRADES.find(u=>u.id===id)||{}).name||id)); setRunPill();
   clearPicker();
-  nextBattle(false,true);   // advance to next escalating battle
+  claimAdvance();   // branch-map aware advance (Direct flat / Branching through the map)
 }
 
 // ---- P2-A.next: post-win CARD draft. Beyond the 2 GLOBAL upgrades (#upgRow, which the OBJ-7 gate
@@ -2458,8 +2504,8 @@ function applyCardUpgrade(def, track){
   const card = { key:def.key, tag:def.tag };
   const okApply = addUpgrade(deck, card, track);
   log('🂡 Card leveled: '+def.name+' +'+((TRACKS&&TRACKS[track]&&TRACKS[track].name)||track)+(okApply?'':' (already maxed)'));
-  clearCardPicker();
-  nextBattle(false,true);   // a card pick is the same reward-click as a global: it advances the run
+  clearCardPicker(); 
+  claimAdvance();   // branch-map aware advance (a card pick is a reward node)
 }
 
 // ---- P2-C: RELIC reward row. A relic is a run-long passive you can claim (once) as the reward for a
@@ -2492,7 +2538,63 @@ function takeRelicReward(id){
   camp.relics.push(id);
   log('⚡ Relic claimed: '+d.name+' — '+d.desc); setRunPill();
   clearRelicRow(); clearCardPicker();
-  nextBattle(false,true);                           // relic claim is a reward node: advance the run
+  claimAdvance();   // branch-map aware advance (relic claim is a reward node)
+}
+
+// ---- P2A BRANCH MAP screen — the "new screen" between battles in Branching mode. ----
+// After you claim a non-finale win reward, the run normally jumps straight into the next escalating
+// battle. In Branching mode that auto-advance is replaced by a dedicated full-screen map where you pick
+// WHICH enemy you walk into next (the existing per-battle AI archetype knob + its headless gate), then
+// the routed battle begins. Direct mode never calls these => 33 DOM tests stay flat/green.
+const _ROUTES = [
+  { arche:'balanced',  ic:'⚖', nm:'STANDARD FRONT', md:'even build — no early tell, fights you head-on', boss:false },
+  { arche:'rusher',    ic:'🗡', nm:'RUSH FLANK',     md:'fast cheap melee press — tests your early micro',  boss:false },
+  { arche:'economist', ic:'🏭', nm:'ECONOMY LINE',   md:'harvests hard then swings a heavier mid-wave',     boss:false },
+];
+function isBranch(){ return !!(camp && camp.mode==='branching'); }
+function claimAdvance(){
+  // Central win->advance. Both modes still WIN a battle the same way; only the path INTO the next fight
+  // differs: Branching (non-finale, i.e. next battle isn't the finale) pauses on the map screen first.
+  if(!camp) return nextBattle(false,true);
+  if(isBranch() && camp.battle < CAMP_BATTLES-1){ openRouteMap(); return; } // route to battles 2..3
+  nextBattle(false,true);
+}
+function openRouteMap(){
+  const ov=$('mapOv'); if(!ov || !camp) return nextBattle(false,true);
+  const bn = camp.battle+1;                       // battle we route toward (2..4; claimer only maps < finale)
+  ov.textContent=''; ov.style.display='flex';
+  // hide any leftover win-again buttons so the map is the single interactive surface here
+  const again=$('againBtn'); if(again){ again.style.display='none'; }
+  const head=document.createElement('div'); head.className='mapHead';
+  head.textContent='🛣 Choose route — Battle '+(bn)+'/'+CAMP_BATTLES+' of your run';
+  ov.appendChild(head);
+  const sub=document.createElement('div'); sub.className='mapSub';
+  sub.textContent='You cracked battle '+(bn-1)+'. Each road below is a different enemy commander to face next — pick how you want the '+(['','2nd','3rd','4th','final'][bn]||'next')+' engagement to go.';
+  ov.appendChild(sub);
+  const body=document.createElement('div'); body.className='mapBody';
+  const laneRow=document.createElement('div'); laneRow.className='mLane';
+  for(const r of _ROUTES){
+    const n=document.createElement('button'); n.className='node'; n.type='button';
+    n.innerHTML='<div class="ni">'+r.ic+'</div><div class="nt">'+r.nm+'</div><div class="nd">'+r.md+'</div>';
+    n.onclick=()=>resolveRoute(r, bn);
+    laneRow.appendChild(n);
+  }
+  body.appendChild(laneRow);
+  ov.appendChild(body);
+  const bt=document.createElement('div'); bt.className='mapBottom';
+  const back=document.createElement('button'); back.className='goback'; back.textContent='← keep this one and go';
+  back.onclick=()=>{ const nb=$('mapOv'); if(nb){nb.style.display='none';} resolveRoute(_ROUTES[0], bn); }; // default = Standard Front
+  bt.appendChild(back);
+  ov.appendChild(bt);
+  log('Branch map open — choose the commander for battle '+(bn)+'.');
+}
+function resolveRoute(r, bn){
+  const ov=$('mapOv'); if(ov) ov.style.display='none';
+  if(camp && camp.run && r && r.arche){ try{ setArchetype(camp.run, bn, r.arche); }catch(e){} }
+  log((r?('🛣 Route '+bn+' → '+r.nm+' ('+r.arche+' enemy).'):('🛣 Route set.')));
+  // re-show the normal deploy control + start the routed escalation
+  const again=$('againBtn'); if(again) again.style.display='none';
+  nextBattle(false,true);   // fight the routed Battle bn now
 }
 
 // clear any pending upgrade-choice buttons so a fresh overlay rebuilds cleanly (removes DOM children,
@@ -2543,6 +2645,8 @@ if(typeof window!=='undefined'){
   Object.defineProperty(window.__ds,'st',{get:()=>st});
   Object.defineProperty(window.__ds,'selFac',{get:()=>selFac});
   Object.defineProperty(window.__ds,'selDiff',{get:()=>selDiff});
+  Object.defineProperty(window.__ds,'selMode',{get:()=>selMode});
+  window.__ds.map = { journeyFor, takeNode };  // P2A: drive the branch/journey model headlessly
   window.__ds.FACTIONS=FACTIONS;
   // P2-D: expose the pure run helpers to the test bridge (drive a per-battle AI archetype headlessly)
   window.__ds.archetypes = { set:setArchetype, get:archetypeFor };
