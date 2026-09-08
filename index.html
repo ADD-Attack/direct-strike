@@ -1993,17 +1993,18 @@ function draw(){
   // the field band began, a flat dark slash across the whole arena). Every backdrop layer below paints
   // its full span and covers the canvas top-to-bottom behind the fight. All cosmetic; no sim change. ---
   // sky (paint all the way to the floor so no black hole can show)
+  // STYLE-BIBLE re-skin (COLORFUL/WARM): deep violet void -> teal-tinted atmosphere -> dusty magenta horizon.
   const sky=ctx.createLinearGradient(0,0,0,C.GROUND-40);
-  sky.addColorStop(0,'#050914'); sky.addColorStop(0.72,'#0a141f'); sky.addColorStop(1,'#142e52');
+  sky.addColorStop(0,'#140b1f'); sky.addColorStop(0.62,'#1b2b44'); sky.addColorStop(0.85,'#2d4f5a'); sky.addColorStop(1,'#6d2c4e');
   ctx.fillStyle=sky; ctx.fillRect(0,0,cv.width,C.GROUND-34);
   // faint vignette grid → reads as a scifi playfield (full field height)
   ctx.strokeStyle='rgba(60,110,190,.05)'; ctx.lineWidth=1;
   for(let gx=40;gx<cv.width;gx+=80){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,C.GROUND); ctx.stroke(); }
-  // horizon atmosphere: a soft cool bloom right where the floor plane begins, so the backdrop isn't a
-  // hard sky->wall seam and reads as distance. Faint, deterministic, drawn above the field band's top edge.
-  ctx.save(); ctx.fillStyle='rgba(60,110,200,.06)';
+  // horizon atmosphere: a soft warm bloom where the floor plane begins (drawn above the field band's
+  // top edge) — re-skinned so it echoes the magenta horizon + burn of the contested line, not cold blue.
+  ctx.save(); ctx.fillStyle='rgba(109,60,120,.06)';
   const atmo=ctx.createLinearGradient(0,C.GROUND-84,0,C.GROUND-46);
-  atmo.addColorStop(0,'rgba(70,120,210,0)'); atmo.addColorStop(1,'rgba(90,150,230,.14)');
+  atmo.addColorStop(0,'rgba(150,80,130,0)'); atmo.addColorStop(1,'rgba(200,130,120,.16)');
   ctx.fillStyle=atmo; ctx.fillRect(0,C.GROUND-84,cv.width,40); ctx.restore();
   // subtle star/dust in the upper sky so it isn't empty
   ctx.save(); ctx.fillStyle='rgba(150,190,240,.4)';
@@ -2011,15 +2012,17 @@ function draw(){
     ctx.fillRect(sx, sy, 1, 1); } ctx.restore();
   // field band (ground plays here) — now with recession strata + soft contact ramp so the floor reads
   // as a depth plane rather than a single flat slab.
+  // STYLE-BIBLE re-skin (COLORFUL/WARM): teal-tinged cool floor instead of the old washed-out navy, so
+  // the ground reads alive + faction-coded; the warmer ember right half is layered by the side wash below.
   const g=ctx.createLinearGradient(0,C.GROUND-70,0,C.GROUND);
-  g.addColorStop(0,'#0d1830'); g.addColorStop(0.6,'#15233f'); g.addColorStop(1,'#20314f');
+  g.addColorStop(0,'#153c44'); g.addColorStop(0.55,'#1f5b68'); g.addColorStop(1,'#246d7d');
   ctx.fillStyle=g; ctx.fillRect(0,C.GROUND-70,cv.width,70);
-  // faint horizontal strata (floor seams) lower on the field band
-  ctx.strokeStyle='rgba(70,120,200,.07)'; ctx.lineWidth=1;
+  // faint horizontal strata (floor seams) lower on the field band — teal-lit seams to sit on the teal floor
+  ctx.strokeStyle='rgba(150,235,255,.10)'; ctx.lineWidth=1;
   for(let sy=C.GROUND-16; sy<C.GROUND; sy+=8){ ctx.beginPath(); ctx.moveTo(0,sy); ctx.lineTo(cv.width,sy); ctx.stroke(); }
-  // crisp ground line (where unit feet land)
-  ctx.fillStyle='#2a3f66'; ctx.fillRect(0,C.GROUND-2,cv.width,2);
-  ctx.fillStyle='rgba(120,180,255,.14)'; ctx.fillRect(0,C.GROUND-3,cv.width,1);
+  // crisp ground line (where unit feet land) — teal-amber lit line instead of cold blue
+  ctx.fillStyle='#2a6d78'; ctx.fillRect(0,C.GROUND-2,cv.width,2);
+  ctx.fillStyle='rgba(150,240,255,.18)'; ctx.fillRect(0,C.GROUND-3,cv.width,1);
   // dark foreground below ground
   const fg=ctx.createLinearGradient(0,C.GROUND,0,cv.height);
   fg.addColorStop(0,'#060a14'); fg.addColorStop(1,'#03050b');
@@ -2027,31 +2030,34 @@ function draw(){
   // behind-ground glow/reflection accents near the bases
   ctx.fillStyle='rgba(30,50,90,.55)'; ctx.fillRect(0,C.GROUND,cv.width,8);
   // floor dust / tread specks just on the ground plane (deterministic pattern; reads as broken terrain)
-  ctx.fillStyle='rgba(120,170,240,.10)';
+  ctx.fillStyle='rgba(180,235,255,.14)';
   for(let i=0;i<46;i++){ const sx=(i*137)%cv.width, sy=C.GROUND-((i*29)%46);
     ctx.fillRect(sx,sy-1,3+(i%3),1); }
-  // midline (dashed, subtle)
-  ctx.strokeStyle='#1f3355'; ctx.setLineDash([5,9]); ctx.lineWidth=1.4;
+  // midline (dashed, subtle) — warmer so it sits in the ember zone without being harsh
+  ctx.strokeStyle='rgba(255,160,90,.35)'; ctx.setLineDash([5,9]); ctx.lineWidth=1.4;
   ctx.beginPath(); ctx.moveTo(C.MID, C.GROUND-70); ctx.lineTo(C.MID, cv.height); ctx.stroke(); ctx.setLineDash([]);
-  // yard markers
-  ctx.fillStyle='#3d568a';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  // yard markers — brightened + teal-tinted so they stay legible on the now-vivid teal floor
+  ctx.fillStyle='#bff0f5';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
   ctx.fillText('YOUR FRONT',C.PCORE_X+100,C.GROUND-44);
   ctx.fillText('ENEMY FRONT',C.ECORE_X-100,C.GROUND-44);
   // battlefield ambience: soft side territory tints + a contested-line glow so the two halves of the
   // lane and the likely engagement point read at a glance (pure canvas wash, behind everything else).
+  // STYLE-BIBLE re-skin (COLORFUL/WARM): stronger faction side-wash + a hot ember contested center so the
+  // board reads vivid teal-vs-ember instead of a neutral navy slab.
   ctx.save(); ctx.globalCompositeOperation='lighter';
   // ally (left) approach washes the faction's brand accent (rebels brass / aliens viridian), enemy
   // (right) washes ember; both fading toward mid so ownership reads without overpowering the lane.
   const aR=allyRGB[0], aG=allyRGB[1], aB=allyRGB[2];
   const allyT=ctx.createLinearGradient(C.MID,0,C.PCORE_X,0);
-  allyT.addColorStop(0,'rgba('+aR+','+aG+','+aB+',0)'); allyT.addColorStop(1,'rgba('+aR+','+aG+','+aB+',.10)');
+  allyT.addColorStop(0,'rgba('+aR+','+aG+','+aB+',0)'); allyT.addColorStop(1,'rgba('+aR+','+aG+','+aB+',.20)');
   ctx.fillStyle=allyT; ctx.fillRect(0,C.GROUND-70,C.MID,70);
   const emyT=ctx.createLinearGradient(C.MID,0,C.ECORE_X,0);
-  emyT.addColorStop(0,'rgba(255,107,107,0)'); emyT.addColorStop(1,'rgba(255,107,107,.10)');
+  emyT.addColorStop(0,'rgba(255,90,40,0)'); emyT.addColorStop(1,'rgba(255,120,40,.20)');
   ctx.fillStyle=emyT; ctx.fillRect(C.MID,C.GROUND-70,cv.width-C.MID,70);
-  // a faint warm glow where the two fronts commonly grind together (mid-lane)
+  // a hot ember+gold glow where the two fronts commonly grind together (mid-lane): white-hot center is
+  // overused in the cramped 70px band, so this reads as a warm burning rendezvous rather than a lens flare.
   const mg=ctx.createLinearGradient(0,C.GROUND-70,0,C.GROUND);
-  mg.addColorStop(0,'rgba(160,150,255,.05)'); mg.addColorStop(1,'rgba(180,160,255,.10)');
+  mg.addColorStop(0,'rgba(255,190,90,.16)'); mg.addColorStop(0.5,'rgba(255,140,60,.20)'); mg.addColorStop(1,'rgba(255,90,45,.26)');
   ctx.fillStyle=mg; ctx.fillRect(C.MID-70,C.GROUND-70,140,70);
   ctx.restore();
   // resource nodes — OBJ-4 visuals: minerals read as blue ◆ crystal PATCHES low to the ground,
