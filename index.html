@@ -2563,18 +2563,23 @@ function openRouteMap(){
   const ov=$('mapOv'); if(!ov || !camp) return nextBattle(false,true);
   const bn = camp.battle+1;                       // battle we route toward (2..4; claimer only maps < finale)
   ov.textContent=''; ov.style.display='flex';
-  // hide any leftover win-again buttons so the map is the single interactive surface here
   const again=$('againBtn'); if(again){ again.style.display='none'; }
   const head=document.createElement('div'); head.className='mapHead';
-  head.textContent='🛣 Choose route — Battle '+(bn)+'/'+CAMP_BATTLES+' of your run';
+  head.textContent='🛣 Choose your path — Battle '+(bn)+'/'+CAMP_BATTLES;
   ov.appendChild(head);
   const sub=document.createElement('div'); sub.className='mapSub';
-  sub.textContent='You cracked battle '+(bn-1)+'. Each road below is a different enemy commander to face next — pick how you want the '+(['','2nd','3rd','4th','final'][bn]||'next')+' engagement to go.';
+  sub.textContent='You cleared battle '+(bn-1)+'. The front now forks — pick which enemy commander you advance against for the '+(['1st','2nd','3rd','4th'][Math.min(4,bn)-1])+' engagement.';
   ov.appendChild(sub);
   const body=document.createElement('div'); body.className='mapBody';
+  // position marker = the battle you just won; a little fork scrim funnels into the 3-route lane.
+  const here=document.createElement('div'); here.className='mPos'; here.textContent='📍 You are here · Battle '+(bn-1)+' cleared · '+(camp.wins||0)+'/'+CAMP_BATTLES+' wins';
+  body.appendChild(here);
+  const pipe=document.createElement('div'); pipe.className='mScrim';
+  body.appendChild(pipe);
   const laneRow=document.createElement('div'); laneRow.className='mLane';
   for(const r of _ROUTES){
     const n=document.createElement('button'); n.className='node'; n.type='button';
+    n.title='Fight battle '+bn+' versus a '+(r.arche)+' commander';
     n.innerHTML='<div class="ni">'+r.ic+'</div><div class="nt">'+r.nm+'</div><div class="nd">'+r.md+'</div>';
     n.onclick=()=>resolveRoute(r, bn);
     laneRow.appendChild(n);
@@ -2582,9 +2587,11 @@ function openRouteMap(){
   body.appendChild(laneRow);
   ov.appendChild(body);
   const bt=document.createElement('div'); bt.className='mapBottom';
-  const back=document.createElement('button'); back.className='goback'; back.textContent='← keep this one and go';
-  back.onclick=()=>{ const nb=$('mapOv'); if(nb){nb.style.display='none';} resolveRoute(_ROUTES[0], bn); }; // default = Standard Front
-  bt.appendChild(back);
+  const defaultBtn=document.createElement('button');
+  defaultBtn.textContent='⚖ Hold Standard Front (default) — begin battle '+bn;
+  defaultBtn.title='Equal build, no early tell';
+  defaultBtn.onclick=()=>{ const nb=$('mapOv'); if(nb) nb.style.display='none'; resolveRoute(_ROUTES[0], bn); };
+  bt.appendChild(defaultBtn);
   ov.appendChild(bt);
   log('Branch map open — choose the commander for battle '+(bn)+'.');
 }
