@@ -175,6 +175,15 @@
   #vicOv .vicStat{font-size:13px;color:#6f9c82;margin-top:6px}
   #vicOv button.vicBtn{margin-top:30px;padding:14px 44px;font-size:18px;font-weight:800;border:0;border-radius:14px;background:linear-gradient(180deg,#2f8f5f,#1f6d46);color:#eafff3;cursor:pointer;box-shadow:0 6px 24px rgba(47,143,95,.4);transition:transform .06s,filter .1s}
   #vicOv button.vicBtn:hover{filter:brightness(1.12);transform:translateY(-2px)}
+  /* Branch reward step: when Continue is tapped after a win, #endOv (normally an in-column card in Direct's
+     flat flow) is promoted to a TRUE full-viewport rewards screen — field + shop hidden behind an opaque
+     backdrop, so it never reads as "scroll an excel sheet." Applied via JS on the Branch reward path only;
+     Direct keeps the in-flow card look. The row ids (#upgRow/#cardRow/#relicRow) and children are untouched,
+     so the pinned reward-row DOM tests stay green. */
+  #endOv.endScreen{position:fixed;inset:0;z-index:15;background:radial-gradient(1200px 700px at 50% -8%,#1c2d4d,#0a1020 72%);display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;overflow:auto;padding:22px 18px 40px;text-align:center}
+  #endOv.endScreen h2{font-size:26px;margin:6px 0 4px}
+  #endOv.endScreen .rcard{width:min(860px,100%);max-width:none}
+  #endOv.endScreen #upgRow,#endOv.endScreen #cardRow,#endOv.endScreen #relicRow{width:min(860px,100%)}
 </style>
 </head>
 <body>
@@ -2514,14 +2523,14 @@ function showVictoryStage(){
 // that sits between the VICTORY confirm and the branch MAP.
 function showRewardsStep(){
   if(!camp){ nextBattle(false,true); return; }
-  const over = camp.battle>=CAMP_BATTLES;
-  $('endOv').style.display='block';
   const mapNext = _winAdvance==='map';
-  $('endTxt').textContent= over? '🏆 RUN VICTORY':'🏆 Battle '+camp.battle+' WON';
+  $('endTxt').textContent='🏆 Battle '+camp.battle+' WON — claim your reward';
   $('endTxt').style.color='#79f0c5';
-  $('endSub').textContent='Victory '+camp.wins+'/'+CAMP_BATTLES+'. Take ONE reward below — a run upgrade, a leveled unit card, or a relic'+(mapNext? ' — then a fork opens to pick your next commander for battle '+(camp.battle+1)+'.':' for the battle ahead.');
+  $('endSub').textContent='Victory '+camp.wins+'/'+CAMP_BATTLES+'. Choose ONE reward below — a run upgrade, a leveled unit card, or a relic.'+(mapNext? ' Then a fork opens and you pick your commander for battle '+(camp.battle+1)+'.':'');
   $('againBtn').style.display='none'; $('copyLog').style.display='none';
   showUpgradePicker(); showCardPicker(); showRelicRow();
+  const ov=$('endOv'); ov.style.display='block';
+  ov.classList.add('endScreen');                    // full-viewport rewards screen (Branch): covers field+shop
 }
 function showUpgradePicker(){
   clearPicker();
@@ -2678,6 +2687,8 @@ function claimAdvance(){
   // Central win->advance. In Branching the dedicated path-map leads at victory and the route pick reveals
   // the reward rows; this ONE claim (upgrade/card/relic) then advances straight into the routed battle.
   if(!camp) return nextBattle(false,true);
+  // leave the full-screen reward view before advancing/mapping
+  const eo=$('endOv'); if(eo) eo.classList.remove('endScreen');
   // Branch: this win went VICTORY-confirm -> reward, and now the reward is claimed -> if a fork follows
   // (battles 2..3) open the MAP instead of auto-advancing; the route pick then starts the next battle.
   const goMap = (_winAdvance==='map') && isBranch() && (camp.battle < CAMP_BATTLES-1);
@@ -2743,6 +2754,7 @@ function resolveRoute(r, bn){
 // clear any pending upgrade-choice buttons so a fresh overlay rebuilds cleanly (removes DOM children,
 // not just text — the ui loop may fire endOfMatch a couple of times around battle end, so rebuild is idempotent)
 function clearPicker(){
+  const o=$('endOv'); if(o) o.classList.remove('endScreen');   // exit full-screen reward presentation if shown
   const row=$('upgRow'); if(row){ while(row.firstChild) row.removeChild(row.firstChild); row.textContent=''; }
   clearCardPicker();   // P2-A.next: the parallel #cardRow draft must vanish on advance/retry too
   clearRelicRow();     // P2-C: any pending #relicRow reward too
