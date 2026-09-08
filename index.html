@@ -2550,7 +2550,7 @@ function boomOnCore(){
   try{ const t0=setTimeout(()=>{},0); if(typeof t0!=='number' || t0===0) return; }catch(e){ return; }
   try{
     const cv=document.getElementById('cv'); if(!cv||!cv.parentElement) return;
-    const isWin=!st.win, x=(isWin? C.ECORE_X : C.PCORE_X);   // the LOSING core = ours when we lost (PCORE), theirs when we won (ECORE)
+    const isWin=st.win, x=(isWin? C.ECORE_X : C.PCORE_X);   // the DESTROYED(0-HP) core: theirs (right) when we won, ours (left) when we lost
     const boom=document.createElement('div');
     boom.className='coreBoom';
     boom.style.left=(x/(cv.width||900)*100)+'%';
