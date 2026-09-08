@@ -2486,19 +2486,8 @@ function showUpgradePicker(){
   // hide plain retry/again while a choice is pending (choosing runs the next battle)
   $('againBtn').style.display='none'; $('copyLog').style.display='none';
 }
-// A reward was claimed (upgrade / card / relic). Visually commit by dimming the OTHER two reward rows
-// so it reads as ONE choice — presentation only (rows still clear + advance as before; no test contract
-// depends on their live style since the advance clears them right after). Safe: flat + branching.
-function dimOtherRewards(pickedRowId){
-  for(const id of ['upgRow','cardRow','relicRow']){
-    if(id===pickedRowId) continue;
-    const r2=(id==='upgRow')? $('upgRow') : (id==='cardRow')? $('cardRow') : $('relicRow');
-    if(r2){ r2.style.opacity='0.45'; r2.style.pointerEvents='none'; }
-  }
-}
 function takeUpgrade(id){
   if(!camp) return; camp.upgrades[id]=(camp.upgrades[id]||0)+1;
-  dimOtherRewards('upgRow');
   log('✨ Upgrade taken: '+((UPGRADES.find(u=>u.id===id)||{}).name||id)); setRunPill();
   clearPicker();
   claimAdvance();   // branch-map aware advance (Direct flat / Branching through the map)
@@ -2535,7 +2524,7 @@ function showCardPicker(){
     row.appendChild(u);
   }
 }
-function clearCardPicker(){ const row=$('cardRow'); if(!row) return; while(row.firstChild) row.removeChild(row.firstChild); row.textContent=''; row.style.opacity=''; row.style.pointerEvents=''; }
+function clearCardPicker(){ const row=$('cardRow'); if(!row) return; while(row.firstChild) row.removeChild(row.firstChild); row.textContent=''; }
 function applyCardUpgrade(def, track){
   const deck = campDeck();
   // level the card on the run deck via deck.mjs addUpgrade (eligibility + soft cap honored).
@@ -2544,7 +2533,6 @@ function applyCardUpgrade(def, track){
   // maxed one — we still advance (it is the reward node); the cap keeps numbers sane pre-balance.
   const card = { key:def.key, tag:def.tag };
   const okApply = addUpgrade(deck, card, track);
-  dimOtherRewards('cardRow');
   log('🂡 Card leveled: '+def.name+' +'+((TRACKS&&TRACKS[track]&&TRACKS[track].name)||track)+(okApply?'':' (already maxed)'));
   clearCardPicker(); 
   claimAdvance();   // branch-map aware advance (a card pick is a reward node)
@@ -2572,14 +2560,13 @@ function showRelicRow(){
     row.appendChild(b);
   }
 }
-function clearRelicRow(){ const row=$('relicRow'); if(row){ while(row.firstChild) row.removeChild(row.firstChild); row.textContent=''; row.style.opacity=''; row.style.pointerEvents=''; } }
+function clearRelicRow(){ const row=$('relicRow'); if(row){ while(row.firstChild) row.removeChild(row.firstChild); row.textContent=''; } }
 function takeRelicReward(id){
   const d=RELIC_DEFS[id]; if(!d) return;
   if(!camp.relics) camp.relics=[];
   if(camp.relics.includes(id)) return;              // can't double-claim
   camp.relics.push(id);
   log('⚡ Relic claimed: '+d.name+' — '+d.desc); setRunPill();
-  dimOtherRewards('relicRow');
   clearRelicRow(); clearCardPicker();
   claimAdvance();   // branch-map aware advance (relic claim is a reward node)
 }
@@ -2695,7 +2682,7 @@ function resolveRoute(r, bn){
 // clear any pending upgrade-choice buttons so a fresh overlay rebuilds cleanly (removes DOM children,
 // not just text — the ui loop may fire endOfMatch a couple of times around battle end, so rebuild is idempotent)
 function clearPicker(){
-  const row=$('upgRow'); if(row){ while(row.firstChild) row.removeChild(row.firstChild); row.textContent=''; row.style.opacity=''; row.style.pointerEvents=''; }
+  const row=$('upgRow'); if(row){ while(row.firstChild) row.removeChild(row.firstChild); row.textContent=''; }
   clearCardPicker();   // P2-A.next: the parallel #cardRow draft must vanish on advance/retry too
   clearRelicRow();     // P2-C: any pending #relicRow reward too
 }
