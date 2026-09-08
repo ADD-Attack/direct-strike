@@ -184,6 +184,12 @@
   #endOv.endScreen h2{font-size:26px;margin:6px 0 4px}
   #endOv.endScreen .rcard{width:min(860px,100%);max-width:none}
   #endOv.endScreen #upgRow,#endOv.endScreen #cardRow,#endOv.endScreen #relicRow{width:min(860px,100%)}
+  /* Reward-row polish: fit the row width instead of hugging 120px (leaves awkward empty space + cramped,
+     dense tap targets). Flex-basis uses the row so buttons read wider but still wrap evenly -> bigger, more
+     readable rewards. CSS-only; row ids/children untouched so DOM tests stay green. */
+  #endOv.endScreen #cardRow{display:flex;flex-wrap:wrap;justify-content:center}
+  #endOv.endScreen #cardRow button.cardp{flex:1 1 auto;min-width:150px;max-width:230px}
+  #endOv.endScreen #relicRow button.relicp{flex:1 1 auto;min-width:150px}
 </style>
 </head>
 <body>
