@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Direct Strike: Roguelike</title>
 <style>
-  :root{ --min:#7cd6ff; --gas:#d38bff; --bg:#0b1020; --panel:#131b30; --line:#243a5e;}
+  :root{ --min:#7cd6ff; --gas:#d38bff; --bg:#0b1020; --panel:#131b30; --line:#243a5e;
+    --ally0:#3ce0aa; --ally1:#79f0c5; }            /* default ally identity (rebels-sand fallback kept teal-ish until gate pick) */
+  /* Faction identity accent: the PICKED faction's brand threads YOUR side (gate + battle HUD/core bar)
+     via body[data-fac], while the enemy (.eb) keeps ember so your-vs-them stays unambiguous. CSS-only
+     + one data-fac attribute; no test-pinned ids touched. */
+  body[data-fac="rebels"]{ --ally0:#ff9e5e; --ally1:#ffd97a; }  /* brass / officers-gold */
+  body[data-fac="aliens"]{ --ally0:#6ee39f; --ally1:#c3e88d; }  /* viridian / lime */
   *{box-sizing:border-box}
   body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:linear-gradient(180deg,#080d1a,#0b1020 60%,#101a2e);color:#dfe7f5;min-height:100vh;}
   #topbar{display:flex;align-items:center;gap:14px;padding:8px 14px;background:#0e1526;border-bottom:1px solid #1e2b47;flex-wrap:wrap;position:sticky;top:0;z-index:5}
@@ -102,8 +108,8 @@
   #coreRow{margin-left:auto;display:flex;align-items:center;gap:8px}
   .cb{width:110px;height:13px;background:#152038;border-radius:7px;overflow:hidden;border:1px solid #2a3d63}
   .cb i{display:block;height:100%;transition:width .18s}
-  .eb i{background:linear-gradient(90deg,#ff5d6c,#ff9d6a)}.pb i{background:linear-gradient(90deg,#3ce0aa,#79f0c5)}
-  .pb{transform:scaleX(-1)} .pb i{background:linear-gradient(90deg,#3ce0aa,#79f0c5)}
+  .eb i{background:linear-gradient(90deg,#ff5d6c,#ff9d6a)}.pb i{background:linear-gradient(90deg,var(--ally0),var(--ally1))}
+  .pb{transform:scaleX(-1)} .pb i{background:linear-gradient(90deg,var(--ally0),var(--ally1))}
   .cbl{font-size:11px;color:#9fb2d6;width:56px}
   #logbox{display:none;max-height:170px;overflow:auto;overflow-wrap:break-word;word-break:break-word;font-size:11px;line-height:1.6;color:#a9bce0;white-space:pre-wrap;min-width:0}
   #endOv{display:none;padding:18px;text-align:center}
@@ -1559,6 +1565,18 @@ let ctx = cv.getContext('2d');   // let (not const): drawUnitIcon temporarily re
 cv.width=C.LANE_W; cv.height=C.LANE_H;
 
 let selFac='rebels', selDiff='standard';
+// Faction identity accent for the ally battlefield wash: [r,g,b] of the picked faction's brand, updated
+// on gate click + run start. Rebels=brass #ffd97a, Aliens=viridian #c3e88d. Enemy half stays ember.
+const FAC_RGB={ rebels:[255,217,122], aliens:[195,232,141] };
+let allyRGB=FAC_RGB.rebels;               // default until a pick happens
+// Durable faction-accent driver: stamp data-fac/data-enemy on <body> so the run's core bar + ally field
+// wash carry the picked faction's brand. Guarded to the REAL browser body — the DOM-test shims provide a
+// plain {appendChild,removeChild} body with no setAttribute, so bare calls would throw under headless.
+// Cosmetic only; never touches the sim or test-pinned DOM ids.
+function tickFacAttrs(fid){ try{ if(typeof document!=='undefined' && document.body && typeof document.body.setAttribute==='function'){
+  document.body.setAttribute('data-fac', fid);
+  document.body.setAttribute('data-enemy', fid==='aliens'?'rebels':'aliens');
+} }catch(e){} }
 // P2A branch-map mode. 'direct' = the flat 4-battle run (every DOM test's default, byte-identical tree).
 // 'branching' = between-battle StS-style map screen (choose routes / pickups). User picks it in the gate.
 let selMode='direct';
@@ -1670,7 +1688,8 @@ const fac=$('facGrid');
 for (const fid in FACTIONS){
   const f=FACTIONS[fid];
   const b=document.createElement('button'); b.className='fbtn'+(fid===selFac?' sel':'');  b.innerHTML=`<div class="nm">${f.name}</div><div class="ds">${f.desc}</div>`;
-  b.onclick=()=>{ selFac=fid; [...fac.children].forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); };
+  b.onclick=()=>{ selFac=fid; [...fac.children].forEach(x=>x.classList.remove('sel')); b.classList.add('sel');
+    allyRGB = FAC_RGB[selFac] || FAC_RGB.rebels; tickFacAttrs(selFac); };
   fac.appendChild(b);
 }
 const diffRow=$('diffRow');
@@ -1696,6 +1715,7 @@ if(modeRow){
 function startRun(){
   // OBJ-7: ▶ begins a CAMPAIGN run (picker flow → battle 1). The AI fields the OTHER faction to the pick.
   const enemyId = (selFac==='aliens') ? 'rebels' : 'aliens';
+  allyRGB = FAC_RGB[selFac] || FAC_RGB.rebels; tickFacAttrs(selFac);   // your faction tint threads the whole run
   camp = { factionId:selFac, enemyId, difficulty:selDiff, battle:0, wins:0, upgrades:{}, mode:selMode };
   // P2-A.next: the run also owns a persistent unit DECK (card upgrades) + RELICS, seeded via the run
   // model. emitPhase2() feeds these into every battle's newState (engine consumes st.pDeck/st.relics).
@@ -2003,9 +2023,11 @@ function draw(){
   // battlefield ambience: soft side territory tints + a contested-line glow so the two halves of the
   // lane and the likely engagement point read at a glance (pure canvas wash, behind everything else).
   ctx.save(); ctx.globalCompositeOperation='lighter';
-  // ally (left) approach washes teal, enemy (right) approach washes ember, fading toward mid
+  // ally (left) approach washes the faction's brand accent (rebels brass / aliens viridian), enemy
+  // (right) washes ember; both fading toward mid so ownership reads without overpowering the lane.
+  const aR=allyRGB[0], aG=allyRGB[1], aB=allyRGB[2];
   const allyT=ctx.createLinearGradient(C.MID,0,C.PCORE_X,0);
-  allyT.addColorStop(0,'rgba(63,224,170,0)'); allyT.addColorStop(1,'rgba(63,224,170,.10)');
+  allyT.addColorStop(0,'rgba('+aR+','+aG+','+aB+',0)'); allyT.addColorStop(1,'rgba('+aR+','+aG+','+aB+',.10)');
   ctx.fillStyle=allyT; ctx.fillRect(0,C.GROUND-70,C.MID,70);
   const emyT=ctx.createLinearGradient(C.MID,0,C.ECORE_X,0);
   emyT.addColorStop(0,'rgba(255,107,107,0)'); emyT.addColorStop(1,'rgba(255,107,107,.10)');
