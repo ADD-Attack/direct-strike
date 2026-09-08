@@ -242,11 +242,8 @@
       <div class="fcaption" style="margin-top:10px">Difficulty</div>
       <div class="diffs" id="diffRow"></div>
       <div class="hint" style="margin-top:4px"><b>Easy (dev)</b> = very weak enemy that barely buys — you should roll through each battle and finish a run fast (for learning &amp; testing). Casual/Standard/Brutal = rising enemy economy &amp; aggression.</div>
-      <div class="fcaption" style="margin-top:10px">Path</div>
-      <div class="diffs" id="modeRow"></div>
       <button id="startBtn">▶ START CAMPAIGN</button>
-      <div class="hint">Path · <b>Direct</b> = flat 4 escalating battles (pick one upgrade each win).
-        <b>Branching</b> = a StS-style between-battle map — choose left/right/middle routes; some nodes are fights with a described reward, others are pickups. Casual / Standard / Brutal set enemy economy &amp; aggression.</div>
+      <div class="hint"><b>StS-style branching map:</b> each battle win opens a fork — pick your next commander (STANDARD / RUSH FLANK / ECONOMY LINE). Each road is a different enemy archetype and banks a run-wide boon if you clear it. Win 4 escalating battles to finish the run.</div>
     </div>
     <div id="battlePanel" class="card" style="display:none">
       <div class="fcaption" id="bidCap"></div>
@@ -1579,7 +1576,7 @@ function tickFacAttrs(fid){ try{ if(typeof document!=='undefined' && document.bo
 } }catch(e){} }
 // P2A branch-map mode. 'direct' = the flat 4-battle run (every DOM test's default, byte-identical tree).
 // 'branching' = between-battle StS-style map screen (choose routes / pickups). User picks it in the gate.
-let selMode='direct';
+let selMode='branching';           // 2026-09-08 Brick: paths REMOVED — only FTL/StS branching remains; Direct is gone.
 let st=null, raf=0, last=performance.now();
 
 // ---- generated-art SPRITE system (replaces vector bodies on-field; vectors kept as fallback) ----
@@ -1699,24 +1696,14 @@ for (const d of ['easy','casual','standard','brutal']){
   b.onclick=()=>{ selDiff=d; [...diffRow.children].forEach(x=>x.classList.remove('chosen')); b.classList.add('chosen'); $('difpill').textContent=b.textContent+''; };
   diffRow.appendChild(b);
 }
-// P2A Path toggle (Direct / Branching) — a user-visible gate control mirroring the difficulty pills.
-// Tests never touch it (default 'direct'), so the flat path + all DOM gates stay byte-identical.
-const modeRow=$('modeRow');
-if(modeRow){
-  for(const m of ['direct','branching']){
-    const b=document.createElement('button');
-    b.textContent = (m==='branching') ? '🛣 Branch map' : 'Direct';
-    if(m===selMode) b.classList.add('chosen');
-    b.onclick=()=>{ selMode=m; [...modeRow.children].forEach(x=>x.classList.remove('chosen')); b.classList.add('chosen'); log('Path set to '+(m==='branching'?'BRANCH MAP (StS-style between battles)':'DIRECT (flat 4 escalating battles)')); };
-    modeRow.appendChild(b);
-  }
-}
+// P2A Path toggle REMOVED 2026-09-08 (Brick): only the FTL/StS Branching mode remains; Direct is gone.
+// modeRow is left as an empty hidden slot in the gate so no dangling id refs appear.
 
 function startRun(){
   // OBJ-7: ▶ begins a CAMPAIGN run (picker flow → battle 1). The AI fields the OTHER faction to the pick.
   const enemyId = (selFac==='aliens') ? 'rebels' : 'aliens';
   allyRGB = FAC_RGB[selFac] || FAC_RGB.rebels; tickFacAttrs(selFac);   // your faction tint threads the whole run
-  camp = { factionId:selFac, enemyId, difficulty:selDiff, battle:0, wins:0, upgrades:{}, mode:selMode };
+  camp = { factionId:selFac, enemyId, difficulty:selDiff, battle:0, wins:0, upgrades:{}, mode:'branching' };
   // P2-A.next: the run also owns a persistent unit DECK (card upgrades) + RELICS, seeded via the run
   // model. emitPhase2() feeds these into every battle's newState (engine consumes st.pDeck/st.relics).
   const rmodel = newRun({ factionId:selFac, enemyId, difficulty:selDiff, roster: FACTIONS[selFac].roster });
@@ -2665,21 +2652,13 @@ function campsWin(){
     $('againBtn').textContent='▶ New Campaign'; $('againBtn').style.display='';
     $('againBtn').onclick=startRun; $('copyLog').style.display='';
   } else {
-    if(isBranch()){
-      // Branching win -> [VICTORY celebrate + tap Continue] -> reward rows -> then MAP (battles 2..3) or
-      // straight to the finale (after battle 3). The reward rows are revealed by Continue.
-      showVictoryStage();
-      _winAdvance = (camp.battle < CAMP_BATTLES-1) ? 'map' : '';   // map after this win's reward unless finale is next
-      recap(); setRunPill();
-      return;   // reward rows NOT shown yet — Continue boots them from the victory overlay
-    }
-    $('endSub').textContent='Cracked the enemy core '+C.fmtT(st.t)+' — victory '+camp.wins+'/'+CAMP_BATTLES+
-      '. Choose ONE reward below — a run upgrade, a leveled unit card, or a relic — for the next battle.';
+    // BRANCHING win (only flow — Direct was removed 2026-09-08): [VICTORY celebrate + tap Continue] ->
+    // reward rows -> then MAP for non-finale wins (battles 2..3) or straight into the finale reward queue
+    // (after battle 3, finale doesn't re-map). The reward rows are revealed by Continue.
+    showVictoryStage();
+    _winAdvance = (camp.battle < CAMP_BATTLES-1) ? 'map' : '';   // map after this win's reward unless finale is next
     recap(); setRunPill();
-    showUpgradePicker();
-    showCardPicker();
-    showRelicRow();   // P2-C: a relic is an alternate reward while any remain unclaimed
-    renderNextLegs(); // P2a: next-leg route preview strip between battles
+    return;   // reward rows NOT shown yet — Continue boots them from the victory overlay
   }
 }
 // Branch win celebration: a full-screen VICTORY confirmation the player must acknowledge (the missing
@@ -2871,9 +2850,10 @@ function claimAdvance(){
   if(!camp) return nextBattle(false,true);
   // leave the full-screen reward view before advancing/mapping
   const eo=$('endOv'); if(eo) eo.classList.remove('endScreen');
-  // Branch: this win went VICTORY-confirm -> reward, and now the reward is claimed -> if a fork follows
-  // (battles 2..3) open the MAP instead of auto-advancing; the route pick then starts the next battle.
-  const goMap = (_winAdvance==='map') && isBranch() && (camp.battle < CAMP_BATTLES-1);
+  // Branching-only (Direct removed): this win went VICTORY-confirm -> reward, and now the reward is
+  // claimed -> if a fork follows (battles 2..3) open the MAP instead of auto-advancing; the route pick
+  // then starts the next battle. Only the finale reward advances straight into the boss.
+  const goMap = _winAdvance==='map' && (camp.battle < CAMP_BATTLES-1);
   _winAdvance='';
   if(goMap){ openRouteMap(); return; }
   nextBattle(false,true);
