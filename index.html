@@ -161,11 +161,12 @@
   #mapOv .node .ni{font-size:22px}
   #mapOv .node .nt{font-weight:700;font-size:12px;color:#e8f1ff;margin-top:4px}
   #mapOv .node .nd{font-size:11px;color:#8ba0cc;margin-top:3px;line-height:1.35}
+  #mapOv .node .nb{font-size:10px;color:#ffd98a;margin-top:6px;line-height:1.3;background:rgba(255,217,138,.08);border:1px dashed rgba(255,217,138,.35);border-radius:8px;padding:4px 5px}
+  #mapOv .node .bossTag{display:inline-block;font-size:9px;color:#12121f;background:#ff5a5a;border-radius:6px;padding:1px 5px;margin-left:4px;vertical-align:middle;letter-spacing:.5px}
   #mapOv .node.taken{border-color:#5fa88a}
-  #mapOv .mpath{margin:6px 0;font-size:12px;color:#64799f}
-  #mapOv .mNext{font-size:12px;color:#b7c7ea;margin:10px 0 4px;font-weight:600}
   #mapOv .mScrim{width:46%;height:2px;background:#2a3f6a;border-radius:2px;margin:2px auto}
-  #mapOv .mapBottom{display:flex;justify-content:center;gap:10px;padding:14px 16px 22px}
+  #mapOv .mapBottom{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;padding:14px 16px 22px}
+  #mapOv .mapHint{font-size:11.5px;color:#9fbbe8;text-align:center;max-width:560px;line-height:1.4;padding:0 10px}
   #mapOv button.goback,.mapOv button{background:#1a2a4a;color:#dfe7f5;border:1px solid #3a5287;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}
   #mapOv button.chosen{background:#2b4a86;border-color:#7aa2ff}
 </style>
@@ -1664,6 +1665,17 @@ function battleOpts(){
   // P2-D: a map/AI director may ask that THIS battle be fought by a specific enemy archetype. Default
   // (no entry) = 'balanced', byte-identical current tree; newState whitelists again for safety.
   if(camp && camp.run){ const a = archetypeFor(camp.run, camp.battle); if(a) o.aiArche = a; }
+  // Branch-map lane boons + nemesis finale (Branching only; flat/direct never sets lanes => all 0 =>
+  // opts identical to before). Lane boons you earned by beating routed enemies carry the rest of the run.
+  if(isBranch()){
+    const ld = laneOptDeltas();
+    if(ld.startMin)   startMin += ld.startMin;
+    if(ld.incomeMult) o.minMult   = (o.minMult||1) + ld.incomeMult;   // stacks on Colony-Surge income if any
+    if(ld.starterMelee) o.starterMelee = ld.starterMelee;             // +N starter melee bodies (applied in newState opener)
+    // Nemesis finale: if we're at the finale (battle 4) and no archetype was explicitly routed for it,
+    // the commander-type you beat most in battles 2..3 resurfaces as the finale threat (path-influenced boss).
+    if(camp.battle>=CAMP_BATTLES && !o.aiArche){ const ne=nemesisArche(); if(ne) o.aiArche=ne; }
+  }
   // P2-A.next: feed the run's unit DECK stacks + held RELICS into the battle as pDeck/relics.
   // (camp.deck/camp.relics set in startRun via run-model; engine consumes them per-spawn.)
   if(camp && camp.deck){
@@ -1702,7 +1714,9 @@ function nextBattle(first, advance){
   const pWorkers = 1 + upgradeCount('workers')*2;
   give(st, false, 'worker', pWorkers);
   give(st, true , 'worker', 1);                               // enemy fields the SAME 1-worker opener
-  give(st, false, 'melee', 2);
+  // starter squads. Lane boon 'Blitz Charge' (branch) adds extra PLAYER melee bodies once earned.
+  const pMelee = 2 + (o&&o.starterMelee? o.starterMelee : 0); // o reflects lane deltas from battleOpts
+  give(st, false, 'melee', pMelee);
   give(st, true , 'melee', 2 + camp.battle);                          // escalating starter wave (3,4,5,6 bodies) = difficulty (not economy)
   const tDef=grant('tank'); if(camp.battle>=4 && tDef) grantUnit(st,tDef,true); // OBJ-8 balance: the free enemy tank is the run's final 'boss' threat — it joins at battle 4 (the finale), NOT battle 3. Measured headlessly (test/campaignbal.mjs) that a free tank at battle 3 cliffed the mid-run: b3 win dropped to ~0% for a competent buyer even on Casual because the instant 5-melee+tank opener pushed before the player could respond. Moving it to the final battle both restores a fair mid-run (b2-b3 winnable) AND gives battle 4 its intended signature escalation. Economy ramp (eInc/eStart/aiA) is untouched — obj7engine still passes.
   showBattle(first);
@@ -1730,6 +1744,8 @@ function setRunPill(){
     const upgN=countUpgs();
     if(upgN>0) core+=' · ✨'+upgN;
     const rel=(camp.relics||[]); if(rel.length) core+=' · 💠'+(rel.map(id=>(RELIC_DEFS[id]?RELIC_DEFS[id].ic:'💠')).join(''));
+    const lane=camp&&camp.lanes&&camp.lanes.credit||{}; const lk=Object.keys(lane).filter(a=>lane[a]>0);
+    if(lk.length && isBranch()) core+=' · 🏁'+lk.map(a=>(({balanced:'⚖',rusher:'🗡',economist:'🏭'})[a]||a)+'×'+lane[a]).join('');
     p.textContent=core;
   } else p.textContent='Standard';
 }
@@ -2419,6 +2435,13 @@ function endOfMatch(){
 // campaign won this battle: last battle = RUN victory; otherwise offer 1-of-2 persistent upgrades.
 function campsWin(){
   camp.wins += 1;
+  // Branch-mode lane accounting: if THIS battle was routed to an enemy archetype and you won it, credit
+  // that lane's boon for the rest of the run (and feed the nemesis finale pick). Applied only when the
+  // run is branching AND battle had a routed archetype.
+  if(camp && camp.run && camp.battle>0){
+    const a = archetypeFor(camp.run, camp.battle);
+    if(a) creditRoutedLane(a);
+  }
   const over = camp.battle>=CAMP_BATTLES;
   $('endTxt').textContent= over? '🏆 RUN VICTORY' : ('🏆 Battle '+camp.battle+' WON');
   $('endTxt').style.color='#79f0c5';
@@ -2547,11 +2570,47 @@ function takeRelicReward(id){
 // WHICH enemy you walk into next (the existing per-battle AI archetype knob + its headless gate), then
 // the routed battle begins. Direct mode never calls these => 33 DOM tests stay flat/green.
 const _ROUTES = [
-  { arche:'balanced',  ic:'⚖', nm:'STANDARD FRONT', md:'even build — no early tell, fights you head-on', boss:false },
-  { arche:'rusher',    ic:'🗡', nm:'RUSH FLANK',     md:'fast cheap melee press — tests your early micro',  boss:false },
-  { arche:'economist', ic:'🏭', nm:'ECONOMY LINE',   md:'harvests hard then swings a heavier mid-wave',     boss:false },
+  { arche:'balanced',  ic:'⚖', nm:'STANDARD FRONT', md:'even build — no early tell, fights you head-on',   boon:'Aegis — disciplined command keeps you flush: +6 ◆ opener each later battle',
+    bhow:'pure head-on pressure, no tricks — the honest fight' },
+  { arche:'rusher',    ic:'🗡', nm:'RUSH FLANK',     md:'fast cheap melee press — tests your early micro',    boon:'Blitz Charge — your forward line hits harder out of the gate: +1 starter melee each later battle',
+    bhow:'a quick cheap rush that tries to overrun you before your line firms' },
+  { arche:'economist', ic:'🏭', nm:'ECONOMY LINE',   md:'harvests hard then swings a heavier mid-wave',      boon:'Tithe — harvest discipline pays down the road: +6% income each later battle',
+    bhow:'he plays the long game — banks hard, then throws a heavier mid/late wave' },
 ];
 function isBranch(){ return !!(camp && camp.mode==='branching'); }
+// ---- Branch-map run ledger: which opponents you actually BEAT (lane boons) + nemesis finale. ----
+// A lane's boon is credited the moment you WIN that routed battle, so it pays off from the next battle
+// on (persistent, additive, op-level). Only tracks in Branching mode (flat/33 never set it), and each
+// archetype counters live on camp so a fresh run resets them.
+const ROUTE_BOONS = { balanced:  { op:[{k:'startMin',v:6 }],  label:'+6 ◆ opener each later battle' },
+                      rusher:    { op:[{k:'starterMelee',v:1 }], label:'+1 starter melee each later battle' },
+                      economist: { op:[{k:'incomeMult',v:0.06 }], label:'+6% income later battles' } };
+function lanesCredited(){ if(!camp||!camp.lanes) return {}; return camp.lanes.credit||{}; }
+function creditRoutedLane(arche){
+  // called when a battle ROUTED to arche wins (i.e. the routed laner was beaten).
+  if(!isBranch()||!camp) return;
+  camp.lanes = camp.lanes || { credit:{}, nemesis:{} };
+  camp.lanes.credit[arche] = (camp.lanes.credit[arche]||0)+1;
+  // final boss 'nemesis': the leader you routed to most in battles 2..3 returns for the finale.
+  if(camp.battle < CAMP_BATTLES) camp.lanes.nemesis[arche] = (camp.lanes.nemesis[arche]||0)+1;
+}
+// translate credited lane boons into battle-op deltas (Branching only; flat never credits => stays 0).
+function laneOptDeltas(){
+  const d={ startMin:0, starterMelee:0, incomeMult:0 };
+  if(!camp||!camp.lanes) return d;
+  for(const a in camp.lanes.credit||{}){
+    const n=camp.lanes.credit[a]||0; if(!n) continue;
+    for(const op of (ROUTE_BOONS[a]?ROUTE_BOONS[a].op:[])) d[op.k]+=op.v*n;
+  }
+  return d;
+}
+// the archetype you beat most often so far (finale 'nemesis' candidate); undefined if no routed lanes yet.
+function nemesisArche(){
+  const seen=lanesCredited(); let best=null,bestN=0;
+  for(const a in seen){ const n=seen[a]||0; if(n>bestN){ bestN=n; best=a; } }
+  return best; // count>0 only when you routed+won that lane
+}
+
 function claimAdvance(){
   // Central win->advance. Both modes still WIN a battle the same way; only the path INTO the next fight
   // differs: Branching (non-finale, i.e. next battle isn't the finale) pauses on the map screen first.
@@ -2568,10 +2627,10 @@ function openRouteMap(){
   head.textContent='🛣 Choose your path — Battle '+(bn)+'/'+CAMP_BATTLES;
   ov.appendChild(head);
   const sub=document.createElement('div'); sub.className='mapSub';
-  sub.textContent='You cleared battle '+(bn-1)+'. The front now forks — pick which enemy commander you advance against for the '+(['1st','2nd','3rd','4th'][Math.min(4,bn)-1])+' engagement.';
+  const finalTxt = (bn>=CAMP_BATTLES)? ' and they are the run\'s FINAL BOSS — beat them to win the campaign.':' — each also banks a run-wide boon if you can beat them.';
+  sub.textContent='You cleared battle '+(bn-1)+'. The front now forks — each road is a different enemy commander to face for the '+(['1st','2nd','3rd','4th'][Math.min(4,bn)-1])+' engagement'+finalTxt;
   ov.appendChild(sub);
   const body=document.createElement('div'); body.className='mapBody';
-  // position marker = the battle you just won; a little fork scrim funnels into the 3-route lane.
   const here=document.createElement('div'); here.className='mPos'; here.textContent='📍 You are here · Battle '+(bn-1)+' cleared · '+(camp.wins||0)+'/'+CAMP_BATTLES+' wins';
   body.appendChild(here);
   const pipe=document.createElement('div'); pipe.className='mScrim';
@@ -2579,14 +2638,26 @@ function openRouteMap(){
   const laneRow=document.createElement('div'); laneRow.className='mLane';
   for(const r of _ROUTES){
     const n=document.createElement('button'); n.className='node'; n.type='button';
-    n.title='Fight battle '+bn+' versus a '+(r.arche)+' commander';
-    n.innerHTML='<div class="ni">'+r.ic+'</div><div class="nt">'+r.nm+'</div><div class="nd">'+r.md+'</div>';
+    const beau = ROUTE_BOONS[r.arche]? ROUTE_BOONS[r.arche].label : '';
+    const isFinale = (bn>=CAMP_BATTLES);
+    n.innerHTML='<div class="ni">'+r.ic+'</div><div class="nt">'+r.nm+(isFinale?' <span class="bossTag">BOSS</span>':'')+'</div>'
+      +'<div class="nd">'+r.md+'</div>'
+      +(beau&&!isFinale? '<div class="nb">Win ▶ '+beau+'</div>':'<div class="nb">Crack their core to win the run.</div>');
     n.onclick=()=>resolveRoute(r, bn);
     laneRow.appendChild(n);
   }
   body.appendChild(laneRow);
   ov.appendChild(body);
+  const nem=nemesisArche();
   const bt=document.createElement('div'); bt.className='mapBottom';
+  const hint=document.createElement('div'); hint.className='mapHint';
+  const BOSSNAME={balanced:'STANDARD FRONT',rusher:'RUSH FLANK',economist:'ECONOMY LINE'};
+  if(bn>=CAMP_BATTLES && nem){ hint.textContent='🧠 NEMESIS BOSS: you out-fought the '+(BOSSNAME[nem]||nem)+' Commander most in battles 2-3. They have come back to lead the finale line — unless you re-route now.'; }
+  else {
+    const cred=camp&&camp.lanes&&camp.lanes.credit||{}; const owned=Object.keys(cred).filter(a=>cred[a]>0);
+    hint.textContent = owned.length ? ('🏁 Beaten so far: '+owned.map(a=>(BOSSNAME[a]||a)+' ×'+cred[a]).join(' · ')+' — keep clearing roads to bank their boons.') : '🛡 Clear a road to bank its run-wide boon for the battles ahead.';
+  }
+  bt.appendChild(hint);
   const defaultBtn=document.createElement('button');
   defaultBtn.textContent='⚖ Hold Standard Front (default) — begin battle '+bn;
   defaultBtn.title='Equal build, no early tell';
