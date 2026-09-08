@@ -212,7 +212,7 @@
       <div class="factions" id="facGrid"></div>
       <div class="fcaption" style="margin-top:10px">Difficulty</div>
       <div class="diffs" id="diffRow"></div>
-      <div class="hint" style="margin-top:4px"><b>Easy (dev)</b> = almost no enemy pressure (near-idle AI) — for learning &amp; testing systems. Casual/Standard/Brutal = rising enemy economy &amp; aggression.</div>
+      <div class="hint" style="margin-top:4px"><b>Easy (dev)</b> = very weak enemy that barely buys — you should roll through each battle and finish a run fast (for learning &amp; testing). Casual/Standard/Brutal = rising enemy economy &amp; aggression.</div>
       <div class="fcaption" style="margin-top:10px">Path</div>
       <div class="diffs" id="modeRow"></div>
       <button id="startBtn">▶ START CAMPAIGN</button>
@@ -300,10 +300,12 @@ const DIFF = {
   //   cannot field a gas-tech unit before its workers reach the geyser (~same ~20s clock as the player).
   //   This stops 'enemy dropped a gas unit at 10s while I have zero gas'; challenge lives instead in the
   //   mineral lead + income multiplier + buy cadence. Tunable later with human testing.
-  // easy = Developer / beginner sandbox: no enemy mineral lead, income a trickle, and a slow lazy AI =
-  //   a near-idle enemy so you can actually TEST systems (branch map, boons, cards, relics, units) without
-  //   the AI rushing your opener. Real difficulty still lives in Casual/Standard/Brutal.
-  easy:     { eStart: 0,  eInc: 0.35, aiA: 2.8,  eGasStart: 0 },
+  // easy = Developer / beginner sandbox: no enemy mineral lead, income ~a trickle and a slow lazy AI — a
+  // near-idle enemy so you can actually TEST systems (branch map, boons, cards, relics, units). eInc 0.10
+  // (~3.5x below the earlier 0.35) + aiA 5.0 (~1.8x slower than 2.8) so it almost never reinforces: you
+  // roll through its fixed starter wave and crack its core fast (wins land ~50-75% of the old time).
+  // Real difficulty still lives in Casual/Standard/Brutal.
+  easy:     { eStart: 0,  eInc: 0.10, aiA: 5.0,  eGasStart: 0 },
   casual:   { eStart: 4,  eInc: 0.6,  aiA: 2.0,  eGasStart: 0 },
   standard: { eStart: 40, eInc: 1.0,  aiA: 1.55, eGasStart: 3 },
   brutal:   { eStart: 90, eInc: 1.18, aiA: 1.1, eGasStart: 3 },
