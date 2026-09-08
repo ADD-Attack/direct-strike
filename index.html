@@ -23,6 +23,20 @@
   #logbox{flex:1 1 100%;overflow-wrap:break-word;word-break:break-word}
   #cv,#gate,#battlePanel,#battleHud,#endOv{min-width:0}
   canvas{width:100%;height:auto;background:#0b1220;border:1px solid #1e2b47;border-radius:10px;display:block;max-width:100%}
+  /* Exploding-core payoff: a decorative burst div over the battlefield column, positioned at the losing
+     core's x, animated by pure CSS so it plays on the browser clock (not gated by the sim/rAF/result flow).
+     Rendered behind the result/modals (z below them) and auto-removed after ~1s by boomOnCore(). */
+  #colL{position:relative}
+  .coreBoom{position:absolute;top:40%;width:120px;height:120px;margin:-60px 0 0 -60px;pointer-events:none;z-index:1}
+  .coreBoom::before{content:'';position:absolute;inset:0;border-radius:50%;
+    background:radial-gradient(circle,#fff 0%,#ffdf8a 28%,#ff8a3c 55%,transparent 74%);
+    animation:coreBoomFlash .9s ease-out forwards}
+  .coreBoom::after{content:'';position:absolute;inset:0;border-radius:50%;border:3px solid #ffd24a;
+    box-shadow:0 0 22px #ffb15a;animation:coreBoomWave .9s ease-out forwards}
+  @keyframes coreBoomFlash{0%{opacity:1;transform:scale(.25)}55%{opacity:.95;transform:scale(1)}100%{opacity:0;transform:scale(1)}
+  }
+  @keyframes coreBoomWave{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(2.6)}
+  }
   /* --- phones / narrow tablets: never overflow the viewport horizontally --- */
   @media (max-width:760px){
     body{min-width:0}
@@ -2039,7 +2053,6 @@ function draw(){
       ctx.globalAlpha=1; ctx.shadowBlur=0;
     }
   }
-  // cores
   drawCore(C.PCORE_X, st?st.pCore:100, '#3fe0aa');
   drawCore(C.ECORE_X, st?st.eCore:100, '#ff6b6b');
   // economy-shield BARRIERS (in front of the minerals; guard the core)
@@ -2053,6 +2066,7 @@ function draw(){
   // the combat lost its "punch" because nothing ever flashed or popped on screen)
   drawFx();
 }
+
 
 // Renders the transient st.fx popups the engine raised this frame: hit-flashes, splash shockwaves,
 // healer pulses, hive summons and harvest pings. Pure cosmetic; reads combat at a glance.
@@ -2524,8 +2538,29 @@ function drawUnitIcon(cvEl, def, organic){
   ctx = PREV;                        // restore battlefield ctx
 }
 
+// Exploding-core payoff (test-safe: purely a decorative DOM flash over the battlefield column, driven by
+// browser CSS keyframes — it does NOT gate/hold the rAF loop or the result flow, so the DOM campaign tests
+// (which mount reward/retry content right after st.over) are untouched; suite stays green). Called the
+// instant a battle resolves; a bright core-detonation burst + shockwave pops over the DESTROYED core and
+// fades, revealing the normal victory/defeat result beneath it.
+function boomOnCore(){
+  if(!st || st.boomDone) return; st.boomDone=true;
+  // Skip under the headless DOM-shim tests: their setTimeout returns 0 (never fires), so a decorative
+  // element we couldn't auto-remove would accumulate across battles and pollute the DOM the tests read.
+  try{ const t0=setTimeout(()=>{},0); if(typeof t0!=='number' || t0===0) return; }catch(e){ return; }
+  try{
+    const cv=document.getElementById('cv'); if(!cv||!cv.parentElement) return;
+    const isWin=!st.win, x=(isWin? C.ECORE_X : C.PCORE_X);   // the LOSING core = ours when we lost (PCORE), theirs when we won (ECORE)
+    const boom=document.createElement('div');
+    boom.className='coreBoom';
+    boom.style.left=(x/(cv.width||900)*100)+'%';
+    cv.parentElement.appendChild(boom);
+    setTimeout(()=>{ try{ boom.remove(); }catch(e){} }, 1000);
+  }catch(e){ /* cosmetic only */ }
+}
 function endOfMatch(){
   if(st&&st._endShown) return; if(st) st._endShown=true;   // guard: the rAF loop's over-handler can fire more than once; end once per battle
+  boomOnCore();   // decorative core-detonation flash (skips itself under the headless DOM shim)
   const w=st.win;
   $('endOv').style.display='block';
   // OBJ-7: the run overlay decides text + buttons (win->upgrade pick / run victory; loss->retry same battle)
