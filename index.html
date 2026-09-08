@@ -2571,7 +2571,7 @@ function renderNextLegs(){
   if(winningBattle>=CAMP_BATTLES){ sec.style.display='none'; return; } // finale has no next-leg preview
   const header=document.createElement('div');
   header.className='mapHead';
-  header.textContent='🛣 Next escalation · '+(['2nd','3rd','4th'][Math.min(2,winningBattle)])+' engagement — the enemy will push one of these:';
+  header.textContent='🛣 Next escalation · '+(['2nd','3rd','4th'][winningBattle-1]||'next')+' engagement — the enemy will push one of these:';
   sec.appendChild(header);
   const wrap=document.createElement('div'); wrap.className='mapWrap';
   for(const n of _ROUTE_ARCHE){
