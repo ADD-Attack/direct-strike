@@ -1595,6 +1595,8 @@ function drawStruct(key, x, gy, hPx, alpha){
 // here in ui.js: a fresh engine state (newState) is created per battle with the run's upgrades
 // baked in, then torn down when the battle ends. camp persists across battles within one run.
 let camp=null;
+let _branchRewardsDeferred=false;   // Branching: upgrade/card/relic rows held back until a road is picked
+let _branchPendingMap=false;         // Branching: a map is up awaiting a route decision (reward pick must not re-open it)
 const CAMP_BATTLES=4;
 
 // persistent-run upgrade pool — winner picks 1-of-2 after each battle. Each is a clean state delta
@@ -2463,6 +2465,18 @@ function campsWin(){
     $('againBtn').textContent='▶ New Campaign'; $('againBtn').style.display='';
     $('againBtn').onclick=startRun; $('copyLog').style.display='';
   } else {
+    // Branching (non-finale, and only while the routed battle isn't the finale itself): make the
+    // after-victory screen the dedicated PATH MAP (battles 2 & 3 get routed). Winning battle 3 goes
+    // straight to the battle-4 finale reward (nemesis boss is auto-chosen) — no map pause before the boss.
+    const routing = isBranch() && (camp.battle < CAMP_BATTLES-1);
+    if(routing){
+      $('endSub').textContent='You cracked battle '+camp.battle+' of the run. ▶ Pick the next enemy commander on the map — then take your reward and press on.';
+      recap(); setRunPill();
+      _branchRewardsDeferred = true;              // reward rows are shown by resolveRoute after a route pick
+      _branchPendingMap = true;
+      openRouteMap();                              // the dedicated full-screen map IS the after-victory screen now
+      return;
+    }
     $('endSub').textContent='Cracked the enemy core '+C.fmtT(st.t)+' — victory '+camp.wins+'/'+CAMP_BATTLES+
       '. Choose ONE reward below — a run upgrade, a leveled unit card, or a relic — for the next battle.';
     recap(); setRunPill();
@@ -2624,10 +2638,10 @@ function nemesisArche(){
 }
 
 function claimAdvance(){
-  // Central win->advance. Both modes still WIN a battle the same way; only the path INTO the next fight
-  // differs: Branching (non-finale, i.e. next battle isn't the finale) pauses on the map screen first.
+  // Central win->advance. In Branching the dedicated path-map leads at victory and the route pick reveals
+  // the reward rows; this ONE claim (upgrade/card/relic) then advances straight into the routed battle.
   if(!camp) return nextBattle(false,true);
-  if(isBranch() && camp.battle < CAMP_BATTLES-1){ openRouteMap(); return; } // route to battles 2..3
+  _branchPendingMap=false; _branchRewardsDeferred=false;   // map decision resolved before any claim now
   nextBattle(false,true);
 }
 function openRouteMap(){
@@ -2679,6 +2693,16 @@ function resolveRoute(r, bn){
   const ov=$('mapOv'); if(ov) ov.style.display='none';
   if(camp && camp.run && r && r.arche){ try{ setArchetype(camp.run, bn, r.arche); }catch(e){} }
   log((r?('🛣 Route '+bn+' → '+r.nm+' ('+r.arche+' enemy).'):('🛣 Route set.')));
+  // rewards are deferred in Branching until a road is picked: after the pick we show the upgrade/card/
+  // relic rows and let the ONE claim advance into the routed battle (claimAdvance sees _branchPendingMap
+  // is now false => maps are done, so it starts the fight).
+  if(isBranch() && _branchRewardsDeferred){
+    _branchPendingMap=false; _branchRewardsDeferred=false;
+    $('endTxt').textContent='🏆 Battle '+(bn-1)+' clear — take your reward for the road ahead';
+    $('endSub').textContent='Route set: the '+(r?r.nm:'next')+' Commander waits at battle '+bn+'. Take ONE reward below, then the routed fight begins.';
+    showUpgradePicker(); showCardPicker(); showRelicRow(); renderNextLegs();
+    return;                                  // do NOT advance; the reward claim starts battle bn
+  }
   // re-show the normal deploy control + start the routed escalation
   const again=$('againBtn'); if(again) again.style.display='none';
   nextBattle(false,true);   // fight the routed Battle bn now
