@@ -1698,6 +1698,15 @@ function battleOpts(){
   if(rw && (rw.min||rw.gas)){ startMin += rw.min||0; startGas += rw.gas||0; if(camp.run) camp.run.__wind = {}; }
   if(startMin !== C.P_START_MIN) o.startMin = startMin;          // only override when something added
   if(startGas !== 0)            o.startGas = startGas + C.P_START_GAS;  // gas: base 0, add vouchers + windfall
+  // DEV SANDBOX ONLY (Easy/dev, chosen on the gate): hand the player a fat opening bank + a small gas
+  // seed so testing any system (map, cards, relics, units) is nearly instant. Guard is 100% UI-layer
+  // (camp.difficulty, set by the gate) and never reaches the engine difficulty table or any real
+  // difficulty — no other mode and no headless test (all run casual/standard/brutal) is affected.
+  if(camp && camp.difficulty==='easy'){
+    startMin += 220;                       // enough to instantly field a couple of units + workers
+    startGas += 4;                         // unlocks the ◈ gas tier immediately (no geyser waiting)
+    o.startMin = startMin; o.startGas = startGas + C.P_START_GAS;
+  }
   // P2-D: a map/AI director may ask that THIS battle be fought by a specific enemy archetype. Default
   // (no entry) = 'balanced', byte-identical current tree; newState whitelists again for safety.
   if(camp && camp.run){ const a = archetypeFor(camp.run, camp.battle); if(a) o.aiArche = a; }
@@ -1750,8 +1759,11 @@ function nextBattle(first, advance){
   const pWorkers = 1 + upgradeCount('workers')*2;
   give(st, false, 'worker', pWorkers);
   give(st, true , 'worker', 1);                               // enemy fields the SAME 1-worker opener
+  // DEV SANDBOX: on Easy/dev give the player 2 extra workers (income snowball) so any test builds fast.
+  const DEV = (camp && camp.difficulty==='easy');
+  if(DEV) give(st, false, 'worker', 2);
   // starter squads. Lane boon 'Blitz Charge' (branch) adds extra PLAYER melee bodies once earned.
-  const pMelee = 2 + (o&&o.starterMelee? o.starterMelee : 0); // o reflects lane deltas from battleOpts
+  const pMelee = 2 + (o&&o.starterMelee? o.starterMelee : 0) + (DEV? 3 : 0); // o reflects lane deltas from battleOpts; dev gets +3 to push fast
   give(st, false, 'melee', pMelee);
   give(st, true , 'melee', 2 + camp.battle);                          // escalating starter wave (3,4,5,6 bodies) = difficulty (not economy)
   const tDef=grant('tank'); if(camp.battle>=4 && tDef) grantUnit(st,tDef,true); // OBJ-8 balance: the free enemy tank is the run's final 'boss' threat — it joins at battle 4 (the finale), NOT battle 3. Measured headlessly (test/campaignbal.mjs) that a free tank at battle 3 cliffed the mid-run: b3 win dropped to ~0% for a competent buyer even on Casual because the instant 5-melee+tank opener pushed before the player could respond. Moving it to the final battle both restores a fair mid-run (b2-b3 winnable) AND gives battle 4 its intended signature escalation. Economy ramp (eInc/eStart/aiA) is untouched — obj7engine still passes.
