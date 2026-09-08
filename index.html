@@ -2313,6 +2313,10 @@ function drawUnit(u,en){
     const bob = Math.sin(u.id*1.7 + st.t*3)*2;
     const organic = (u.isEnemy? (st&&(st.aifac||st.faction)) : ((st&&st.faction)||FACTIONS[selFac])).id==='aliens';
     const spr = sprFor(u, organic);   // node sprite for the owning side
+    // Miner carry-state (Brick 16:07): hands stay EMPTY heading out & while digging; the carried ◆ only
+    // shows on the RETURN trip (wStage==='to-base'), i.e. when it holds loot moving back to base. Read-only
+    // against the sim's existing per-worker stage machine (to-node->mining->to-base) — no sim change.
+    const hauling = (u.wStage==='to-base');
     ctx.save();
     ctx.globalAlpha=.16; ctx.fillStyle='#000';
     ctx.beginPath(); ctx.ellipse(u.x, C.GROUND-1, 8, 2.6, 0, 0, Math.PI*2); ctx.fill();
@@ -2323,10 +2327,11 @@ function drawUnit(u,en){
       ctx.save(); ctx.translate(u.x, wy + bob*0.5); ctx.scale(u.isEnemy? -1:1, 1);
       ctx.shadowBlur=0; ctx.drawImage(spr.img, -wS/2, -hS, wS, hS);
       ctx.restore();
-      const c = u.isEnemy? '#ffd97a':'#d2f27a';
-      ctx.fillStyle=c; ctx.globalAlpha=.95; ctx.font='10px sans-serif'; ctx.textAlign='center';
-      ctx.fillText('◆', u.x, wy + bob*0.5 - hS - 2);   // carried mineral glints above the droid
-      ctx.restore();
+      if(hauling){ const c = u.isEnemy? '#ffd97a':'#d2f27a';
+        ctx.fillStyle=c; ctx.globalAlpha=.95; ctx.font='10px sans-serif'; ctx.textAlign='center';
+        ctx.fillText('◆', u.x, wy + bob*0.5 - hS - 2);   // carried mineral glints only on the run home
+        ctx.restore();
+      } else ctx.restore();
       return;
     }
     // fallback: tiny simple harvester marker (no sprite art / shim)
@@ -2335,8 +2340,8 @@ function drawUnit(u,en){
     ctx.beginPath(); ctx.arc(u.x, wy-7+bob, 6, 0, Math.PI*2); ctx.fill();
     ctx.shadowBlur=0; ctx.fillStyle= u.isEnemy? '#70330f':'#2f5d33';
     ctx.fillRect(u.x-3, wy-4+bob, 3, 5);
-    ctx.fillStyle='#8b8bFF'; ctx.globalAlpha=1; ctx.textAlign='center';
-    ctx.fillText('◆', u.x, wy-10+bob);
+    if(hauling){ ctx.fillStyle='#8b8bFF'; ctx.globalAlpha=1; ctx.textAlign='center';
+      ctx.fillText('◆', u.x, wy-10+bob); }
     ctx.restore();
     return;
   }
