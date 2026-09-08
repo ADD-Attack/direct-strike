@@ -1261,6 +1261,7 @@ function newRun({ factionId, enemyId, difficulty, deckBudget = 0, roster }){
     seen: [],                          // completed battle numbers (map bookkeeping)
     pool: poolFromRoster(roster),      // the unit-card pool this faction can draft/upgrade
     budget: deckBudget,                // unspent starting-deck budget
+    archetypes: {},                    // battle-number -> 'rusher'|'economist'|'balanced' (P2-D; empty = all balanced)
   };
   return run;
 }
@@ -1322,6 +1323,19 @@ function hasRelicRun(run, id){ return !!(run && run.relics && run.relics.include
 function enterBattle(run){ run.battle += 1; return run.battle; }
 function markWin(run){ run.wins += 1; run.seen.push(run.battle); return run.wins; }
 // (no markLoss: a loss just retries the SAME battle, UI keeps upgrades — win only when you clear it)
+
+// ---- P2-D AI-archetype request. A map/AI director may say a given battle number should be fought by a
+// specific ENEMY archetype ('rusher'/'economist'/'balanced'); empty/missing => balanced (no behavior shift). ----
+function setArchetype(run, battle, arche){
+  const A = ['rusher','economist','balanced'];
+  if(!run || !A.includes(arche)) return false;
+  run.archetypes[battle] = arche;
+  return true;
+}
+function archetypeFor(run, battle){
+  const a = run && run.archetypes && run.archetypes[battle];
+  return (a==='rusher'||a==='economist'||a==='balanced') ? a : undefined;
+}
 
 // ---- PURE Phase-2 emission: deck stacks -> engine pDeck mapping + relics ----
 // Returns { pDeck?, relics? } (undefined keys omitted). Called by ui.js and merged onto its battle-opts
@@ -1581,6 +1595,9 @@ function battleOpts(){
   if(rw && (rw.min||rw.gas)){ startMin += rw.min||0; startGas += rw.gas||0; if(camp.run) camp.run.__wind = {}; }
   if(startMin !== C.P_START_MIN) o.startMin = startMin;          // only override when something added
   if(startGas !== 0)            o.startGas = startGas + C.P_START_GAS;  // gas: base 0, add vouchers + windfall
+  // P2-D: a map/AI director may ask that THIS battle be fought by a specific enemy archetype. Default
+  // (no entry) = 'balanced', byte-identical current tree; newState whitelists again for safety.
+  if(camp && camp.run){ const a = archetypeFor(camp.run, camp.battle); if(a) o.aiArche = a; }
   // P2-A.next: feed the run's unit DECK stacks + held RELICS into the battle as pDeck/relics.
   // (camp.deck/camp.relics set in startRun via run-model; engine consumes them per-spawn.)
   if(camp && camp.deck){
@@ -1722,7 +1739,14 @@ function renderUnits(keepSel){
     const rowE=document.createElement('div'); rowE.className='row';
     const icWrap=document.createElement('span'); icWrap.className='icw'; icWrap.appendChild(icCanvas);
     const mid=document.createElement('div');
-    const nm=document.createElement('div'); nm.className='nm2'; nm.textContent=def.name;
+    const nm=document.createElement('div'); nm.className='nm2';
+    // P2: show WHEN a unit's CARD is deck-upgraded (run carries the level), so buying it visibly already
+    // yields the upgraded body — feedback that the strategic layer is live in the battle shop.
+    let dPts=0, dTag=null;
+    const dk=(camp&&camp.deck&&camp.deck.cards)? camp.deck.cards[def.key] : null;
+    if(dk && dk.upg){ for(const t in dk.upg){ dPts+=dk.upg[t]; dTag= t; } }
+    nm.textContent= def.name + (dPts>0? ('  ✦'+dPts) : '');
+    if(dPts>0) nm.title='Card is deck-upgraded ('+(dTag||'')+' x'+dPts+') this run — deployed copies are buffed.';
     const tg=document.createElement('div'); tg.className='tg'; tg.textContent=TAGLBL[def.tag]||def.tag;
     mid.appendChild(nm); mid.appendChild(tg);
     const badge=document.createElement('span'); badge.className='own'; badge.textContent=badgeText(def,aliveN);
@@ -2499,6 +2523,8 @@ if(typeof window!=='undefined'){
   Object.defineProperty(window.__ds,'selFac',{get:()=>selFac});
   Object.defineProperty(window.__ds,'selDiff',{get:()=>selDiff});
   window.__ds.FACTIONS=FACTIONS;
+  // P2-D: expose the pure run helpers to the test bridge (drive a per-battle AI archetype headlessly)
+  window.__ds.archetypes = { set:setArchetype, get:archetypeFor };
 }
 
 </script>
