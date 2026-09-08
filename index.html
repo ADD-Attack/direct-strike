@@ -169,6 +169,12 @@
   #mapOv .mapHint{font-size:11.5px;color:#9fbbe8;text-align:center;max-width:560px;line-height:1.4;padding:0 10px}
   #mapOv button.goback,.mapOv button{background:#1a2a4a;color:#dfe7f5;border:1px solid #3a5287;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}
   #mapOv button.chosen{background:#2b4a86;border-color:#7aa2ff}
+  #vicOv{position:fixed;inset:0;z-index:18;background:radial-gradient(1200px 700px at 50% -10%,#12301f,#08120c 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+  #vicOv .vicBig{font-size:44px;font-weight:900;color:#79f0c5;letter-spacing:1px;text-shadow:0 0 24px rgba(121,240,197,.35)}
+  #vicOv .vicSub{font-size:15px;color:#9fd6b6;margin-top:8px;max-width:620px;line-height:1.5}
+  #vicOv .vicStat{font-size:13px;color:#6f9c82;margin-top:6px}
+  #vicOv button.vicBtn{margin-top:30px;padding:14px 44px;font-size:18px;font-weight:800;border:0;border-radius:14px;background:linear-gradient(180deg,#2f8f5f,#1f6d46);color:#eafff3;cursor:pointer;box-shadow:0 6px 24px rgba(47,143,95,.4);transition:transform .06s,filter .1s}
+  #vicOv button.vicBtn:hover{filter:brightness(1.12);transform:translateY(-2px)}
 </style>
 </head>
 <body>
@@ -226,6 +232,7 @@
       <button id="copyLog">Copy match log</button>
     </div>
     <div id="mapOv" class="mapOv" style="display:none"></div>
+    <div id="vicOv" style="display:none"></div>
   </div>
   <div id="logbox" class="card"></div>
 </div>
@@ -1595,8 +1602,10 @@ function drawStruct(key, x, gy, hPx, alpha){
 // here in ui.js: a fresh engine state (newState) is created per battle with the run's upgrades
 // baked in, then torn down when the battle ends. camp persists across battles within one run.
 let camp=null;
-let _branchRewardsDeferred=false;   // Branching: upgrade/card/relic rows held back until a road is picked
-let _branchPendingMap=false;         // Branching: a map is up awaiting a route decision (reward pick must not re-open it)
+// Branch-mode win sequencing (game start(diff) -> Branch -> battle -> [VICTORY confirm] -> reward -> MAP
+// -> next battle). `_winAdvance` says what the reward CLAIM should do next: '' = straight to next battle
+// (Direct + finale wins), 'map' = open the branch map (#mapOv) after the reward is claimed (battles 2..3).
+let _winAdvance='';
 const CAMP_BATTLES=4;
 
 // persistent-run upgrade pool — winner picks 1-of-2 after each battle. Each is a clean state delta
@@ -2465,17 +2474,13 @@ function campsWin(){
     $('againBtn').textContent='▶ New Campaign'; $('againBtn').style.display='';
     $('againBtn').onclick=startRun; $('copyLog').style.display='';
   } else {
-    // Branching (non-finale, and only while the routed battle isn't the finale itself): make the
-    // after-victory screen the dedicated PATH MAP (battles 2 & 3 get routed). Winning battle 3 goes
-    // straight to the battle-4 finale reward (nemesis boss is auto-chosen) — no map pause before the boss.
-    const routing = isBranch() && (camp.battle < CAMP_BATTLES-1);
-    if(routing){
-      $('endSub').textContent='You cracked battle '+camp.battle+' of the run. ▶ Pick the next enemy commander on the map — then take your reward and press on.';
+    if(isBranch()){
+      // Branching win -> [VICTORY celebrate + tap Continue] -> reward rows -> then MAP (battles 2..3) or
+      // straight to the finale (after battle 3). The reward rows are revealed by Continue.
+      showVictoryStage();
+      _winAdvance = (camp.battle < CAMP_BATTLES-1) ? 'map' : '';   // map after this win's reward unless finale is next
       recap(); setRunPill();
-      _branchRewardsDeferred = true;              // reward rows are shown by resolveRoute after a route pick
-      _branchPendingMap = true;
-      openRouteMap();                              // the dedicated full-screen map IS the after-victory screen now
-      return;
+      return;   // reward rows NOT shown yet — Continue boots them from the victory overlay
     }
     $('endSub').textContent='Cracked the enemy core '+C.fmtT(st.t)+' — victory '+camp.wins+'/'+CAMP_BATTLES+
       '. Choose ONE reward below — a run upgrade, a leveled unit card, or a relic — for the next battle.';
@@ -2485,6 +2490,38 @@ function campsWin(){
     showRelicRow();   // P2-C: a relic is an alternate reward while any remain unclaimed
     renderNextLegs(); // P2a: next-leg route preview strip between battles
   }
+}
+// Branch win celebration: a full-screen VICTORY confirmation the player must acknowledge (the missing
+// "a screen after victory" beat). Continue -> reveal the upgrade/card/relic reward rows over the field.
+function showVictoryStage(){
+  const v=$('vicOv'); if(!v) return;
+  v.textContent=''; v.style.display='flex';
+  const big=document.createElement('div'); big.className='vicBig';
+  big.textContent='🏆  BATTLE '+(camp.battle)+' / '+CAMP_BATTLES+' CLEARED';
+  v.appendChild(big);
+  const sub=document.createElement('div'); sub.className='vicSub';
+  sub.textContent='The enemy production core is down. '+((camp.wins>=CAMP_BATTLES?'All four escalations broken':'Victory '+(camp.wins)+' of '+CAMP_BATTLES))+' — your line held, commander.';
+  v.appendChild(sub);
+  const stat=document.createElement('div'); stat.className='vicStat';
+  stat.textContent='⏱ '+C.fmtT(st.t)+'  ·  ✨ '+countUpgs()+' upgrade'+(countUpgs()===1?'':'s')+' banked'+(camp&&camp.relics&&camp.relics.length? '  ·  💠 '+camp.relics.length+' relic'+(camp.relics.length===1?'':'s'):'');
+  v.appendChild(stat);
+  const btn=document.createElement('button'); btn.className='vicBtn'; btn.type='button';
+  btn.textContent='Continue ▶';
+  btn.onclick=()=>{ v.style.display='none'; showRewardsStep(); };
+  v.appendChild(btn);
+}
+// Reveal the (already-computed) post-win reward rows over the field+shop — the "take your reward" step
+// that sits between the VICTORY confirm and the branch MAP.
+function showRewardsStep(){
+  if(!camp){ nextBattle(false,true); return; }
+  const over = camp.battle>=CAMP_BATTLES;
+  $('endOv').style.display='block';
+  const mapNext = _winAdvance==='map';
+  $('endTxt').textContent= over? '🏆 RUN VICTORY':'🏆 Battle '+camp.battle+' WON';
+  $('endTxt').style.color='#79f0c5';
+  $('endSub').textContent='Victory '+camp.wins+'/'+CAMP_BATTLES+'. Take ONE reward below — a run upgrade, a leveled unit card, or a relic'+(mapNext? ' — then a fork opens to pick your next commander for battle '+(camp.battle+1)+'.':' for the battle ahead.');
+  $('againBtn').style.display='none'; $('copyLog').style.display='none';
+  showUpgradePicker(); showCardPicker(); showRelicRow();
 }
 function showUpgradePicker(){
   clearPicker();
@@ -2641,7 +2678,11 @@ function claimAdvance(){
   // Central win->advance. In Branching the dedicated path-map leads at victory and the route pick reveals
   // the reward rows; this ONE claim (upgrade/card/relic) then advances straight into the routed battle.
   if(!camp) return nextBattle(false,true);
-  _branchPendingMap=false; _branchRewardsDeferred=false;   // map decision resolved before any claim now
+  // Branch: this win went VICTORY-confirm -> reward, and now the reward is claimed -> if a fork follows
+  // (battles 2..3) open the MAP instead of auto-advancing; the route pick then starts the next battle.
+  const goMap = (_winAdvance==='map') && isBranch() && (camp.battle < CAMP_BATTLES-1);
+  _winAdvance='';
+  if(goMap){ openRouteMap(); return; }
   nextBattle(false,true);
 }
 function openRouteMap(){
@@ -2693,17 +2734,8 @@ function resolveRoute(r, bn){
   const ov=$('mapOv'); if(ov) ov.style.display='none';
   if(camp && camp.run && r && r.arche){ try{ setArchetype(camp.run, bn, r.arche); }catch(e){} }
   log((r?('🛣 Route '+bn+' → '+r.nm+' ('+r.arche+' enemy).'):('🛣 Route set.')));
-  // rewards are deferred in Branching until a road is picked: after the pick we show the upgrade/card/
-  // relic rows and let the ONE claim advance into the routed battle (claimAdvance sees _branchPendingMap
-  // is now false => maps are done, so it starts the fight).
-  if(isBranch() && _branchRewardsDeferred){
-    _branchPendingMap=false; _branchRewardsDeferred=false;
-    $('endTxt').textContent='🏆 Battle '+(bn-1)+' clear — take your reward for the road ahead';
-    $('endSub').textContent='Route set: the '+(r?r.nm:'next')+' Commander waits at battle '+bn+'. Take ONE reward below, then the routed fight begins.';
-    showUpgradePicker(); showCardPicker(); showRelicRow(); renderNextLegs();
-    return;                                  // do NOT advance; the reward claim starts battle bn
-  }
-  // re-show the normal deploy control + start the routed escalation
+  // A route pick from the map (which was reached AFTER the VICTORY-confirm + reward): start the routed battle.
+  _winAdvance='';
   const again=$('againBtn'); if(again) again.style.display='none';
   nextBattle(false,true);   // fight the routed Battle bn now
 }
