@@ -48,7 +48,7 @@
     .ubtn .nm2{font-size:12.5px}
     .cbl{font-size:10px;width:auto}
     /* (reward-overlay declutter rules for ≤440px now live BELOW, after the base reward row styles, so
-       they actually win the cascade — see the @media(max-width:440px) block just before </style>.) */
+       they actually win the cascade — see the @media(max-width:440px) block at the end of the sheet.) */
   }
   .card{background:linear-gradient(180deg,#131b30,#101828);border:1px solid #22315a;border-radius:12px;padding:12px}
   .fcaption{font-size:11px;color:#8fa3cc;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px;font-weight:700}
@@ -112,7 +112,10 @@
      #cardRow/#relicRow above: equal-specificity later rules win the cascade, so placing the mobile
      overrides at the very end is what actually makes the CHOOSE-ONE wall render as full-width stacked
      thumb-rows (bigger tap zones) on phones instead of the cramped desktop multi-column tiles that
-     otherwise win here. Overlay becomes ONE scrollable panel. DOM untouched => DOM tests stay green. */
+     otherwise win here. Overlay becomes ONE scrollable panel. DOM untouched => DOM tests stay green.
+     NOTE: do NOT write the literal text "close-style" (slash-s-t-y-l-e) inside a CSS comment here —
+     an HTML style element ends at the first such literal even inside a comment, which truncates the
+     sheet and dumps the rest as visible text. Learned the hard way. */
   @media (max-width:440px){
     #endOv{padding:12px;max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
     #endOv h2{font-size:20px;margin-bottom:3px}
