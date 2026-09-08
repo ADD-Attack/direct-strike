@@ -47,22 +47,8 @@
     #units{grid-template-columns:1fr 1fr}
     .ubtn .nm2{font-size:12.5px}
     .cbl{font-size:10px;width:auto}
-    /* --- reward overlay declutter (mobile): the CHOOSE-ONE reward wall (2 globals + up to a dozen
-       card/relic items) must fit a phone. Narrow screens: the overlay itself becomes ONE scrollable
-       panel, captions sit on their own lines, and every reward is a full-width thumb-sized tappable row
-       (bigger tap zone, no ambiguous multi-column cramming). DOM structure untouched => DOM tests stay green. */
-    #endOv{padding:12px;max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
-    #endOv h2{font-size:20px;margin-bottom:3px}
-    #endOv p{font-size:13px;line-height:1.4}
-    #cardRow,#relicRow{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin:8px 0 4px}
-    #cardRow > div:first-child,#relicRow > div:first-child{position:static;margin:0 0 2px;font-size:13px}
-    #cardRow button.cardp,#relicRow button.relicp,.again,button.again{width:100%;max-width:none;min-width:0;
-      text-align:left;display:flex;flex-direction:column;align-items:flex-start;white-space:normal;font-size:13px;
-      padding:11px 12px;border-radius:10px}
-    #upgRow{flex-direction:column;align-items:stretch}
-    #upgRow button.upg{width:100%;max-width:none;min-width:0;flex:0 0 auto}
-    #upgRow,.again{margin:6px 0 4px}
-    #againBtn,#copyLog{width:100%;margin:4px 0}
+    /* (reward-overlay declutter rules for ≤440px now live BELOW, after the base reward row styles, so
+       they actually win the cascade — see the @media(max-width:440px) block just before </style>.) */
   }
   .card{background:linear-gradient(180deg,#131b30,#101828);border:1px solid #22315a;border-radius:12px;padding:12px}
   .fcaption{font-size:11px;color:#8fa3cc;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px;font-weight:700}
@@ -122,6 +108,25 @@
   #relicRow button.relicp:hover{border-color:#d99bff;background:#241241;transform:translateY(-1px)}
   #cardRow .hint,#relicRow .hint{color:#a8b7dc;font-size:11px;font-weight:400;margin-top:2px;display:block}
   .hint{font-size:11px;color:#66779c;margin-top:6px}
+  /* --- reward overlay declutter (mobile, ≤440px). MUST come AFTER the base styles for #upgRow/
+     #cardRow/#relicRow above: equal-specificity later rules win the cascade, so placing the mobile
+     overrides at the very end is what actually makes the CHOOSE-ONE wall render as full-width stacked
+     thumb-rows (bigger tap zones) on phones instead of the cramped desktop multi-column tiles that
+     otherwise win here. Overlay becomes ONE scrollable panel. DOM untouched => DOM tests stay green. */
+  @media (max-width:440px){
+    #endOv{padding:12px;max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    #endOv h2{font-size:20px;margin-bottom:3px}
+    #endOv p{font-size:13px;line-height:1.4}
+    #cardRow,#relicRow{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin:8px 0 4px}
+    #cardRow > div:first-child,#relicRow > div:first-child{position:static;margin:0 0 2px;font-size:13px}
+    #cardRow button.cardp,#relicRow button.relicp,.again,button.again{width:100%;max-width:none;min-width:0;
+      text-align:left;display:flex;flex-direction:column;align-items:flex-start;white-space:normal;font-size:13px;
+      padding:11px 12px;border-radius:10px}
+    #upgRow{flex-direction:column;align-items:stretch}
+    #upgRow button.upg{width:100%;max-width:none;min-width:0;flex:0 0 auto}
+    #upgRow,.again{margin:6px 0 4px}
+    #againBtn,#copyLog{width:100%;margin:4px 0}
+  }
 </style>
 </head>
 <body>
