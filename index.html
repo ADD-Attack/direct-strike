@@ -1729,6 +1729,13 @@ function showBattle(first){
   $('gate').style.display='none';
   const extra = camp? (' · Battle '+camp.battle+'/'+CAMP_BATTLES+' vs '+(camp?FACTIONS[camp.enemyId].name:'?')):'';
   $('bidCap').textContent=(st.faction.name+' — build your line')+extra;
+  // Branching finale reveal: if this is battle 4 and a nemesis commander is leading (path-influenced boss),
+  // announce it loudly so the player sees their history shaped the final fight.
+  const NMS={balanced:'STANDARD FRONT',rusher:'RUSH FLANK',economist:'ECONOMY LINE'};
+  if(isBranch() && st && st.faction && camp && camp.battle>=CAMP_BATTLES){
+    const ne=nemesisArche();
+    $('bidCap').textContent='☠ FINAL BOSS — battle 4/4 vs '+(ne&&NMS[ne]? 'the '+NMS[ne]+' Commander':'the enemy high command')+' ('+(FACTIONS[camp.enemyId].name||'')+') — crack their core to win the campaign!';
+  }
   $('deployHint').textContent='Buy workers (⛏) to mine faster — the 4th+ walk to the ◈ geyser and unlock your ◈ gas units. Then open a unit to deploy it when you can afford ◆ minerals'+(st.faction.roster.some(d=>d.cost.gas)?' (+ ◈ gas units need a ◈ worker on the geyser)':'')+'.';
   setRunPill();
   renderUnits();
@@ -2627,8 +2634,7 @@ function openRouteMap(){
   head.textContent='🛣 Choose your path — Battle '+(bn)+'/'+CAMP_BATTLES;
   ov.appendChild(head);
   const sub=document.createElement('div'); sub.className='mapSub';
-  const finalTxt = (bn>=CAMP_BATTLES)? ' and they are the run\'s FINAL BOSS — beat them to win the campaign.':' — each also banks a run-wide boon if you can beat them.';
-  sub.textContent='You cleared battle '+(bn-1)+'. The front now forks — each road is a different enemy commander to face for the '+(['1st','2nd','3rd','4th'][Math.min(4,bn)-1])+' engagement'+finalTxt;
+  sub.textContent='You cleared battle '+(bn-1)+'. The front now forks — each road is a different enemy commander to face for the '+(['1st','2nd','3rd','4th'][Math.min(4,bn)-1])+' engagement, and each banks a run-wide boon if you can beat them.';
   ov.appendChild(sub);
   const body=document.createElement('div'); body.className='mapBody';
   const here=document.createElement('div'); here.className='mPos'; here.textContent='📍 You are here · Battle '+(bn-1)+' cleared · '+(camp.wins||0)+'/'+CAMP_BATTLES+' wins';
@@ -2639,24 +2645,22 @@ function openRouteMap(){
   for(const r of _ROUTES){
     const n=document.createElement('button'); n.className='node'; n.type='button';
     const beau = ROUTE_BOONS[r.arche]? ROUTE_BOONS[r.arche].label : '';
-    const isFinale = (bn>=CAMP_BATTLES);
-    n.innerHTML='<div class="ni">'+r.ic+'</div><div class="nt">'+r.nm+(isFinale?' <span class="bossTag">BOSS</span>':'')+'</div>'
+    n.innerHTML='<div class="ni">'+r.ic+'</div><div class="nt">'+r.nm+'</div>'
       +'<div class="nd">'+r.md+'</div>'
-      +(beau&&!isFinale? '<div class="nb">Win ▶ '+beau+'</div>':'<div class="nb">Crack their core to win the run.</div>');
+      +'<div class="nb">Win ▶ '+beau+'</div>';
+    n.title='Fight battle '+bn+' versus a '+(r.arche)+' commander — beat them to bank this boon';
     n.onclick=()=>resolveRoute(r, bn);
     laneRow.appendChild(n);
   }
   body.appendChild(laneRow);
   ov.appendChild(body);
-  const nem=nemesisArche();
   const bt=document.createElement('div'); bt.className='mapBottom';
   const hint=document.createElement('div'); hint.className='mapHint';
   const BOSSNAME={balanced:'STANDARD FRONT',rusher:'RUSH FLANK',economist:'ECONOMY LINE'};
-  if(bn>=CAMP_BATTLES && nem){ hint.textContent='🧠 NEMESIS BOSS: you out-fought the '+(BOSSNAME[nem]||nem)+' Commander most in battles 2-3. They have come back to lead the finale line — unless you re-route now.'; }
-  else {
-    const cred=camp&&camp.lanes&&camp.lanes.credit||{}; const owned=Object.keys(cred).filter(a=>cred[a]>0);
-    hint.textContent = owned.length ? ('🏁 Beaten so far: '+owned.map(a=>(BOSSNAME[a]||a)+' ×'+cred[a]).join(' · ')+' — keep clearing roads to bank their boons.') : '🛡 Clear a road to bank its run-wide boon for the battles ahead.';
-  }
+  const cred=camp&&camp.lanes&&camp.lanes.credit||{}; const owned=Object.keys(cred).filter(a=>cred[a]>0);
+  const nem=nemesisArche();
+  if(nem && owned.length){ hint.textContent='🧠 Watch the finale: the '+(BOSSNAME[nem]||nem)+' Commander is your nemesis — beat them most so far, they will be back to lead the final line unless you keep them down.'; }
+  else { hint.textContent = owned.length ? ('🏁 Beaten so far: '+owned.map(a=>(BOSSNAME[a]||a)+' ×'+cred[a]).join(' · ')+' — keep clearing roads to bank their boons.') : '🛡 Clear a road to bank its run-wide boon for the battles ahead.'; }
   bt.appendChild(hint);
   const defaultBtn=document.createElement('button');
   defaultBtn.textContent='⚖ Hold Standard Front (default) — begin battle '+bn;
