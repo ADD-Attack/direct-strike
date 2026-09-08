@@ -1262,6 +1262,7 @@ function shotFromIsPlayerCore(st, isPlayerCore, dt){
   if (t){
     tw.cd = 1/C.CORE_TOWER.rate;
     tw.fireT = st.t;                // visual telegraph: core pulses/flashes the moment it fires
+    tw.lastTx = t.x;                // cosmetic bolt target (renderer draws a travelling projectile to it)
     dmg(t, C.CORE_TOWER.dmg, st, null);
     st.stats.towerShots++;
     emitFx(st,t.x,'shot',C.CORE_TOWER.dmg);
@@ -2127,6 +2128,32 @@ function drawCore(x,hp,tint){
     ctx.globalAlpha = 0.25*(1-fa); ctx.fillStyle = '#fff';
     ctx.beginPath(); ctx.arc(gx, gy-rH*0.75, baseW*(1.15+fa), 0, Math.PI*2); ctx.fill();
     ctx.restore(); ctx.globalAlpha=1;
+  }
+  // visible bolt: after firing, hurl a bright projectile from the muzzle toward the struck target so the
+  // tower's shot READS as a projectile crossing the lane (cosmetic; the damage already applied instantly
+  // in game.js, so sim/tests are unchanged). Flight time = range / CORE_TOWER.projSpeed(300 px/s).
+  if (tw && tw.fireT!=null && tw.lastTx!=null && st){
+    const mx = gx + aimDir*(baseW*0.6 + 6);
+    const my = gy - (rH*0.5 + 6);
+    const dist = Math.abs(tw.lastTx - mx);
+    const flight = dist / (C.CORE_TOWER.projSpeed||300);
+    const age = st.t - tw.fireT;
+    if (flight>0.02 && age >=0 && age <= flight){
+      const p = age/flight;
+      const bx = mx + (tw.lastTx - mx)*p;
+      // arc the bolt slightly upward then down to impact (feels like a lobbed shot, not a laser)
+      const by = my - Math.sin(p*Math.PI)*22;
+      const fade = 1 - 0.4*p;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0,fade); ctx.shadowBlur = 16; ctx.shadowColor = tint;
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(bx, by, 3.2, 0, Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+      // short motion tail behind the bolt
+      ctx.globalAlpha *= 0.65; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(bx - aimDir*12*p, by + 4*p); ctx.lineTo(bx, by); ctx.stroke();
+      ctx.restore(); ctx.globalAlpha=1;
+    }
   }
 }
 function drawBarrier(x,hp){
