@@ -96,6 +96,15 @@
   #upgRow button.upg{flex:1 1 220px;min-width:210px;max-width:300px;text-align:left;padding:12px;border:1px solid #8a4bd0;background:#1a1030;color:#e6edfb;border-radius:11px;cursor:pointer}
   #upgRow button.upg:hover{border-color:#c08bff;background:#241040;transform:translateY(-1px)}
   #upgRow .hint{color:#a99fd0;font-size:12px;font-weight:400;line-height:1.4}
+  /* P2-A.next/P2-C win reward rows: unit-card draft (#cardRow) + relic claim (#relicRow) — styled to
+     match the upgrade-row aesthetic so the multi-reward overlay reads clearly on the real canvas. */
+  #cardRow,#relicRow{display:flex;flex-flow:wrap;gap:8px;margin-top:4px}
+  #cardRow button.cardp,#relicRow button.relicp{flex:0 1 auto;min-width:120px;max-width:190px;text-align:left;
+    padding:8px 10px;border:1px solid #3c6fd8;background:#0f1a33;color:#e6edfb;border-radius:10px;cursor:pointer;font-size:12px}
+  #cardRow button.cardp:hover{border-color:#7aa2ff;background:#15264a;transform:translateY(-1px)}
+  #relicRow button.relicp{border-color:#b06bd0;background:#180f2e}
+  #relicRow button.relicp:hover{border-color:#d99bff;background:#241241;transform:translateY(-1px)}
+  #cardRow .hint,#relicRow .hint{color:#a8b7dc;font-size:11px;font-weight:400;margin-top:2px;display:block}
   .hint{font-size:11px;color:#66779c;margin-top:6px}
 </style>
 </head>
@@ -599,6 +608,10 @@ function newState(factionId, difficulty, enemyFactionId, opts){
     pDeck: (o && o.pDeck) || undefined,
     relics: (o && Array.isArray(o.relics)) ? o.relics.slice() : undefined,
     lazarusUsed:false,
+    // P2-D groundwork: AI buy-preference archetype. Default 'balanced' reproduces today's heuristic so
+    // existing runs/oracle are byte-identical; a map/battle node may set o.aiArche to 'rusher'/'economist'
+    // to give that battle a distinct enemy behaviour.
+    aiArche: (o && (o.aiArche==='rusher'||o.aiArche==='economist'||o.aiArche==='balanced')) ? o.aiArche : undefined,
     t:0, over:false, win:null,
     min:(o.startMin!=null?o.startMin:C.P_START_MIN),
     gas:(o.startGas!=null?o.startGas:C.P_START_GAS),
@@ -838,19 +851,49 @@ function AI(st,dt){
   const pick = (st.aifac||st.faction).roster.filter(d=>d.tag!=='worker');   // OBJ-7: enemy fields ITS OWN faction
   const haveTank = st.eUnits.some(u=>u.alive&&u.def.tag==='tank');
   const canAfford = d=>{ const c=costOfUnit(d,st.eOwned[d.key]||0); return st.eMin>=c.min && st.eGas>=c.gas; };
-  let d=null;
-  if(!haveTank && pick.find(x=>x.tag==='tank'&&canAfford(x))) d=pick.find(x=>x.tag==='tank'&&canAfford(x));
-  if(!d){
-    const aff=pick.filter(canAfford);
-    const meleeAff=aff.filter(x=>['melee','swarm'].includes(x.tag));
-    const rangedAff=aff.filter(x=>['ranged','burst','splash'].includes(x.tag));
-    const meleeN=st.eUnits.filter(u=>u.alive&&['melee','swarm'].includes(u.def.tag)).length;
-    if(meleeAff.length && (rangedAff.length===0 || meleeN<4 || Math.random()<0.5)) d=meleeAff[(Math.random()*meleeAff.length)|0];
-    else if(rangedAff.length) d=rangedAff[(Math.random()*rangedAff.length)|0];
-    else if(aff.length) d=aff[(Math.random()*aff.length)|0];
+  // P2-D groundwork: enemy buy-preference archetype. Default (none/'balanced') EXACTLY reproduces today's
+  // tree, so the balance oracle never shifts unless a caller opts in via newState o.aiArche. Only the
+  // afford list + easy reads are shared; 'rusher'/'economist' are additive variations a future map battle
+  // can request for a distinct-feeling enemy.
+  const arche = st.aiArche;
+  let d = null;
+  if (arche==='rusher'){
+    // impatience: buy cheap close bodies early; only take the tank when it's already affordable AND massed
+    const aff = pick.filter(canAfford);
+    const meleeAff = aff.filter(x=>['melee','swarm'].includes(x.tag));
+    const meleeN  = st.eUnits.filter(u=>u.alive&&['melee','swarm'].includes(u.def.tag)).length;
+    if (meleeAff.length && (meleeN<8 || Math.random()<0.7)) d = meleeAff[(Math.random()*meleeAff.length)|0];
+    else if (!haveTank && pick.find(x=>x.tag==='tank'&&canAfford(x))) d = pick.find(x=>x.tag==='tank'&&canAfford(x));
+    else if (aff.length) d = aff[(Math.random()*aff.length)|0];
+    if (d && canAfford(d)) buyUnit(st,d,true);
+  } else if (arche==='economist'){
+    // invest: open an extra harvester while income is thin (auto-target tops workers anyway; this just
+    // fronts it) then lean on affordable damage dealers once it has minerals to spare.
+    const wd = (st.aifac||st.faction).roster.find(x=>x.tag==='worker');
+    const wc = (st.eOwned&&st.eOwned['worker'])? st.eOwned['worker'] : st.eUnits.filter(u=>u.alive&&u.isEnemy&&u.def.tag==='worker').length;
+    const wMin = wd&&wd.cost? wd.cost.min : 40;
+    if (wc<5 && st.eMin>=wMin+18 && st.eMin< wMin*3 && wd){ grantDefWorker(st,wd); return; }   // front one early worker
+    const aff = pick.filter(canAfford);
+    if (haveTank===false && pick.find(x=>x.tag==='tank'&&canAfford(x))) d = pick.find(x=>x.tag==='tank'&&canAfford(x));
+    else if (aff.length) d = aff[(Math.random()*aff.length)|0];
+    if (d && canAfford(d)) buyUnit(st,d,true);
+  } else {
+    // ---- balanced (default): today's decision tree, byte-for-byte the same picks ----
+    if(!haveTank && pick.find(x=>x.tag==='tank'&&canAfford(x))) d=pick.find(x=>x.tag==='tank'&&canAfford(x));
+    if(!d){
+      const aff=pick.filter(canAfford);
+      const meleeAff=aff.filter(x=>['melee','swarm'].includes(x.tag));
+      const rangedAff=aff.filter(x=>['ranged','burst','splash'].includes(x.tag));
+      const meleeN=st.eUnits.filter(u=>u.alive&&['melee','swarm'].includes(u.def.tag)).length;
+      if(meleeAff.length && (rangedAff.length===0 || meleeN<4 || Math.random()<0.5)) d=meleeAff[(Math.random()*meleeAff.length)|0];
+      else if(rangedAff.length) d=rangedAff[(Math.random()*rangedAff.length)|0];
+      else if(aff.length) d=aff[(Math.random()*aff.length)|0];
+    }
+    if (d && canAfford(d)) buyUnit(st,d,true);
   }
-  if (d && canAfford(d)) buyUnit(st,d,true);
 }
+// worker grant directly to the side roster (economist front-expand helper); honours side roster not pick
+function grantDefWorker(st, wd){ grantUnit(st, wd, true, 1); }
 
 // ============================================================
 // combat — central movement + attack dispatch
@@ -1500,6 +1543,7 @@ function startRun(){
   // P2-A.next: the run also owns a persistent unit DECK (card upgrades) + RELICS, seeded via the run
   // model. emitPhase2() feeds these into every battle's newState (engine consumes st.pDeck/st.relics).
   const rmodel = newRun({ factionId:selFac, enemyId, difficulty:selDiff, roster: FACTIONS[selFac].roster });
+  camp.run = rmodel;                 // the full run-model object (deck/pool/relics/upgrades/__wind)
   camp.deck = rmodel.deck;
   camp.relicPool = rmodel.pool;      // unit-card pool for drafting (reagents for upgrade choices)
   camp.relics = rmodel.relics;       // held relic ids
@@ -1513,8 +1557,14 @@ function battleOpts(){
   const o={ upgs:Object.assign({},camp.upgrades) };
   if(upgradeCount('income'))  o.minMult   = 1 + 0.35*upgradeCount('income');
   if(upgradeCount('hp'))      o.hpMul     = 1 + 0.20*upgradeCount('hp');
-  if(upgradeCount('warchest'))o.startMin  = C.P_START_MIN + 50*upgradeCount('warchest');
-  if(upgradeCount('gas'))     o.startGas  = 0 + 6*upgradeCount('gas');
+  // minerals opener = base + War-Chest (+50/up) + any pending map WINDALLOW (one-time), stacked separately
+  let startMin = C.P_START_MIN + 50*upgradeCount('warchest');
+  let startGas = upgradeCount('gas')*6;                     // Gas Vouchers add on top of P_START_GAS(=0) default
+  // P2-C map 'windfall' node: map.takeNode writes run.__wind; here drain it into the NEXT battle's opener once.
+  const rw = (camp && camp.run && camp.run.__wind) ? camp.run.__wind : null;
+  if(rw && (rw.min||rw.gas)){ startMin += rw.min||0; startGas += rw.gas||0; if(camp.run) camp.run.__wind = {}; }
+  if(startMin !== C.P_START_MIN) o.startMin = startMin;          // only override when something added
+  if(startGas !== 0)            o.startGas = startGas + C.P_START_GAS;  // gas: base 0, add vouchers + windfall
   // P2-A.next: feed the run's unit DECK stacks + held RELICS into the battle as pDeck/relics.
   // (camp.deck/camp.relics set in startRun via run-model; engine consumes them per-spawn.)
   if(camp && camp.deck){
@@ -1537,6 +1587,7 @@ function scaleDiff(d, b){
   };
 }
 function nextBattle(first, advance){
+  clearPicker();                      // never let a stale reward row survive across ANY battle boundary
   initUI();
   if(advance!==false) camp.battle += 1;              // advance=true for fresh/next; false = retry the SAME battle (no full wipe)
   const scaled = scaleDiff(camp.difficulty, camp.battle);
@@ -2272,7 +2323,7 @@ function campsWin(){
     $('againBtn').onclick=startRun; $('copyLog').style.display='';
   } else {
     $('endSub').textContent='Cracked the enemy core '+C.fmtT(st.t)+' — victory '+camp.wins+'/'+CAMP_BATTLES+
-      '. Choose a persistent upgrade (and a unit card) for the next battle.';
+      '. Choose ONE reward below — a run upgrade, a leveled unit card, or a relic — for the next battle.';
     recap(); setRunPill();
     showUpgradePicker();
     showCardPicker();
@@ -2398,6 +2449,12 @@ function recap(){
   log('\n──────  MATCH RECAP  ──────');
   log('🎚 '+(st.difficulty||'?')+' · '+(st.faction?st.faction.name:'?')+' vs '+(st.aifac?st.aifac.name:'?')+'  —  Over at '+C.fmtT(st.t)+' — '+ (w?'VICTORY':'DEFEAT'));
   log('Battle '+(camp?camp.battle:'?')+'/'+CAMP_BATTLES+(camp&&camp.upgrades&&countUpgs()>0? ' · upgrades '+Object.keys(camp.upgrades).map(k=>k+':'+camp.upgrades[k]).join(','):''));
+  // P2: surface the run's deck (card levels) + relics at the recap so the player can read their build
+  if(camp && camp.deck){
+    const lv=[]; for(const k in camp.deck.cards||{}){ const u=camp.deck.cards[k]&&camp.deck.cards[k].upg||{}; if(Object.keys(u).length){ lv.push(k+'['+Object.keys(u).map(t=>t+':'+u[t]).join(' ')+']'); } }
+    if(lv.length) log('🂡 Deck: '+lv.join('  '));
+  }
+  if(camp && camp.relics && camp.relics.length) log('💠 Relics: '+camp.relics.map(id=>(RELIC_DEFS[id]?RELIC_DEFS[id].ic+' '+RELIC_DEFS[id].name:id)).join('  '));
   log('🧱 Cores   you '+Math.round(st.pCore)+'%  |  enemy '+Math.round(st.eCore)+'%');
   log('◆ You   '+res(st.min)+'◆ '+res(st.gas)+'◈   (spent '+fmt(st.spend)+'◆◈)   last buy '+lastB(st.lastBuyT,st.lastBuyName));
   log('◆ Enemy '+res(st.eMin)+'◆ '+res(st.eGas)+'◈   (spent '+fmt(st.eSpend)+'◆◈)   last buy '+lastB(st.eLastBuyT,st.eLastBuyName));
