@@ -90,6 +90,14 @@
   .ubtn{border:1px solid #2a3d63;border-radius:11px;padding:9px;background:#0f1830;color:#e6edfb;cursor:pointer;text-align:left;transition:.12s;min-height:92px;display:flex;flex-direction:column;justify-content:space-between}
   .ubtn:hover:not(:disabled){border-color:#6f9bff;background:#152442}
   .ubtn:disabled{opacity:.4;cursor:not-allowed}
+  /* can't-afford card (Brick UI-shop overhaul): don't just grey it out — tint the shortfall red so the
+     *reason* is legible. .noaff is set in renderUnits only when !capped && !afford, keeping a plainly-maxed
+     worker card grey. Purely cosmetic on already-disabled buttons; affordability enabling logic is untouched. */
+  .ubtn.noaff:disabled{opacity:.85;border-color:#7a3a52;background:#180f23}
+  .ubtn.noaff:disabled .nm2,.ubtn.noaff:disabled .purpose{opacity:.55}
+  .ubtn.noaff .co b.mc{color:#ff8d9c}.ubtn.noaff .co b.gc{color:#ff9dcb}
+  .ubtn.noaff .co::after{content:'insufficient';color:#ff8d9c;opacity:1;font-weight:600}
+  .ubtn:disabled:not(.noaff) .co::after{content:'';opacity:0}
   .ubtn.special{border-color:#8a4bd0;background:#1a1030}
   .ubtn.eco{border-color:#e0b44a;background:#211b0f}
   .ubtn .row{display:flex;align-items:center;gap:8px}
@@ -1931,6 +1939,7 @@ function renderUnits(keepSel){
     if(def.cost.gas){ const gc=document.createElement('b'); gc.className='gc'; gc.textContent=' ◈'+c.gas; coE.appendChild(gc); }
     b.appendChild(rowE); b.appendChild(coE);
     b.disabled=!aff;
+    if(!capped && !aff) b.classList.add('noaff');   // can't-afford (distinct from maxed worker card)
     // economy card: the first 3 workers mine minerals; each EXTRA worker you BUY walks to the ◈ geyser
     // (the 4th+ unlock the gas tier — SC2-vespene), so buying a worker IS investing in faster mining /
     // reaching your ◈ gas uniques.
