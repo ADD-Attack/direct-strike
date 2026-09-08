@@ -47,6 +47,22 @@
     #units{grid-template-columns:1fr 1fr}
     .ubtn .nm2{font-size:12.5px}
     .cbl{font-size:10px;width:auto}
+    /* --- reward overlay declutter (mobile): the CHOOSE-ONE reward wall (2 globals + up to a dozen
+       card/relic items) must fit a phone. Narrow screens: the overlay itself becomes ONE scrollable
+       panel, captions sit on their own lines, and every reward is a full-width thumb-sized tappable row
+       (bigger tap zone, no ambiguous multi-column cramming). DOM structure untouched => DOM tests stay green. */
+    #endOv{padding:12px;max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    #endOv h2{font-size:20px;margin-bottom:3px}
+    #endOv p{font-size:13px;line-height:1.4}
+    #cardRow,#relicRow{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin:8px 0 4px}
+    #cardRow > div:first-child,#relicRow > div:first-child{position:static;margin:0 0 2px;font-size:13px}
+    #cardRow button.cardp,#relicRow button.relicp,.again,button.again{width:100%;max-width:none;min-width:0;
+      text-align:left;display:flex;flex-direction:column;align-items:flex-start;white-space:normal;font-size:13px;
+      padding:11px 12px;border-radius:10px}
+    #upgRow{flex-direction:column;align-items:stretch}
+    #upgRow button.upg{width:100%;max-width:none;min-width:0;flex:0 0 auto}
+    #upgRow,.again{margin:6px 0 4px}
+    #againBtn,#copyLog{width:100%;margin:4px 0}
   }
   .card{background:linear-gradient(180deg,#131b30,#101828);border:1px solid #22315a;border-radius:12px;padding:12px}
   .fcaption{font-size:11px;color:#8fa3cc;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px;font-weight:700}
