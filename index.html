@@ -2144,14 +2144,21 @@ function drawCore(x,hp,tint){
       // arc the bolt slightly upward then down to impact (feels like a lobbed shot, not a laser)
       const by = my - Math.sin(p*Math.PI)*22;
       const fade = 1 - 0.4*p;
+      // drawn dot radius: tapers from a clear ~5px head down through the bolt tail across the whole flight
+      const headR = 5*(1-fade*0.3);
       ctx.save();
-      ctx.globalAlpha = Math.max(0,fade); ctx.shadowBlur = 16; ctx.shadowColor = tint;
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(bx, by, 3.2, 0, Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
-      // short motion tail behind the bolt
-      ctx.globalAlpha *= 0.65; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(bx - aimDir*12*p, by + 4*p); ctx.lineTo(bx, by); ctx.stroke();
+      ctx.globalAlpha = Math.max(0,fade); ctx.shadowBlur = 20; ctx.shadowColor = tint;
+      ctx.fillStyle = '#fff'; ctx.strokeStyle = '#fff';
+      ctx.beginPath(); ctx.arc(bx, by, headR, 0, Math.PI*2); ctx.fill();
+      // visible speed trail: fade the path behind the head (repeats so a fast bolt leaves a readable streak)
+      ctx.lineWidth = 2.6; ctx.globalAlpha = Math.max(0,fade*0.7);
+      for(let k=1;k<=4;k++){
+        const tp=Math.max(0,p - k*0.11); const tx2=mx+(tw.lastTx-mx)*tp;
+        const ty2=my - Math.sin(tp*Math.PI)*22;
+        const ta=Math.max(0, 1 - k*0.26);
+        ctx.globalAlpha = Math.max(0,fade)*0.55*ta;
+        ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(tx2,ty2); ctx.stroke();
+      }
       ctx.restore(); ctx.globalAlpha=1;
     }
   }
