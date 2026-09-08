@@ -1116,6 +1116,7 @@ function specialSaboteur(st, u, en, dt, foes){
       u.cd = 1/(u.def.atk||1.4);
       const bonus = best.def.tag==='tank' ? C.SABOTEUR_TANK_BONUS : 0;
       u.tgt = best;
+      u.swing = st.t;             // cosmetic: snipe fired => muzzle/recoil cue (no sim read-back)
       dmg(best, u.def.dmg + bonus, st, u);
       if (bonus) st.stats.tankHits++;
       st.stats.snipes++;
@@ -1133,6 +1134,7 @@ function specialSaboteur(st, u, en, dt, foes){
 // ---------------- attack (shared): splash = real AoE on impact ----------------
 function attack(u, foe, foes, st, en){
   const tag = u.def.tag;
+  u.swing = st.t;             // cosmetic: timestamp the blow for the renderer's lunge/muzzle cue (no sim read-back)
   if (tag==='splash'){
     dmg(foe, u.def.dmg, st, u);
     st.stats.splashes++;
@@ -1162,11 +1164,17 @@ function dmg(u, amt, st, src){
     // P2-B Lazarus relic: first PLAYER unit death revives once at full HP (engine consumes per-battle token)
     if (lazarusRevive(st, u)) return;   // revived: skip kill bookkeeping + no death fx
     u.alive=false; rewardKill(st, src, u);
+    emitFx(st, u.x, 'die', u.isEnemy? 1 : 0);   // death puff (added AFTER revive check so revived units don't pop)
   }
   // floating damage number on EVERY combat hit (was only emitted for the Saboteur + core tower) so the
   // main grind of melee/ranged/tank/splash reads with punch. Rounded; tiny splash scatter shown as-is.
   if (st && st.fx && !st.over){ emitFx(st, u.x, 'shot', Math.max(1, Math.round(amt))); }
 }
+// Cosmetic ATTACK pulse (renderer-only): LUNGE_T seconds after a standard combatant lands a blow we
+// set u.swing = st.t (a pure timestamp COPY). The renderer diffs it against the live sim clock st.t to
+// show a brief forward lunge + weapon/muzzle flash. NEVER read back into sim decisions, and u.swing is
+// never decremented — it decays purely by st.t advancing. Sim math is byte-identical.
+const LUNGE_T = 0.18;
 function rewardKill(st, src, victim){
   if (victim.def.tag==='worker') return;
   const bounty = victim.def.tag==='tank' ? 10 : 6;
@@ -1183,6 +1191,7 @@ function frontStopX(st,hitsEnemy){ // where a striker stops: barrier line while 
   return (hitsEnemy? st.eBar : st.pBar)>0 ? enemyBarX(hitsEnemy) : enemyCoreX(hitsEnemy);
 }
 function strikeFront(st,u,hitsEnemy){
+  u.swing = st.t;             // cosmetic: attacked the barrier/core => attacker lunge/muzzle cue (no sim read-back)
   const amt = u.def.dmg/5;                 // same per-hit cadence as earlier core strikes (atk-gated upstream)
   if (hitsEnemy){                          // striking enemy side (right)
     if (st.eBar>0){ st.eBar=Math.max(0,st.eBar-amt); }        // barrier takes it while it stands
@@ -2093,6 +2102,19 @@ function drawFx(){
         ctx.beginPath(); ctx.moveTo(x,my+8); ctx.lineTo(x,my); ctx.stroke(); // rising deposit glint
         break;
       }
+      case 'die': { // death puff (added 2026-09-08): dissipating rings/ember shatter in the slain unit's team tint
+        const dc = (fx.sub===1)? '#ff9a7a' : ((fx.sub===0)? '#7fe6c8' : '#cfd8e0');
+        const dr = 10 + age*34;
+        ctx.shadowColor=dc; ctx.shadowBlur=9; ctx.globalAlpha=fade*.85;
+        ctx.strokeStyle=dc; ctx.lineWidth=2.2;
+        ctx.beginPath(); ctx.arc(x,y, dr,0,Math.PI*2); ctx.stroke();
+        ctx.lineWidth=1.3; ctx.globalAlpha=fade*.55;
+        ctx.beginPath(); ctx.arc(x,y, dr*0.55,0,Math.PI*2); ctx.stroke();
+        ctx.fillStyle=dc; ctx.globalAlpha=fade*.9;
+        for(let i=0;i<5;i++){ const a2=i/5*Math.PI*2 - 0.4; ctx.fillRect(x+Math.cos(a2)*dr - 1, y-22-age*26 + Math.sin(a2)*dr*0.3 - 1, 2.4, 2.4); }
+        ctx.globalAlpha=1; ctx.shadowBlur=0;
+        break;
+      }
       default: { // 'shot' impact + damage number
         ctx.fillStyle='#fff'; ctx.strokeStyle='#ffe28a'; ctx.shadowColor='#fff7';
         ctx.shadowBlur=10; ctx.globalAlpha=fade;
@@ -2320,6 +2342,12 @@ function drawSprite(u, footY, teamCol){
   // rendered up-height: sprite target height when a sprite is used, else the vector body height.
   const fs = spr ? (SPR_TARGET[(u&&u.key)||'g'] || 30) : sz[1];
   const idle = Math.sin((u.id||u.x)*1.9 + st.t*3.2)*1.5;             // gentle idle bob => reads alive
+  // ---- subtle attack cue (renderer reads u.swing timestamp; sim never writes back) ----
+  // u.swing is set to st.t the instant a standard combatant (or saboteur snipe) lands a blow. The age
+  // vs the live sim clock st.t decays without any sim-side decrement; we only ever READ u.swing here.
+  const L = LUNGE_T || 0.18;
+  const swingAge = (u.swing!=null && !st.over)? (st.t - u.swing) : 999;
+  const swing = (u.swing!=null && swingAge>=0 && swingAge<L) ? (1 - swingAge/L) : 0;  // 1 at blow -> 0
   const BODY = organic
     ? { A:'#5d8b54', B:'#79a86e', hi:'#cfe7b6' }                     // alien olive/virescent
     : { A:'#b98f4e', B:'#cfa968', hi:'#ffe3b0' };                    // rebel sand-brass steel
@@ -2330,7 +2358,8 @@ function drawSprite(u, footY, teamCol){
                 tank:'#ff6b8a', splash:'#ff9b3d', healer:'#79f0c5', special:'#d79bff' }[tag] || '#fff';
 
   ctx.save();
-  ctx.translate(u.x, footY + idle*0.35);
+  const lux = en? -swing*3 : swing*3;                        // brief forward lunge toward the foe (world, 0-3px)
+  ctx.translate(u.x + lux, footY + idle*0.35);
   // row-foot pad + faint team aura so each depth-row is its own little stage
   ctx.globalAlpha=en? .24:.15; ctx.fillStyle='#000';
   ctx.beginPath(); ctx.ellipse(0, 1, sz[0]*1.3, 3.4, 0, 0, Math.PI*2); ctx.fill();
@@ -2351,6 +2380,19 @@ function drawSprite(u, footY, teamCol){
   } else {
     ctx.shadowColor=rim; ctx.shadowBlur=8;
     drawFigure(tag, fs, organic, BODY, rim, ACC);
+  }
+  // forward slash/muzzle spark while the swing cue is live => the unit reads as STRIKING, not teleporting
+  if (swing>0 && tag!=='worker'){
+    const tip = sz[0]*1.15 + swing*3;
+    const col = (ACC==='#ffe06a'||ACC==='#ff8a3c') ? '#fff1a8' : ACC;   // melee/swarm slash = bright; ranged/other = class tint
+    ctx.save();
+    ctx.globalAlpha = swing*0.75;
+    ctx.shadowColor=col; ctx.shadowBlur=6; ctx.strokeStyle=col; ctx.lineWidth=1.6; ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(tip, -fs*0.42); ctx.lineTo(tip+swing*7, -fs*0.50);          // forward slash tracks the weapon band
+    ctx.moveTo(tip, -fs*0.52); ctx.lineTo(tip+swing*10, -fs*0.62);
+    ctx.moveTo(tip, -fs*0.62); ctx.lineTo(tip+swing*8, -fs*0.74);
+    ctx.stroke(); ctx.restore();
   }
   ctx.restore();
   // team hp bar above the sprite (double duty as an unambiguous side tag vs the enemy twin)
