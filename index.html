@@ -5,8 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Direct Strike: Roguelike</title>
 <style>
-  :root{ --min:#7cd6ff; --gas:#d38bff; --bg:#0b1020; --panel:#131b30; --line:#243a5e;
-    --ally0:#3ce0aa; --ally1:#79f0c5; }            /* default ally identity (rebels-sand fallback kept teal-ish until gate pick) */
+  /* COLOR-SYSTEM AUDIT PASS 2026-09-08 (locked palette, STYLE-BIBLE): the UI is a deep-indigo glass
+     family (panel #0B0B2E -> card #23234F -> well #05051A, recessed lip #0B0F2F, edge-glow #2D2D7F)
+     that CUTS THROUGH the battlefield. Currency was the audit's #1 collision (mineral+gas+border all one
+     teal-wash): mineral diamond is now ICE-BLUE #A0EFFF, gas is EMBER #FF7A1A (NOT the old violet — that
+     bled into the rare-magenta), gold #FFD324 only in luxury frames, stat yellow #FFCC00 only for values.
+     Identity teal #18B5B5/#1CC7C7 stays the ALIVE ally accent; the field/enemy keep ember. */
+  :root{ --min:#A0EFFF; --gas:#FF7A1A; --bg:#0b1020; --panel:#0B0B2E; --line:#2D2D7F;
+    --card:#23234F; --well:#05051A; --lip:#0B0F2F; --dis:#3E3E6A; --disTx:#C7C7E0; --edg:#2D2D7F;
+    --ally:#1CC7C7; --stat:#FFCC00; --tag:#9FB4C7; --gold:#FFD324; --magenta:#E026FF;
+    --ally0:#3ce0aa; --ally1:#79f0c5; }            /* default ally identity (faction-picked later; rebrand/color-diff = A2, not touched here) */
   /* Faction identity accent: the PICKED faction's brand threads YOUR side (gate + battle HUD/core bar)
      via body[data-fac], while the enemy (.eb) keeps ember so your-vs-them stays unambiguous. CSS-only
      + one data-fac attribute; no test-pinned ids touched. */
@@ -70,7 +78,12 @@
     /* (reward-overlay declutter rules for ≤440px now live BELOW, after the base reward row styles, so
        they actually win the cascade — see the @media(max-width:440px) block at the end of the sheet.) */
   }
-  .card{background:linear-gradient(180deg,#131b30,#101828);border:1px solid #22315a;border-radius:12px;padding:12px}
+  /* SURFACE LADDER (panel -> card -> well) per STYLE-BIBLE: deep midnight panel #0B0B2E (darker-at-bottom),
+     clearly-lighter card #23234F, near-black well #05051A. Panel edge / inner-glow thin bright-indigo
+     #2D2D7F line lifts the panel; 1px top highlight + 2px bottom inner shadow = top-down light. This is the
+     OPAQUE glass that cuts through the battlefield (Design Law #1). */
+  .card{background:linear-gradient(180deg,#12124a 0%,#0B0B2E 34%,#090927 100%);border:1px solid #2D2D7F;border-radius:12px;padding:12px;
+    box-shadow:inset 0 1px 0 rgba(143,255,255,.20), inset 0 -2px 6px rgba(0,0,0,.45), 0 0 0 1px #0B0F2F, 0 4px 18px rgba(0,0,0,.5)}
   .fcaption{font-size:11px;color:#8fa3cc;text-transform:uppercase;letter-spacing:1.4px;margin-bottom:8px;font-weight:700}
   #gate{display:flex;flex-direction:column;gap:12px;padding:18px}
   #gate h2{margin:0 0 2px;font-size:18px}
@@ -87,30 +100,40 @@
   #startBtn{padding:13px;font-size:16px;font-weight:800;letter-spacing:1px;background:linear-gradient(90deg,#2f6bd8,#4f9cf0);color:#fff;border:none;border-radius:11px;cursor:pointer}
   #startBtn:hover{filter:brightness(1.12)}
   #units{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-  .ubtn{border:1px solid #2a3d63;border-radius:11px;padding:9px;background:#0f1830;color:#e6edfb;cursor:pointer;text-align:left;transition:.12s;min-height:92px;display:flex;flex-direction:column;justify-content:space-between}
-  .ubtn:hover:not(:disabled){border-color:#6f9bff;background:#152442}
-  .ubtn:disabled{opacity:.4;cursor:not-allowed}
+  /* CARD ANATOMY (locked GOOD-UI shop): raised indigo-grey slab #23234F over the deep panel, with a thin
+     #0B0F2F recessed lip just inside the glowing border (a subtle groove detaching fill from border). */
+  .ubtn{border:1px solid #1CC7C7;border-radius:11px;padding:9px;background:linear-gradient(180deg,#2A2A5C 0%,#23234F 45%,#1C1C42 100%);color:#e8f0ff;cursor:pointer;text-align:left;transition:.12s;min-height:92px;display:flex;flex-direction:column;justify-content:space-between;
+    box-shadow:inset 0 0 0 1px #0B0F2F, inset 0 1px 0 rgba(143,255,255,.14), 0 2px 8px rgba(0,0,0,.4)}
+  .ubtn:hover:not(:disabled){border-color:#8EFFFF;background:linear-gradient(180deg,#34346B 0%,#2A2A5C 100%);box-shadow:inset 0 0 0 1px #0B0F2F, 0 0 12px rgba(28,199,199,.28)}
+  .ubtn:disabled{cursor:not-allowed}
   /* can't-afford card (Brick UI-shop overhaul): don't just grey it out — tint the shortfall red so the
      *reason* is legible. .noaff is set in renderUnits only when !capped && !afford, keeping a plainly-maxed
-     worker card grey. Purely cosmetic on already-disabled buttons; affordability enabling logic is untouched. */
-  .ubtn.noaff:disabled{opacity:.85;border-color:#7a3a52;background:#180f23}
-  .ubtn.noaff:disabled .nm2,.ubtn.noaff:disabled .purpose{opacity:.55}
+     worker card grey. Purely cosmetic on already-disabled buttons; affordability enabling logic is untouched.
+     Disabled/collapsed fill #3E3E6A with LIGHT text #C7C7E0 so locks stay legible on any monitor (audit fix). */
+  .ubtn:disabled{background:var(--dis,#3E3E6A);color:var(--disTx,#C7C7E0);opacity:.92}
+  .ubtn:disabled .nm2{color:#E2E4F7}
+  .ubtn.noaff:disabled{opacity:.92;border-color:#b04a63;background:#2A1430}
+  .ubtn.noaff:disabled .nm2,.ubtn.noaff:disabled .purpose{opacity:.6}
   .ubtn.noaff .co b.mc{color:#ff8d9c}.ubtn.noaff .co b.gc{color:#ff9dcb}
   .ubtn.noaff .co::after{content:'insufficient';color:#ff8d9c;opacity:1;font-weight:600}
   .ubtn:disabled:not(.noaff) .co::after{content:'';opacity:0}
-  .ubtn.special{border-color:#8a4bd0;background:#1a1030}
-  .ubtn.eco{border-color:#e0b44a;background:#211b0f}
+  /* rare/magic frame (#E026FF) for special/gas units — stays distinct from ember gas ◈ (magenta-vs-gas guard) */
+  .ubtn.special{border-color:#E026FF;background:linear-gradient(180deg,#3A1B5C 0%,#2A0F44 60%,#1F0A33 100%);box-shadow:inset 0 0 0 1px #0B0F2F, 0 2px 12px rgba(224,38,255,.22)}
+  .ubtn.special:hover:not(:disabled){border-color:#ff8aff}
+  .ubtn.eco{position:relative}
   .ubtn .row{display:flex;align-items:center;gap:8px}
-  .ubtn .icw{width:50px;height:46px;flex:0 0 50px;display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(circle at 50% 70%, #16264a 0%, rgba(13,22,44,.1) 70%);border-radius:8px;border:1px solid #22365e;overflow:hidden}
+  /* SPRITE WELL: near-black navy #05051A — the DEEPEST layer (light->dark back in), so the character reads
+     like it stands in a dark booth window behind the raised card face. */
+  .ubtn .icw{width:50px;height:46px;flex:0 0 50px;display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(circle at 50% 62%,#101046 0%,#05051A 74%);border-radius:8px;border:1px solid #1B1B4A;box-shadow:inset 0 0 0 1px #0B0F2F;overflow:hidden}
   .ubtn .icw canvas{display:block;width:46px;height:42px;image-rendering:auto}
   .ubtn .nm2{font-weight:700;font-size:14px;line-height:1.1}
-  .ubtn .tg{font-size:10px;color:#8fa3cc;text-transform:uppercase;letter-spacing:.6px;margin-top:2px}
-  .ubtn .purpose{font-size:10.5px;line-height:1.3;color:#9fb2d6;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-transform:none;letter-spacing:0;font-weight:400}
+  .ubtn .tg{font-size:10px;color:var(--tag,#9FB4C7);text-transform:uppercase;letter-spacing:.6px;margin-top:2px;font-weight:700}
+  .ubtn .purpose{font-size:10.5px;line-height:1.3;color:#B9C6E0;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-transform:none;letter-spacing:0;font-weight:400}
   .ubtn .co{font-size:13px;margin-top:6px;font-weight:700;display:flex;align-items:center;gap:7px}
   .co b.mc{color:var(--min)} .co b.gc{color:var(--gas)}
-  .ubtn .co::after{content:'⤴ deploy';margin-left:auto;font-size:9px;font-weight:600;color:#4d7bd9;letter-spacing:.4px;text-transform:uppercase;opacity:0;transition:opacity .12s}
+  .ubtn .co::after{content:'⤴ deploy';margin-left:auto;font-size:9px;font-weight:600;color:#6fd6ff;letter-spacing:.4px;text-transform:uppercase;opacity:0;transition:opacity .12s}
   .ubtn:hover:not(:disabled) .co::after{opacity:1}
-  .ubtn .own{position:absolute;margin-left:auto;font-size:11px;color:#7ee0a3;font-weight:700;text-align:right}
+  .ubtn .own{position:absolute;margin-left:auto;font-size:11px;color:#8EFFFF;font-weight:700;text-align:right}
   #battleHud{display:none;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:2px}
   .stat{font-weight:700;font-size:13px}
   #coreRow{margin-left:auto;display:flex;align-items:center;gap:8px}
