@@ -201,28 +201,64 @@
   /* ---- P2A BRANCH MAP screen: a dedicated full-screen overlay (top-level, fixed) the player lands on
         in Branching mode after each non-finale win. Renders the journey: past slots, current position,
         the upcoming decision row (computed from the same run map/shape as the strip) and a Back+log. */
-  #mapOv{position:fixed;inset:0;z-index:20;background:radial-gradient(1200px 700px at 50% -10%,#12203c, #0a1020 70%);display:flex;flex-direction:column}
-  #mapOv .mapHead{font-size:22px;font-weight:800;color:#e8f1ff;text-align:center;padding:26px 16px 4px;letter-spacing:.3px}
-  #mapOv .mapSub{font-size:13px;color:#8298c4;text-align:center;max-width:640px;margin:2px auto 0;padding:0 16px}
-  #mapOv .mapBody{flex:1;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:18px 12px 30px;gap:6px}
-  #mapOv .mArc{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
-  #mapOv .mPast{display:flex;gap:8px;opacity:.45}
-  #mapOv .mLane{display:flex;gap:10px;justify-content:center;align-items:stretch}
-  #mapOv .mPastLed,.mapOv .mFutureLed{margin:10px 0 6px}
-  #mapOv .mPos{font-size:15px;color:#9fe3c2;font-weight:700;letter-spacing:.5px}
-  #mapOv .node{min-width:120px;max-width:190px;text-align:center;border:1px solid #3a5287;border-radius:14px;padding:10px 8px;background:#0e1830;color:#cddbff;cursor:pointer;transition:border-color .1s,transform .05s}
-  #mapOv .node:hover{border-color:#7aa2ff;transform:translateY(-2px)}
-  #mapOv .node .ni{font-size:22px}
-  #mapOv .node .nt{font-weight:700;font-size:12px;color:#e8f1ff;margin-top:4px}
-  #mapOv .node .nd{font-size:11px;color:#8ba0cc;margin-top:3px;line-height:1.35}
-  #mapOv .node .nb{font-size:10px;color:#ffd98a;margin-top:6px;line-height:1.3;background:rgba(255,217,138,.08);border:1px dashed rgba(255,217,138,.35);border-radius:8px;padding:4px 5px}
+  /* ---- P2A BRANCH MAP screen (LOCKED FTL / route-select board, STYLE-BIBLE map/route section) ----
+     Deep-indigo space field w/ drift star clusters + a soft cold nebula (cool, uncrowded). Airy:
+     clear gap between traced path thread and the NEXT decision fork; rest space above/below the real
+     choice. Node surfaces follow the A1 ladder (opaque glass panel #0B0B2E / card #23234F / well
+     #05051A, thin #2D2D7F edge glow) so the map reads as the same family as shop/deck/reward. */
+  #mapOv{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;overflow:hidden;
+    color:#dfe7f5;
+    background:
+      radial-gradient(900px 480px at 78% -6%, rgba(74,86,180,.32), rgba(74,86,180,0) 60%),
+      radial-gradient(700px 420px at 12% 108%, rgba(108,46,106,.22), rgba(108,46,106,0) 58%),
+      radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.75), transparent 100%),
+      radial-gradient(1px 1px at 32% 9%, rgba(255,255,255,.5), transparent 100%),
+      radial-gradient(1px 1px at 48% 26%, rgba(255,255,255,.4), transparent 100%),
+      radial-gradient(1px 1px at 64% 12%, rgba(255,255,255,.65), transparent 100%),
+      radial-gradient(1px 1px at 81% 31%, rgba(255,255,255,.45), transparent 100%),
+      radial-gradient(1px 1px at 22% 38%, rgba(160,239,255,.4), transparent 100%),
+      radial-gradient(1px 1px at 91% 55%, rgba(255,122,26,.34), transparent 100%),
+      linear-gradient(180deg,#070a1c 0%,#0B0B2E 46%,#05081a 100%);
+  }
+  #mapOv .mapHead{font-size:22px;font-weight:800;color:#e8f1ff;text-align:center;padding:24px 14px 2px;letter-spacing:.6px;text-shadow:0 0 18px rgba(110,150,255,.25)}
+  #mapOv .mapSub{font-size:13px;color:#9fb4d6;text-align:center;max-width:620px;margin:2px auto 4px;padding:0 16px}
+  #mapOv .mapBody{flex:1;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:10px 12px 6px;gap:6px}
+  /* route-thread ledger (visited lanes swept from the top, cyan trace): the FTL 'what I already beat' */
+  #mapOv .threadRow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;margin:4px 0 2px}
+  #mapOv .mPos{font-size:13px;letter-spacing:.5px;font-weight:700}
+  #mapOv .threadDot{width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:0 0 auto;position:relative}
+  #mapOv .threadDot.visitedDot{background:rgba(28,199,199,.14);border:1px solid rgba(28,199,199,.7);color:#aef3f3;box-shadow:0 0 8px rgba(28,199,199,.35)}
+  #mapOv .threadDot.currentDot{background:#0B0B2E;border:2px solid #8EFFFF;color:#eaffff;box-shadow:0 0 16px rgba(142,255,255,.55),0 0 3px rgba(142,255,255,.8);transform:scale(1.12)}
+  #mapOv .threadDash{height:2px;width:30px;max-width:7vw;flex:0 1 46px;background:linear-gradient(90deg,rgba(28,199,199,.85),rgba(28,199,199,.25));border-radius:2px;min-width:16px}
+  #mapOv .titleDot{font-size:10px;letter-spacing:.4px;color:#9fb4d6;text-transform:uppercase}
+  #mapOv .mScrim{width:40%;height:1px;background:linear-gradient(90deg,transparent,rgba(142,255,255,.22),transparent);border-radius:2px;margin:2px auto 4px}
+  /* NEXT decision fork = the real choice; roomier than a packed mesh. Ring node cards read along the
+     locked route accents (STANDARD teal-neut, RUSH ember, ECONOMY gold-ish) but stay glass-ladder cards. */
+  #mapOv .mLane{display:flex;gap:14px;justify-content:center;align-items:stretch;width:100%;max-width:640px;flex-wrap:wrap}
+  #mapOv .node{flex:1 1 150px;max-width:196px;min-width:130px;text-align:center;cursor:pointer;
+    border:1px solid #3a5287;border-radius:16px;padding:12px 10px;color:#d7e2ff;
+    background:linear-gradient(180deg,#23234F 0%,#1d1d45 52%,#16163c 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 6px 16px rgba(5,5,20,.4);
+    transition:border-color .1s,transform .06s,box-shadow .1s}
+  #mapOv .node:hover{border-color:#8EFFFF;transform:translateY(-3px);box-shadow:0 8px 22px rgba(5,5,20,.5),0 0 14px rgba(142,255,255,.12)}
+  #mapOv .node .ni{font-size:24px;filter:drop-shadow(0 0 6px rgba(160,239,255,.3))}
+  #mapOv .node .nt{font-weight:800;font-size:12px;color:#f1f6ff;margin-top:5px;letter-spacing:.4px;text-transform:uppercase}
+  #mapOv .node .nd{font-size:11px;color:#a7b6dc;margin-top:3px;line-height:1.35}
+  #mapOv .node .nb{font-size:10px;color:#FFD324;margin-top:7px;line-height:1.3;background:rgba(255,211,36,.10);border:1px solid rgba(255,211,36,.3);border-radius:9px;padding:4px 6px;font-weight:600}
   #mapOv .node .bossTag{display:inline-block;font-size:9px;color:#12121f;background:#ff5a5a;border-radius:6px;padding:1px 5px;margin-left:4px;vertical-align:middle;letter-spacing:.5px}
-  #mapOv .node.taken{border-color:#5fa88a}
-  #mapOv .mScrim{width:46%;height:2px;background:#2a3f6a;border-radius:2px;margin:2px auto}
-  #mapOv .mapBottom{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;padding:14px 16px 22px}
-  #mapOv .mapHint{font-size:11.5px;color:#9fbbe8;text-align:center;max-width:560px;line-height:1.4;padding:0 10px}
-  #mapOv button.goback,.mapOv button{background:#1a2a4a;color:#dfe7f5;border:1px solid #3a5287;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer}
-  #mapOv button.chosen{background:#2b4a86;border-color:#7aa2ff}
+  #mapOv .node.taken{border-color:#1CC7C7;opacity:.55;cursor:default}
+  /* small read-only legend inside the fork (teal=standard, ember=rush, gold=economy, ?=unknown) */
+  #mapOv .mapLegend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin:4px 0 2px}
+  #mapOv .lgd{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:#9fb4d6;letter-spacing:.3px}
+  #mapOv .lgd i{width:9px;height:9px;border-radius:50%;display:inline-block;flex:0 0 auto}
+  #mapOv .mapBottom{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;padding:10px 16px 18px}
+  #mapOv .mapHint{font-size:11.5px;color:#9fbbe8;text-align:center;max-width:600px;line-height:1.4;padding:0 10px}
+  #mapOv button{background:linear-gradient(180deg,#23234F,#1a1a42);color:#dfe7f5;border:1px solid #3a5287;border-radius:11px;padding:10px 18px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(5,5,20,.4)}
+  #mapOv button:hover{border-color:#8EFFFF}
+  /* fog shroud creeping over the unexplored lower region (the finale is still beneath the fog edge) */
+  #mapOv::after{content:'';position:absolute;left:-5%;right:-5%;bottom:0;height:34%;pointer-events:none;
+    background:linear-gradient(180deg,rgba(5,8,26,0) 0%,rgba(5,8,26,.92) 74%,#03050f 100%);
+    box-shadow:0 -10px 40px rgba(5,8,26,.7)}
   #vicOv{position:fixed;inset:0;z-index:18;background:radial-gradient(1200px 700px at 50% -10%,#12301f,#08120c 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
   #vicOv .vicBig{font-size:44px;font-weight:900;color:#79f0c5;letter-spacing:1px;text-shadow:0 0 24px rgba(121,240,197,.35)}
   #vicOv .vicSub{font-size:15px;color:#9fd6b6;margin-top:8px;max-width:620px;line-height:1.5}
@@ -3006,7 +3042,26 @@ function openRouteMap(){
   sub.textContent='You cleared battle '+(bn-1)+'. The front now forks — each road is a different enemy commander to face for the '+(['1st','2nd','3rd','4th'][Math.min(4,bn)-1])+' engagement, and each banks a run-wide boon if you can beat them.';
   ov.appendChild(sub);
   const body=document.createElement('div'); body.className='mapBody';
-  const here=document.createElement('div'); here.className='mPos'; here.textContent='📍 You are here · Battle '+(bn-1)+' cleared · '+(camp.wins||0)+'/'+CAMP_BATTLES+' wins';
+  // FTL route-thread: the lanes you already cleared trail from the top in cyan into your current node.
+  const BOSSNAME2={balanced:'STANDARD FRONT',rusher:'RUSH FLANK',economist:'ECONOMY LINE'};
+  const _cred=camp&&camp.lanes&&camp.lanes.credit||{};
+  const _owned=Object.keys(_cred).filter(a=>_cred[a]>0);
+  const thread=document.createElement('div'); thread.className='threadRow';
+  const tTitle=document.createElement('span'); tTitle.className='titleDot'; tTitle.textContent='CLEARED';
+  thread.appendChild(tTitle);
+  function dashDot(){ const s=document.createElement('span'); s.className='threadDash'; return s; }
+  function tDot(ic,tip,extra){
+    const d=document.createElement('span'); d.className='threadDot '+(extra||'');
+    d.textContent=ic; if(tip) d.title=tip; return d;
+  }
+  const orderA=['balanced','rusher','economist'];
+  const shown= orderA.filter(a=>_owned.includes(a));
+  shown.forEach((a,i)=>{ if(i) thread.appendChild(dashDot()); thread.appendChild(tDot((({balanced:'⚖',rusher:'🗡',economist:'🏭'})[a]||'•'), 'Cleared '+BOSSNAME2[a]+' ×'+_cred[a], 'visitedDot')); });
+  if(shown.length){ thread.appendChild(dashDot()); }
+  else { const l0=tDot('•','start of the line','visitedDot'); thread.appendChild(l0); thread.appendChild(dashDot()); }
+  thread.appendChild(tDot('📍','You are here · Battle '+(bn-1)+' cleared','currentDot'));
+  body.appendChild(thread);
+  const here=document.createElement('div'); here.className='mPos'; here.textContent='You are here · Battle '+(bn-1)+' cleared · '+(camp.wins||0)+'/'+CAMP_BATTLES+' wins';
   body.appendChild(here);
   const pipe=document.createElement('div'); pipe.className='mScrim';
   body.appendChild(pipe);
@@ -3014,14 +3069,21 @@ function openRouteMap(){
   for(const r of _ROUTES){
     const n=document.createElement('button'); n.className='node'; n.type='button';
     const beau = ROUTE_BOONS[r.arche]? ROUTE_BOONS[r.arche].label : '';
+    const dotCss = {balanced:'#1CC7C7', rusher:'#FF7A1A', economist:'#FFD324'}[r.arche] || '#9FB4C7';
     n.innerHTML='<div class="ni">'+r.ic+'</div><div class="nt">'+r.nm+'</div>'
       +'<div class="nd">'+r.md+'</div>'
       +'<div class="nb">Win ▶ '+beau+'</div>';
+    n.style.borderColor=dotCss;
     n.title='Fight battle '+bn+' versus a '+(r.arche)+' commander — beat them to bank this boon';
     n.onclick=()=>resolveRoute(r, bn);
     laneRow.appendChild(n);
   }
   body.appendChild(laneRow);
+  // small legend under the fork teaches the glyph→road accent mapping (locked map legend).
+  const legend=document.createElement('div'); legend.className='mapLegend';
+  const lgd=[['#1CC7C7','⚖ Neutral commander'],['#FF7A1A','🗡 Aggressive rush'],['#FFD324','🏭 Economy line'],['#9FB4C7','? Unforged road']];
+  for(const [c,txt] of lgd){ const s=document.createElement('span'); s.className='lgd'; s.innerHTML='<i style="background:'+c+'"></i>'+txt; legend.appendChild(s); }
+  body.appendChild(legend);
   ov.appendChild(body);
   const bt=document.createElement('div'); bt.className='mapBottom';
   const hint=document.createElement('div'); hint.className='mapHint';
