@@ -277,6 +277,58 @@
   #mapOv::after{content:'';position:absolute;left:-5%;right:-5%;bottom:0;height:34%;pointer-events:none;
     background:linear-gradient(180deg,rgba(5,8,26,0) 0%,rgba(5,8,26,.92) 74%,#03050f 100%);
     box-shadow:0 -10px 40px rgba(5,8,26,.7)}
+  /* B-S2c RESCUE OFFER (FTL/For-the-King distress on the branch-map fork). A separate non-`.node`
+     map card below the route lanes: read as in-family glass (A1 ladder #23234F slab / #05051A lip,
+     teal + ember accents per the locked palette). It must NOT look like a `.node` (route lock stays
+     3 forks); it reads as an urgent side offer with a distinct distress glyph + ember risk action. */
+  #mapOv .rescueCard{display:flex;align-items:center;gap:12px;width:100%;max-width:560px;margin:10px auto 2px;padding:10px 12px;cursor:pointer;text-align:left;
+    border:1px solid #7a4a8a;border-radius:14px;color:#eadff6;
+    background:linear-gradient(180deg,#2a1e45 0%,#201636 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 14px rgba(200,100,255,.10),0 6px 16px rgba(5,5,20,.4);
+    transition:border-color .1s,transform .06s,box-shadow .1s}
+  #mapOv .rescueCard:hover{border-color:#E07AFF;transform:translateY(-2px);box-shadow:0 0 18px rgba(224,122,255,.18)}
+  #mapOv .rescueCard .rsIc{font-size:26px;filter:drop-shadow(0 0 6px rgba(255,122,26,.5))}
+  #mapOv .rescueCard .rsTx{flex:1;display:flex;flex-direction:column;gap:3px;font-size:12px;color:#c7bce0;line-height:1.35}
+  #mapOv .rescueCard .rsTx b{font-size:12px;letter-spacing:.5px;color:#f2ecff}
+  #mapOv .rescueCard .rsGo{font-size:10.5px;white-space:nowrap;background:rgba(255,122,26,.16);border:1px solid rgba(255,122,26,.5);color:#FFB37A;border-radius:9px;padding:6px 10px;font-weight:800;letter-spacing:.3px}
+  /* RESCUE OVERLAY — a fixed opaque modal that CUTS THROUGH the map (Design Law #1). Lists owned
+     cards, per-card pass contribution, a running total vs the distress threshold, and the SEND call
+     (attemptRescue = the copies leave the bag whether they clear). Indigo glass, teal/ember/rare
+     accents; the distress rail + ember risk buttons read on the locked G3 palette. */
+  #rescueOv{position:fixed;inset:0;z-index:26;display:flex;align-items:center;justify-content:center;padding:16px;color:#e6ecfa;
+    background:radial-gradient(900px 520px at 50% -10%,rgba(45,40,96,.55),rgba(5,8,26,.92) 72%)}
+  #rescueOv .resModal{width:min(560px,94vw);max-height:86vh;overflow:auto;display:flex;flex-direction:column;gap:10px;position:relative;
+    border:1px solid #3a5287;border-radius:16px;padding:18px;color:#e6ecfa;
+    background:linear-gradient(180deg,#191943 0%,#10102f 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 34px rgba(160,122,255,.16),0 18px 50px rgba(3,5,15,.7)}
+  #rescueOv .resModal::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,#FF7A1A 26%,#E07AFF 74%,transparent)}
+  #rescueOv .resHead{font-size:19px;font-weight:900;color:#fff;letter-spacing:.6px;text-align:center}
+  #rescueOv .resSub{font-size:12px;color:#a9b8dc;text-align:center;line-height:1.4}
+  #rescueOv .resThr{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px auto;padding:4px 12px;font-size:12px;font-weight:800;color:#FFE3B8;background:rgba(255,199,90,.10);border:1px solid rgba(255,199,90,.35);border-radius:10px}
+  #rescueOv .resList{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+  #rescueOv .resCard{display:flex;align-items:center;gap:10px;border:1px solid #3a5287;border-radius:11px;padding:8px 10px;background:rgba(5,8,26,.35)}
+  #rescueOv .resCard .rcEm{font-size:22px}
+  #rescueOv .resCard .rcNm{flex:1;display:flex;flex-direction:column;gap:2px}
+  #rescueOv .resCard .rcNm b{font-size:13px;color:#eef4ff}
+  #rescueOv .resCard .rcNm span{font-size:10.5px;color:#9fb4d6}
+  #rescueOv .resCard .rcVal{font-size:12px;color:#A0EFFF;font-weight:800;white-space:nowrap}
+  #rescueOv .resCard .rcStepper{display:flex;align-items:center;gap:4px}
+  #rescueOv .resCard .rcStepper button{width:26px;height:26px;border-radius:8px;border:1px solid #3a5287;background:#0d0d28;color:#dfe7f5;font-weight:900;cursor:pointer;line-height:1}
+  #rescueOv .resCard .rcStepper button:hover{border-color:#8EFFFF}
+  #rescueOv .resCard .rcStepper .rcN{min-width:22px;text-align:center;font-weight:900;color:#fff}
+  #rescueOv .resTot{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:4px;padding:8px 0;border-top:1px solid rgba(58,82,135,.5)
+    ;font-size:13px;color:#cfdcf6}
+  #rescueOv .resTot b{color:#FFD324;font-size:15px}
+  #rescueOv .resTot .passOk{color:#3CF0B2;font-weight:800}
+  #rescueOv .resBtnRow{display:flex;justify-content:center;gap:10px}
+  #rescueOv .resSend{background:linear-gradient(180deg,#7a2f0a,#9c3d0d);color:#FFE3B8;border:1px solid rgba(255,122,26,.6);border-radius:11px;padding:10px 22px;font-weight:900;cursor:pointer;letter-spacing:.4px}
+  #rescueOv .resSend:disabled{opacity:.35;cursor:default}
+  #rescueOv .resClose{border:1px solid #3a5287;background:#10102f;color:#9fb4d6;border-radius:11px;padding:10px 16px;cursor:pointer}
+  #rescueOv .resResult{margin-top:2px;padding:10px 12px;border-radius:11px;text-align:center;font-size:13px;line-height:1.45;border:1px solid rgba(122,74,138,.6);background:rgba(35,20,60,.45);color:#e9dcff}
+  #rescueOv .resResult.pass{border-color:rgba(60,240,178,.6);color:#b8ffe6;background:rgba(14,60,58,.5)}
+  #rescueOv .resResult.fail{border-color:rgba(255,90,90,.6);color:#ffc9c9;background:rgba(70,18,18,.5)}
+  #rescueOv .resResult b{display:block;font-size:14px;margin-bottom:2px}
   /* A7 victory-celebration refresh: #vicOv was themed off-bible dark-green (green is reserved for XP/
      scout lens only in the locked palette). Re-costumed to the locked END/reward victory family — deep-
      indigo glass backdrop feeding the reward modal that follows it, warm-gold #FFD324 victory header,
@@ -670,6 +722,7 @@
       <button id="copyLog">Copy match log</button>
     </div>
     <div id="mapOv" class="mapOv" style="display:none"></div>
+    <div id="rescueOv" style="display:none"></div>
     <div id="vicOv" style="display:none"></div>
   </div>
   <div id="logbox" class="card"></div>
@@ -3816,6 +3869,12 @@ function applyCardUpgrade(def, track){
   // maxed one — we still advance (it is the reward node); the cap keeps numbers sane pre-balance.
   const card = { key:def.key, tag:def.tag };
   const okApply = addUpgrade(deck, card, track);
+  // S-2 CARD-ECONOMY bridge (B-S2c): the reward pick ALSO collects ONE OWNED COPY of that card into
+  // the run's bag (run.mjs collectCard), so the S-2 owned-copy economy (rescue sends, drag-assign A.1b
+  // producers) becomes LIVE-reachable from a normal run — a leveled card you keep is a card you hold.
+  // Pure additive: adds a run.bag entry only; deck leveling + emitPhase2 + all existing draft tests are
+  // untouched (bag is consumed solely by S-2 model reads/UI below).
+  if(camp && camp.run && okApply){ try{ collectCard(camp.run, def.key); }catch(e){} }
   log('🂡 Card leveled: '+def.name+' +'+((TRACKS&&TRACKS[track]&&TRACKS[track].name)||track)+(okApply?'':' (already maxed)'));
   clearCardPicker(); 
   claimAdvance();   // branch-map aware advance (a card pick is a reward node)
@@ -3969,6 +4028,25 @@ function openRouteMap(){
   const lgd=[['#1CC7C7','⚖ Neutral commander'],['#FF7A1A','🗡 Aggressive rush'],['#FFD324','🏭 Economy line'],['#9FB4C7','? Unforged road']];
   for(const [c,txt] of lgd){ const s=document.createElement('span'); s.className='lgd'; s.innerHTML='<i style="background:'+c+'"></i>'+txt; legend.appendChild(s); }
   body.appendChild(legend);
+  // B-S2c RESCUE OFFER: an FTL/For-the-King distress reads BEFORE you pick a commander for the next
+  // battle. Renders as its OWN non-`.node` map card below the fork (the 3-route `.node` test contract
+  // stays intact) whenever the run holds >=1 owned card copy to gamble. Committing copies is a REAL
+  // cost (out of the fight); a passing rescue banks a distress reward; a failing one loses the copies
+  // but never blocks advancing. Shown once per map open; the player may ignore it and just pick a road.
+  if(camp && camp.run && !camp.run.rescueDone){
+    let rtot=0; try{ rtot=rescueReserves(camp.run).total||0; }catch(e){}
+    if(rtot>0){
+      const tier=(camp.run.rescueTier)||'easy';
+      const hypo=rescueNode(tier,{maxCards:2});
+      const ro=document.createElement('div'); ro.className='rescueCard';
+      ro.innerHTML='<div class="rsIc">✉</div>'
+        +'<div class="rsTx"><b>A FLOTILLA IS IN DISTRESS</b><span>You hold '+rtot+' owned card'+(rtot===1?'':'s')+'. Send some to intercept the burn — the copies you commit are gone whether they clear. Risk cards now, or stand down and pick your road.</span></div>'
+        +'<div class="rsGo">◈ RISK CARDS</div>';
+      ro.title='Distress difficulty ~'+tier+' (threshold ≈ '+hypo.threshold+') — send owned cards to aid the ship.';
+      ro.onclick=()=>openRescuePanel(tier);
+      body.appendChild(ro);
+    }
+  }
   ov.appendChild(body);
   const bt=document.createElement('div'); bt.className='mapBottom';
   const hint=document.createElement('div'); hint.className='mapHint';
@@ -3986,6 +4064,111 @@ function openRouteMap(){
   ov.appendChild(bt);
   log('Branch map open — choose the commander for battle '+(bn)+'.');
 }
+
+// ---- B-S2c DISTRESS-RESCUE UI (A.2 live surface) ----
+// Drives the pure rescue.mjs model (rescueNode / rescueReserves / attemptRescue) through a real on-map
+// panel: pick which OWNED card copies to risk, watch the pass read vs the distress threshold, SEND
+// (copies leave the bag either way), then read pass/rewward or fail. A resolved distress is marked on
+// the run so it offers once; ignoring it just picks a road. All ids stable + DOM-shim friendly.
+let _rescueSpends = {};
+function openRescuePanel(tier){
+  const ov=$('rescueOv'); if(!ov||!camp||!camp.run) return;
+  // roll one distress for this run (once). threshold keyed to the tier; maxCards bounds multi-sends.
+  const run=camp.run;
+  if(!run.rescueDone){ run.rescueTier=tier||run.rescueTier||'easy'; run.rescueNode=rescueNode(run.rescueTier,{maxCards:2,label:'route'}); }
+  const node=run.rescueNode;
+  _rescueSpends={};
+  ov.textContent=''; ov.style.display='flex';
+  const box=document.createElement('div'); box.className='resModal';
+  box.id='resModal';
+  // header
+  const head=document.createElement('div'); head.className='resHead'; head.textContent='✉ DISTRESS CALL — INTERCEPT THE BURN';
+  box.appendChild(head);
+  const sub=document.createElement('div'); sub.className='resSub';
+  sub.textContent='A flotilla is breaking up under attack. Send the cards you own to aid it — every copy you commit is GONE whether it clears (a reserve can be rebuilt). Clear the difficulty to bank a distress reward, or stand down and pick your road.';
+  box.appendChild(sub);
+  const thr=document.createElement('div'); thr.className='resThr';
+  thr.appendChild(document.createTextNode('DISTRESS · ~'+String(run.rescueTier).toUpperCase()+' · clear ≥ '+(node.threshold)+' threat'));
+  box.appendChild(thr);
+  // owned card rows
+  let defs=[]; const byKey={};
+  try{ for(const c of (run.pool||[])) byKey[c.key]=c; }catch(e){}
+  try{ const rr=rescueReserves(run); for(const k in (rr.owned||{})){ if(rr.owned[k]>0 && byKey[k] && byKey[k].tag!=='worker') defs.push(byKey[k]); } }catch(e){}
+  const list=document.createElement('div'); list.className='resList';
+  const totalWrap=document.createElement('div'); totalWrap.className='resTot';
+  const btnRow=document.createElement('div'); btnRow.className='resBtnRow';
+  function refresh(){
+    let sum=0;
+    for(const k in _rescueSpends){ if(_rescueSpends[k]>0 && byKey[k]) sum+=cardValue(byKey[k],_rescueSpends[k]); }
+    const pass=rescuePasses(node,sum);
+    totalWrap.innerHTML='';
+    const t1=document.createElement('div'); t1.appendChild(document.createTextNode('Committed threat: ')); const tb=document.createElement('b'); tb.textContent=sum+' / '+node.threshold+'  '; t1.appendChild(tb);
+    const pk=document.createElement('span'); pk.className=pass?'passOk':''; pk.textContent=pass?('✓ CLEARS THE DISTRESS'):('✗ short of the threshold (add cards)'); t1.appendChild(pk); totalWrap.appendChild(t1);
+    const t2=document.createElement('div'); t2.textContent='Cards you send are spent the moment you hit SEND.'; t2.style.cssText='font-size:11px;color:#7c8bb0'; totalWrap.appendChild(t2);
+    if(typeof send!=='undefined' && send) send.disabled = Object.keys(_rescueSpends).length<1;
+  }
+  for(const def of defs){
+    const ownedCount=cardCount(camp.run,def.key);
+    const val=cardValue(def,1);
+    const card=document.createElement('div'); card.className='resCard';
+    const em=document.createElement('div'); em.className='rcEm'; em.textContent=def.emoji||def.icon||'🃏';
+    const nm=document.createElement('div'); nm.className='rcNm';
+    const nb=document.createElement('b'); nb.textContent=def.name;
+    const ns=document.createElement('span'); ns.textContent=((def.desc||'').slice(0,58))+' — own '+ownedCount+((ownedCount===1)?' copy':' copies');
+    nm.appendChild(nb); nm.appendChild(ns);
+    const vv=document.createElement('div'); vv.className='rcVal'; vv.textContent='~'+val+' threat';
+    const sp=document.createElement('div'); sp.className='rcStepper';
+    const minus=document.createElement('button'); minus.type='button'; minus.textContent='−';
+    const cnt=document.createElement('span'); cnt.className='rcN'; cnt.textContent='0';
+    const plus=document.createElement('button'); plus.type='button'; plus.textContent='+';
+    function renderN(){ cnt.textContent=_rescueSpends[def.key]||0; }
+    plus.onclick=()=>{
+      const own=cardCount(camp.run,def.key); const used=_rescueSpends[def.key]||0;
+      const totalUsed=Object.keys(_rescueSpends).reduce((s,k)=>s+(_rescueSpends[k]||0),0);
+      if(used<own && totalUsed<(node.maxCards||2)){ _rescueSpends[def.key]=used+1; renderN(); refresh(); }
+    };
+    minus.onclick=()=>{ const used=_rescueSpends[def.key]||0; if(used>0){ _rescueSpends[def.key]=used-1; if(!_rescueSpends[def.key])delete _rescueSpends[def.key]; renderN(); refresh(); } };
+    sp.appendChild(minus); sp.appendChild(cnt); sp.appendChild(plus);
+    card.appendChild(em); card.appendChild(nm); card.appendChild(vv); card.appendChild(sp);
+    list.appendChild(card);
+  }
+  if(!defs.length){
+    const none=document.createElement('div'); none.className='resSub'; none.style.cssText='padding:8px;color:#9fb4d6';
+    none.textContent='You hold no owned combat cards to risk. Take a card-draft reward after a win to build a sendable reserve.';
+    list.appendChild(none);
+  }
+  box.appendChild(list);
+  box.appendChild(totalWrap);
+  const send=document.createElement('button'); send.className='resSend'; send.type='button'; send.textContent='⚠ SEND THESE CARDS';
+  send.disabled=true;          // can't send nothing — refresh() enables it once a card is stepped
+  send.id='resSend';
+  send.onclick=()=>{
+    if(!Object.keys(_rescueSpends).length) return;
+    const r=attemptRescue(camp.run,node,{ spends:_rescueSpends });
+    const res=document.createElement('div'); res.className='resResult '+((r&&r.pass)?'pass':'fail'); res.id='resResult';
+    const b=document.createElement('b');
+    b.textContent=(r&&r.pass)?('✓ DISTRESS CLEARED'):((r&&r.blocked)?'Nothing to send':'✗ DISTRESS UNANSWERED');
+    res.appendChild(b);
+    res.appendChild(document.createTextNode((r&&r.note)||''));
+    try{ camp.run.rescueDone=true; }catch(e){}
+    try{ const offer=document.querySelector&&document.querySelector('.rescueCard'); if(offer&&offer.parentNode) offer.parentNode.removeChild(offer); }catch(e){}
+    log('✉ Distress: '+((r&&r.note)||''));
+    btnRow.textContent='';
+    const done=document.createElement('button'); done.className='resClose'; done.textContent='Back to the fork';
+    done.onclick=()=>closeRescuePanel();
+    btnRow.appendChild(done);
+    box.appendChild(res);
+  };
+  btnRow.appendChild(send);
+  const back=document.createElement('button'); back.className='resClose'; back.type='button'; back.textContent='Stand down';
+  back.onclick=()=>closeRescuePanel();
+  btnRow.appendChild(back);
+  box.appendChild(btnRow);
+  refresh();          // paint the initial pass read + SEND gating (send is defined above now)
+  ov.appendChild(box);
+  log('✉ Distress call read — risk owned cards to aid the flotilla.');
+}
+function closeRescuePanel(){ const o=$('rescueOv'); if(o) o.style.display='none'; const om=$('resModal'); if(om&&om.parentNode) om.parentNode.removeChild(om); }
 function resolveRoute(r, bn){
   const ov=$('mapOv'); if(ov) ov.style.display='none';
   if(camp && camp.run && r && r.arche){ try{ setArchetype(camp.run, bn, r.arche); }catch(e){} }
