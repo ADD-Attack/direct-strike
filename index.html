@@ -277,11 +277,17 @@
   #mapOv::after{content:'';position:absolute;left:-5%;right:-5%;bottom:0;height:34%;pointer-events:none;
     background:linear-gradient(180deg,rgba(5,8,26,0) 0%,rgba(5,8,26,.92) 74%,#03050f 100%);
     box-shadow:0 -10px 40px rgba(5,8,26,.7)}
-  #vicOv{position:fixed;inset:0;z-index:18;background:radial-gradient(1200px 700px at 50% -10%,#12301f,#08120c 72%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
-  #vicOv .vicBig{font-size:44px;font-weight:900;color:#79f0c5;letter-spacing:1px;text-shadow:0 0 24px rgba(121,240,197,.35)}
-  #vicOv .vicSub{font-size:15px;color:#9fd6b6;margin-top:8px;max-width:620px;line-height:1.5}
-  #vicOv .vicStat{font-size:13px;color:#6f9c82;margin-top:6px}
-  #vicOv button.vicBtn{margin-top:30px;padding:14px 44px;font-size:18px;font-weight:800;border:0;border-radius:14px;background:linear-gradient(180deg,#2f8f5f,#1f6d46);color:#eafff3;cursor:pointer;box-shadow:0 6px 24px rgba(47,143,95,.4);transition:transform .06s,filter .1s}
+  /* A7 victory-celebration refresh: #vicOv was themed off-bible dark-green (green is reserved for XP/
+     scout lens only in the locked palette). Re-costumed to the locked END/reward victory family — deep-
+     indigo glass backdrop feeding the reward modal that follows it, warm-gold #FFD324 victory header,
+     teal Continue primary (matches the locked reward board's 'selected teal glow' + END teal win action).
+     Pure presentation: same ids/children/text + display flex contract untouched (DOM-shim green). */
+  #vicOv{position:fixed;inset:0;z-index:18;background:radial-gradient(1200px 700px at 50% -12%,#2c2f63,#0a0f2e 74%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;border-top:3px solid transparent}
+  #vicOv::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,transparent,#FFD324 22%,#1CC7C7 78%,transparent);opacity:.9}
+  #vicOv .vicBig{font-size:44px;font-weight:900;color:#FFD324;letter-spacing:1px;text-shadow:0 0 26px rgba(255,211,36,.30),0 2px 0 rgba(0,0,0,.25)}
+  #vicOv .vicSub{font-size:15px;color:#cfdcf6;margin-top:10px;max-width:620px;line-height:1.5}
+  #vicOv .vicStat{font-size:13px;color:#9fbbe8;margin-top:8px}
+  #vicOv button.vicBtn{margin-top:30px;padding:14px 44px;font-size:18px;font-weight:800;border:0;border-radius:14px;background:linear-gradient(180deg,#155e5e,#0f6d6d);color:#04121a;border:1px solid rgba(142,255,255,.5);box-shadow:inset 0 1px 0 rgba(200,255,250,.5),0 0 22px rgba(28,199,199,.35),0 6px 24px rgba(5,8,26,.6);cursor:pointer;transition:transform .06s,filter .1s}
   #vicOv button.vicBtn:hover{filter:brightness(1.12);transform:translateY(-2px)}
   /* Branch reward step: when Continue is tapped after a win, #endOv (normally an in-column card in Direct's
      flat flow) is promoted to a TRUE full-viewport rewards screen — field + shop hidden behind an opaque
