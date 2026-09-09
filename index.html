@@ -308,6 +308,136 @@
   #endOv.endScreen button.upg .rowUpg b,#endOv.endScreen button.cardp b,#endOv.endScreen button.relicp b{color:#fff;font-size:13px;letter-spacing:.2px}
   #endOv.endScreen button.upg .hint,#endOv.endScreen button.cardp .hint,#endOv.endScreen button.relicp .hint{color:#AFC0DE;font-size:11.5px;line-height:1.45;display:block;margin-top:4px;padding-top:5px;border-top:1px dashed rgba(45,45,127,.7)}
   /* reward-row deck/relic/upgrade cards now read as shop-clone slabs; DOM + in-column look untouched. */
+
+  /* ============================================================================
+     A6 (art bake) MAIN-MENU / START-SCREEN STYLE-DIFF + FIX toward the LOCKED MENU board
+     (ds-menu-board, STYLE-BIBLE MENU/start 21:01). #gate, previously a plain narrow config card
+     next to an empty canvas, is now a FULL-VIEWPORT framed start screen that reads as the board:
+     deep-indigo starfield -> DIRECT STRIKE comic title lockup + tagline -> teal-army-vs-ember-enemy
+     key-art clash -> central OPAQUE glass menu carrying the REAL faction/difficulty/DEPLOY gate
+     (ids #facGrid/#diffRow/#startBtn untouched) -> faction emblem medallions + ember sigil footer.
+     Pure presentation over the static gate; no feature/logic change. #gate hides on Start exactly
+     as before (all DOM tests keep passing). ============================================= */
+  /* #gate is styled position:fixed so it OVERLAYS the empty pre-start shell as the whole board */
+  #gate.bootGate{position:fixed;inset:0;z-index:60;margin:0;border-radius:0;display:flex;align-items:center;
+    justify-content:center;overflow-y:auto;padding:18px 14px;min-height:100vh;
+    border:none;
+    background:
+      radial-gradient(1px 1px at 8% 14%, rgba(255,255,255,.9), transparent 100%),
+      radial-gradient(1.5px 1.5px at 22% 7%, rgba(255,255,255,.55), transparent 100%),
+      radial-gradient(1px 1px at 35% 18%, rgba(160,239,255,.8), transparent 100%),
+      radial-gradient(1px 1px at 52% 9%, rgba(255,255,255,.65), transparent 100%),
+      radial-gradient(1px 1px at 68% 15%, rgba(160,239,255,.6), transparent 100%),
+      radial-gradient(1.2px 1.2px at 81% 8%, rgba(255,255,255,.8), transparent 100%),
+      radial-gradient(1px 1px at 91% 20%, rgba(255,122,26,.5), transparent 100%),
+      radial-gradient(1px 1px at 15% 86%, rgba(255,255,255,.5), transparent 100%),
+      radial-gradient(1px 1px at 42% 91%, rgba(160,239,255,.5), transparent 100%),
+      radial-gradient(900px 520px at 82% -12%, rgba(90,54,150,.5), rgba(90,54,150,0) 60%),
+      radial-gradient(760px 480px at 12% 112%, rgba(30,70,120,.5), rgba(30,70,120,0) 62%),
+      linear-gradient(180deg,#05070f 0%,#0a0e24 45%,#080a1c 100%);
+    box-shadow:none;}
+  /* framed rounded pane with thin double border (neon outer + dark inner buffer) like the board frame */
+  #gate.bootGate::before{content:'';position:absolute;inset:14px;border-radius:22px;pointer-events:none;
+    border:1px solid rgba(120,150,255,.35);box-shadow:0 0 0 5px rgba(8,10,26,.9), inset 0 0 0 6px rgba(8,10,26,.95), inset 0 0 60px rgba(8,10,30,.6);}
+  /* starfield layer inside the framed area */
+  .bootStar{position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(1px 1px at 30% 34%, rgba(255,255,255,.5), transparent 100%),
+      radial-gradient(1px 1px at 64% 40%, rgba(160,239,255,.4), transparent 100%),
+      radial-gradient(1px 1px at 18% 52%, rgba(255,255,255,.4), transparent 100%),
+      radial-gradient(1px 1px at 41% 61%, rgba(160,239,255,.4), transparent 100%),
+      radial-gradient(1px 1px at 76% 66%, rgba(255,255,255,.4), transparent 100%),
+      radial-gradient(1px 1px at 55% 74%, rgba(255,122,26,.3), transparent 100%),
+      radial-gradient(1px 1px at 86% 29%, rgba(255,255,255,.6), transparent 100%),
+      radial-gradient(1px 1px at 9% 72%, rgba(255,255,255,.4), transparent 100%),
+      radial-gradient(1px 1px at 27% 26%, rgba(160,239,255,.6), transparent 100%),
+      radial-gradient(1px 1px at 48% 33%, rgba(255,255,255,.4), transparent 100%),
+      radial-gradient(1px 1px at 93% 58%, rgba(255,255,255,.4), transparent 100%),
+      radial-gradient(1px 1px at 71% 19%, rgba(255,255,255,.5), transparent 100%);}
+  /* ----- split key-art clash (teal army left vs ember enemy right) behind the glass menu ----- */
+  .bootArt{position:absolute;inset:0;z-index:1;display:flex;overflow:hidden;pointer-events:none;opacity:.9}
+  /* A6 key-art hero vignette: real roster sprites (rebel army LEFT vs swarm RIGHT) painted into this
+     full-bleed canvas so the flanks read as actual forces converging on the hot centre-clash line,
+     matching the LOCKED ds-menu-board's 'teaser clash splash ... teal-army vs ember ENEMY FRONT key
+     art, not live play'. Pure presentation; painters below never run headless (no real Image) so the
+     coloured-wash fallback in the DOM-shim tests is unchanged -> suite stays green. */
+  .bootArtCv{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+  .bootArtHalf{flex:1 1 50%;position:relative}
+  .bootArtHalf.ally{background:
+      radial-gradient(560px 420px at 28% 62%, rgba(28,199,199,.36), rgba(28,199,199,0) 66%),
+      radial-gradient(300px 300px at 66% 76%, rgba(28,199,199,.22), rgba(28,199,199,0) 70%),
+      linear-gradient(180deg, rgba(24,181,181,.10) 0%, rgba(10,60,66,.30) 100%),
+      radial-gradient(900px 500px at 15% 22%, rgba(60,140,220,.16), rgba(60,140,220,0) 62%);}
+  .bootArtHalf.enemy{background:
+      radial-gradient(560px 420px at 72% 60%, rgba(255,120,60,.40), rgba(255,120,60,0) 66%),
+      radial-gradient(300px 300px at 34% 78%, rgba(255,150,40,.22), rgba(255,150,40,0) 70%),
+      linear-gradient(180deg, rgba(255,100,55,.10) 0%, rgba(80,16,8,.30) 100%),
+      radial-gradient(900px 500px at 85% 22%, rgba(255,140,70,.16), rgba(255,140,70,0) 62%);}
+  .bootArtDivider{width:1px;flex:0 0 1px;align-self:stretch;margin:0 3px;
+    background:linear-gradient(180deg,transparent,rgba(255,255,255,.35),rgba(255,211,36,.6),transparent);
+    box-shadow:0 0 12px rgba(255,211,36,.35)}
+  /* emblem medallions flanking the art clash (teal-shield yours / sigil enemy) */
+  .bootEmblem{position:absolute;top:50%;transform:translate(-50%,-50%);width:74px;height:74px;border-radius:20px;
+    display:flex;align-items:center;justify-content:center;font-size:30px;}
+  .bootArtHalf.ally .bootEmblem{left:22%;border:1px solid rgba(142,255,255,.55);color:#8EFFFF;
+    background:radial-gradient(circle at 50% 30%, rgba(28,199,199,.35), rgba(8,30,34,.85) 70%);
+    box-shadow:0 0 26px rgba(28,199,199,.35), inset 0 0 18px rgba(28,199,199,.28)}
+  .bootArtHalf.enemy .bootEmblem{left:78%;border:1px solid rgba(255,122,90,.6);color:#ffb27a;
+    background:radial-gradient(circle at 50% 30%, rgba(255,90,50,.4), rgba(70,14,6,.9) 72%);
+    box-shadow:0 0 26px rgba(255,90,50,.35), inset 0 0 18px rgba(255,122,40,.3)}
+  .bootArtHalf.ally .bootEmblem.shield{transform:translate(-50%,-50%) scaleX(.72)}
+  .bootLex{position:relative;z-index:2;width:min(880px,96%);margin:auto;display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 6px}
+  /* DIRECT STRIKE comic lockup: heavy italic white w/ thick black outline + white bloom */
+  .bootLogoWrap{filter:drop-shadow(0 0 14px rgba(255,255,255,.35)) drop-shadow(0 3px 0 rgba(0,0,0,.6))}
+  .bootLogo{font-size:clamp(34px,7vw,64px);font-weight:900;font-style:italic;letter-spacing:.5px;line-height:.95;
+    text-transform:uppercase;color:#fff;
+    -webkit-text-stroke:.5px #000;
+    text-shadow:0 2px 0 #000, 0 3px 0 #000, 0 4px 0 rgba(0,0,0,.55),
+      0 0 18px rgba(160,239,255,.8), 0 0 40px rgba(90,150,255,.45);}
+  .bootTag{font-size:clamp(11px,1.6vw,15px);color:#f6e9c8;font-weight:600;letter-spacing:.4px;margin-top:-2px}
+  /* ---------- central OPAQUE glass menu (the live gate controls inside) ---------- */
+  .bootMenu{width:min(560px,98%);background:linear-gradient(180deg,#14144a 0%,#0B0B2E 46%,#080826 100%);
+    border:1px solid #2D2D7F;border-radius:20px;padding:16px 18px 14px;margin-top:2px;
+    box-shadow:inset 0 1px 0 rgba(143,255,255,.20), inset 0 -3px 10px rgba(0,0,0,.55),
+      0 0 0 1px #0B0F2F, 0 18px 50px rgba(0,0,0,.65);}
+  .bootMenuHead{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:2px}
+  .bootFacIcon{font-size:13px;color:var(--min);filter:drop-shadow(0 0 6px rgba(160,239,255,.6))}
+  .bootFacIcon.alien{color:var(--gas);filter:drop-shadow(0 0 6px rgba(255,122,26,.6))}
+  .bootMenuTitle{font-size:16px;font-weight:900;letter-spacing:2.6px;color:#f2f6ff;text-transform:uppercase;
+    text-shadow:0 0 12px rgba(110,150,255,.3)}
+  .bootSub{margin:4px 0 6px;text-align:center}
+  .bootCap{margin-top:12px;border-top:1px dashed rgba(45,45,127,.8);padding-top:10px;text-align:center}
+  /* re-skin the live faction tiles to the board's emblem tiles */
+  #gate.bootGate .factions{grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+  #gate.bootGate .fbtn{border-radius:14px;padding:13px 12px;border:2px solid rgba(120,120,180,.4);
+    background:linear-gradient(180deg,#17173f,#10102e 80%);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+  #gate.bootGate .fbtn.sel{border-color:var(--ally,#1CC7C7);background:linear-gradient(180deg,#123a45,#0d2730 85%);
+    box-shadow:0 0 0 1px rgba(28,199,199,.35),0 0 20px rgba(28,199,199,.18) inset 0 1px 0 rgba(142,255,255,.15)}
+  #gate.bootGate .fbtn .nm{font-size:16px;display:flex;align-items:center;gap:8px}
+  #gate.bootGate .fbtn .nm::before{content:'✦';font-size:13px;color:var(--min,#A0EFFF);filter:drop-shadow(0 0 5px rgba(160,239,255,.6))}
+  #gate.bootGate .fbtn.sel .nm::before{content:'★';color:#8EFFFF}
+  #gate.bootGate .fbtn .ds{color:#a9b8de;font-size:12.5px;margin-top:5px}
+  #gate.bootGate .diffs{display:flex;gap:8px;margin:4px 0 2px;justify-content:center}
+  #gate.bootGate .diffs button{flex:1 1 0;min-width:0;padding:9px 6px;border-radius:22px;border:1px solid #2c3f66;
+    background:#141a38;color:#c9d6f2;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+  #gate.bootGate .diffs button.chosen{border-color:#7aa2ff;background:linear-gradient(180deg,#2b4a86,#1d3562);color:#fff}
+  .bootHint{text-align:center;line-height:1.45}
+  #gate.bootGate .diffs+.hint{border-top:1px dashed rgba(45,45,127,.5);padding-top:8px}
+  /* DEPLOY primary (board: teal glow, thick border, subtext) */
+  #gate.bootGate #startBtn{margin-top:10px;padding:13px 12px;font-size:17px;font-weight:900;letter-spacing:2.4px;
+    display:flex;align-items:center;justify-content:center;gap:10px;color:#fff;border-radius:30px;
+    background:linear-gradient(90deg,#177f7f 0%,#1CC7C7 52%,#0fa5a5 100%);border:none;text-transform:uppercase;
+    box-shadow:0 6px 22px rgba(28,199,199,.4), inset 0 1px 0 rgba(142,255,255,.6), inset 0 -2px 6px rgba(0,70,70,.6);
+    cursor:pointer;transition:filter .1s,transform .06s}
+  #gate.bootGate #startBtn:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  #gate.bootGate #startBtn .bootPlayTri{font-size:14px}
+  .mapHint{border-top:1px dashed rgba(45,45,127,.5);padding-top:8px;margin-top:6px}
+  /* bottom emblem/sigil row (mirror of top) */
+  .bootFoot{display:flex;align-items:center;gap:14px;font-size:12px;letter-spacing:1.6px;color:#a9b8de;
+    font-weight:800;margin-top:8px;justify-content:center;text-transform:uppercase;text-shadow:0 1px 0 rgba(0,0,0,.6)}
+  .bootSigil{font-size:16px;filter:drop-shadow(0 0 6px rgba(160,239,255,.5))}
+  .bootSigilA{color:#8EFFFF}.bootSigilE{color:#ffb27a;filter:drop-shadow(0 0 6px rgba(255,122,60,.5))}
+  @media (max-height:680px){#gate.bootGate{padding:8px 10px}.bootLogo{font-size:clamp(28px,6vw,44px)}.bootArt .bootEmblem{width:52px;height:52px;font-size:20px}}
 </style>
 </head>
 <body>
@@ -327,18 +457,42 @@
     <canvas id="cv" width="900" height="520"></canvas>
   </div>
   <div id="colR">
-    <div id="gate" class="card">
-      <h2>Choose your faction &amp; difficulty</h2>
-      <p class="sub">A <b>roguelike run</b> of 4 escalating battles — pick a faction, win each battle to take a persistent
-        upgrade (+income, +workers, bigger army, cheaper tech), and if you lose you <b>retry that battle</b> (no full wipe).
-        🪙 workers auto-mine <b style="color:var(--min)">◆ minerals</b> and <b style="color:var(--gas)">◈ gas</b>; spend them on a line of units — crack their core before they crack yours.</p>
-      <div class="fcaption" style="margin-top:10px">Faction (AI fields the other)</div>
-      <div class="factions" id="facGrid"></div>
-      <div class="fcaption" style="margin-top:10px">Difficulty</div>
-      <div class="diffs" id="diffRow"></div>
-      <div class="hint" style="margin-top:4px"><b>Easy (dev)</b> = very weak enemy that barely buys — you should roll through each battle and finish a run fast (for learning &amp; testing). Casual/Standard/Brutal = rising enemy economy &amp; aggression.</div>
-      <button id="startBtn">▶ START CAMPAIGN</button>
-      <div class="hint"><b>StS-style branching map:</b> each battle win opens a fork — pick your next commander (STANDARD / RUSH FLANK / ECONOMY LINE). Each road is a different enemy archetype and banks a run-wide boon if you clear it. Win 4 escalating battles to finish the run.</div>
+    <div id="gate" class="card bootGate">
+      <!-- A6 MENU STYLE-BAKE: the boot/#gate now renders as the whole framed LOCKED start board
+           (ds-menu-board, STYLE-BIBLE MENU/start 21:01): full-viewport deep-indigo starfield frame,
+           DIRECT STRIKE comic title lockup + tagline, teal-army-vs-ember-enemy key-art clash behind
+           the central OPAQUE glass menu, faction emblem medallions top+bottom, difficulty segment
+           chips, DEPLOY primary. Pure presentation over the existing faction/difficulty gate -- no
+           feature/logic change; ids (#facGrid/#diffRow/#startBtn/#gate) + hide-on-start untouched. -->
+      <div class="bootStar" aria-hidden="true"></div>
+      <div class="bootArt" aria-hidden="true">
+        <canvas class="bootArtCv" aria-hidden="true"></canvas>
+        <div class="bootArtHalf ally"><div class="bootEmblem shield">✦</div></div>
+        <div class="bootArtDivider"></div>
+        <div class="bootArtHalf enemy"><div class="bootEmblem sigil">◈</div></div>
+      </div>
+      <div class="bootLex">
+        <div class="bootLogoWrap"><span class="bootLogo">DIRECT&nbsp;STRIKE</span></div>
+        <div class="bootTag">sci-fi combat roguelike</div>
+        <div class="bootMenu glass">
+          <div class="bootMenuHead">
+            <span class="bootFacIcon">◆</span>
+            <span class="bootMenuTitle">FIELD YOUR RUN</span>
+            <span class="bootFacIcon alien">◈</span>
+          </div>
+          <p class="sub bootSub">A <b>roguelike run</b> of 4 escalating battles — pick your side, win each battle to bank a persistent
+            upgrade, and if you fall you <b>retry that battle</b> (no full wipe). Workers auto-mine
+            <b style="color:var(--min)">◆ minerals</b> &amp; <b style="color:var(--gas)">◈ gas</b> to field your line — crack their core first.</p>
+          <div class="fcaption bootCap">Faction — field your side (AI takes the other)</div>
+          <div class="factions" id="facGrid"></div>
+          <div class="fcaption bootCap">Difficulty</div>
+          <div class="diffs" id="diffRow"></div>
+          <div class="hint bootHint"><b>Easy (dev)</b> = weak enemy to roll a fast run; Casual / Standard / Brutal = rising enemy economy &amp; aggression.</div>
+          <button id="startBtn"><span class="bootPlayTri">▶</span> DEPLOY</button>
+          <div class="hint bootHint mapHint">Each win opens an FTL-style fork — STANDARD / RUSH FLANK / ECONOMY LINE commanders each bank a run-wide boon. Beat 4 escalating battles to finish.</div>
+        </div>
+        <div class="bootFoot"><span class="bootSigil bootSigilA">✦</span><b>REBELS VS THE SWARM</b><span class="bootSigil bootSigilE">✦</span></div>
+      </div>
     </div>
     <div id="battlePanel" class="card" style="display:none">
       <div class="fcaption" id="bidCap"></div>
@@ -520,14 +674,17 @@ const FACTIONS = {
         desc:'Cheap melee bleeder.' },
       { key:'s', icon:'🫀', name:'Skitter', tag:'swarm', hp:45, dmg:5, atk:2.0, range:14, move:64, cost:{min:16}, emoji:'🪳', qty:2,
         desc:'Spawns 2 very cheap runners.' },
-      { key:'r', icon:'🔫', name:'Acid-Shooter', tag:'ranged', hp:55, dmg:11, atk:1.0, range:150, move:34, cost:{min:40,gas:6}, emoji:'🧪',
-        desc:'Spits corrosive acid from range.' },
+      { key:'r', icon:'🔫', name:'Acid-Shooter', tag:'ranged', aa:true, hp:55, dmg:11, atk:1.0, range:150, move:34, cost:{min:40,gas:6}, emoji:'🧪',
+        desc:'Spits corrosive acid from range. AA: can also rain on flyers.' },
       { key:'t', icon:'🛡️', name:'Carapace', tag:'tank', hp:320, dmg:12, atk:1.2, range:18, move:30, cost:{min:70}, emoji:'🛡️',
         desc:'Siege-hardened shell that soaks the line.' },
       { key:'b', icon:'💥', name:'Spore-Blob', tag:'splash', hp:90, dmg:16, atk:1.0, range:40, move:38, cost:{min:55}, emoji:'💥', splash:60,
         desc:'Pops to splash acid on clumps.' },
       { key:'w', icon:'🌡️', name:'Symbiote', tag:'healer', hp:70, dmg:0, atk:0.8, range:90, move:40, cost:{min:60,gas:10}, emoji:'💉', heal:7,
         desc:'Regenerates nearby allies each pulse.' },
+      // B-S1 Pillar-B flyer: airborne acid-spitter (only anti-air / air can hit it)
+      { key:'f', icon:'🐝', name:'Vespid', tag:'ranged', fly:true, hp:40, dmg:9, atk:1.1, range:128, move:66, cost:{min:95,gas:22}, emoji:'🐝',
+        desc:'FLYING acid-spitter — skims over the ground fight and dives the enemy base. Only AA / air can hit it.' },
       { key:'u', icon:'🪺', name:'Hive-Tender', tag:'special', specialKind:'hive', hp:220, dmg:6, atk:0.6, range:22, move:26, cost:{min:110,gas:30}, emoji:'🪺',
         desc:'UNIQUE: summons a Chitterling every few seconds; pulse-buffs melee.' },
     ]
@@ -543,14 +700,17 @@ const FACTIONS = {
         desc:'Rebel soldier who marches to the front and holds it. (A person, not a wrench or an empty helmet.)' },
       { key:'s', icon:'🕸️', name:'Striker Cell', tag:'burst', hp:50, dmg:26, atk:1.0, range:120, move:44, cost:{min:52,gas:8}, emoji:'🎯',
         desc:'High alpha, slow reload — delete a backliner.' },
-      { key:'r', icon:'📡', name:'Spotter', tag:'ranged', hp:55, dmg:10, atk:1.3, range:170, move:40, cost:{min:42,gas:5}, emoji:'📡',
-        desc:'Long sightlines, cheap suppression.' },
+      { key:'r', icon:'📡', name:'Spotter', tag:'ranged', aa:true, hp:55, dmg:10, atk:1.3, range:170, move:40, cost:{min:42,gas:5}, emoji:'📡',
+        desc:'Long sightlines, cheap suppression. AA: designates & lights up flyers.' },
       { key:'t', icon:'🛰️', name:'ARMOR Pal', tag:'tank', hp:300, dmg:10, atk:1.3, range:24, move:26, cost:{min:72}, emoji:'🛰️',
         desc:'Scavenged walker, holds the line.' },
       { key:'b', icon:'💣', name:'Mule-Pack Bomber', tag:'splash', hp:80, dmg:18, atk:0.9, range:46, move:40, cost:{min:58,gas:4}, emoji:'💣', splash:55,
         desc:'Lobs shrapnel at grouped foes.' },
       { key:'w', icon:'🩹', name:'Field Medic', tag:'healer', hp:60, dmg:0, atk:0.9, range:95, move:44, cost:{min:58,gas:8}, emoji:'🩹', heal:8,
         desc:'Triage heals the front rank.' },
+      // B-S1 Pillar-B flyer: one-gun air skiff (only anti-air / air can hit it)
+      { key:'v', icon:'🛸', name:'Sky-Skiff', tag:'ranged', fly:true, hp:48, dmg:11, atk:1.0, range:132, move:70, cost:{min:100,gas:20}, emoji:'🛸',
+        desc:'FLYING one-gun skiff — dives past the ground wall to rake the enemy core. Anti-air hard-counters it.' },
       { key:'u', icon:'🗡️', name:'Saboteur', tag:'special', specialKind:'saboteur', hp:130, dmg:22, atk:1.4, range:130, move:52, cost:{min:120,gas:24}, emoji:'🗡️',
         desc:'UNIQUE: focuses the HIGHEST-HP enemy; +bonus vs tanks.' },
     ]
@@ -662,6 +822,7 @@ function poolFromRoster(roster){
     cost:def.cost||{min:0}, baseCost:def.cost, hp:def.hp, dmg:def.dmg||0, atk:def.atk, range:def.range,
     move:def.move, qty:def.qty||1, splash:def.splash||0, heal:def.heal||0, specialKind:def.specialKind,
     special:!!def.specialKind,
+    fly:!!def.fly, aa:!!def.aa,                 // B-S1 Pillar B air axis (absent on legacy = false)
   }));
 }
 
@@ -691,6 +852,7 @@ function resolveCard(def, upg){            // upg = {track:pts}
     hp:def.hp, dmg:def.dmg||0, atk:def.atk, range:def.range, move:def.move,
     qty:def.qty||1, splash:def.splash||0, heal:def.heal||0, specialKind:def.specialKind,
     cost:{ min:def.cost?def.cost.min:0, gas:def.cost?def.cost.gas||0:0 },
+    fly:!!def.fly, aa:!!def.aa,                 // B-S1 air-axis fields survive deck resolution
   };
   // dmg / hp / atk-speed / splash / heal / summon are fractional multipliers; gather then clamp
   const dm=1+(u.dmg||0)*(NUM.dmg.dmgFrac);
@@ -858,9 +1020,37 @@ function teamArr(st,en){ return en? st.eUnits : st.pUnits; }
 function aliveTeam(st,en){ const a=teamArr(st,en); const r=[]; for(const u of a) if(u.alive) r.push(u); return r; }
 function geomDir(en){ return en? -1 : 1; }
 function homeAnchor(en){ return en? C.ECORE_X-30 : C.PCORE_X+30; }
+// ============================================================
+// B-S1 FLYING UNITS — the airborne targeting axis (Pillar B).
+//   • def.fly:true  => the unit is AIRBORNE. Only an ANTI-AIR-capable shooter (def.aa:true) or another
+//     AIRBORNE unit (def.fly:true) can engage it; plain ground units can't even lock it, so a flyer
+//     glides PAST the ground wall and crosses straight to the enemy structure (siege/harass) unless the
+//     faction's AA answer (or the AA core turret) knocks it down.
+//   • def.aa:true   => a GROUND unit that can ALSO engage airborne units (each faction's anti-air answer).
+//   Legacy defs carry neither flag, so engageable() short-circuits to true => a battle with NO flyers is
+//   byte-identical to the pre-Beta engine (the whole current suite).
+function isAirborne(def){ return !!(def && def.fly); }
+function isAACapable(def){ return !!(def && (def.aa || def.fly)); }
+// Can the shooter unit engage / choose target 'target', respecting the air axis?
+//   • Ground targets are always hittable by anyone.
+//   • A flyer can only be locked/hit by AA-capable (aa or airborne) units.
+//   • A FLYER chooses to SKIM OVER harmless ground (it can't be ground-shot anyway) and engages only
+//     counter-air threats — i.e. it dives straight for the enemy structure unless AA/air intercepts it.
+function engageable(shooter, target){
+  if (!target || !target.def) return false;
+  if (!isAirborne(target.def)) return true;
+  return isAACapable((shooter && shooter.def) || {});   // only AA / flyers can lock a flyer
+}
+function flightFilter(shooter, target){
+  if (!engageable(shooter, target)) return false;
+  const sd = (shooter && shooter.def) || {};
+  if (isAirborne(sd) && !isAACapable((target&&target.def)||{})) return false;  // flyer flies over plain ground
+  return true;
+}
 function nearestAhead(u, foes){
   let foe=null, fd=1e9;
   for (const f of foes){ if(!f.alive) continue;
+    if(!flightFilter(u, f)) continue;                    // B-S1: air-routing (no AA vs flyer / flyer skims ground)
     const ahead = u.isEnemy? (f.x < u.x+4) : (f.x > u.x-4);
     if(!ahead) continue; const d=Math.abs(f.x-u.x); if(d<fd){fd=d;foe=f;} }
   return { foe, dist:fd };
@@ -1206,6 +1396,7 @@ function specialSaboteur(st, u, en, dt, foes){
   // pick highest-HP enemy ahead within snipe reach
   let best=null, bestHp=-1;
   for(const f of foes){ if(!f.alive) continue;
+    if(!flightFilter(u, f)) continue;                    // B-S1: non-AA sniper can't lock a flyer; flyers skim ground
     const ahead = en? (f.x<u.x+4):(f.x>u.x-4); if(!ahead) continue;
     if(Math.abs(f.x-u.x) <= u.def.range+6 && f.hp>bestHp){ bestHp=f.hp; best=f; }
   }
@@ -1238,7 +1429,9 @@ function attack(u, foe, foes, st, en){
     st.stats.splashes++;
     let victims=0;
     const r = u.def.splash||0;
-    for(const f of foes){ if(f.alive && f!==foe && Math.abs(f.x-foe.x)<=r){ dmg(f, u.def.dmg*0.6, st,u); victims++; } }
+    for(const f of foes){ if(f.alive && f!==foe && Math.abs(f.x-foe.x)<=r){
+      if(!flightFilter(u, f)) continue;                        // B-S1: splash doesn't clip air it can't target / harmless ground
+      dmg(f, u.def.dmg*0.6, st,u); victims++; } }
     if (victims>0) st.stats.splashVictims+=victims;
     emitFx(st,foe.x,'boom');
   } else if (tag==='healer'){ /* healer pulses handled in healer(); healers deal no damage */ }
@@ -1475,6 +1668,8 @@ function newRun({ factionId, enemyId, difficulty, deckBudget = 0, roster }){
     budget: deckBudget,                // unspent starting-deck budget
     archetypes: {},                    // battle-number -> 'rusher'|'economist'|'balanced' (P2-D; empty = all balanced)
   };
+  addCardLedger(run);                 // S-2 owned-copy ledger (bag) open on every fresh run
+  run.assigned = {};                  // S-2 A.1b nodeLabel -> cardKey (extra producers beyond FREE_MINER)
   return run;
 }
 
@@ -1564,6 +1759,145 @@ function emitPhase2(run){
       if(Object.keys(up).length) out.pDeck[k]=Object.assign({},up); }
   }
   if(run.relics && run.relics.length) out.relics = run.relics.slice();
+  return out;
+}
+
+// ============================================================
+// S-2 Pillar-A CARD-ECONOMY MODEL (the cards ARE the resource spend)
+// ============================================================
+// Phase-2 deck.mjs `deck.cards` stores only UPGRADES on a card key; ownership is implicit (any pool
+// card is deployable). S-2 (B-S2, Alpha→Beta) adds the Balatro-flavored tension that the game's
+// ECONOMY is made of CARDS you physically hold and spend:
+//   • you COLLECT owned copies of unit cards across the run (buy / win-reward / event / rescue),
+//   • each owned ECONOMY (worker) copy beyond the ONE free auto-miner must be parked on a resource to
+//     produce (A.1b drag-assign), a card is EITHER producing OR held-for-war,
+//   • card destroy/trim is a real tactic (deck slim).
+//
+// This module owns the PURE run STATE for that layer (which cards you own + how many). It does NOT
+// re-run the engine, re-resolve defs, or assign battle rates — the engine worker sim stays the source
+// of truth for the free-miner baseline + per-harvester rates/caps. ui.js (click-drag), the rescue
+// events (A.2) and the win-reward loop all READ this state when they grant/spend cards.
+
+// The ONE free economy baseline the run always has (Brick 21:16 "the FIRST miner is FREE — the run
+// begins with exactly one no-card auto-miner, so you always have a floor to act from"). This is the
+// engine's starting worker (P_START_WORKERS sits in core.js); the run model surfaces it as the policy
+// constant so every reference to "how many producers are free vs card-backed" reads in one place.
+const FREE_MINER = 1;
+
+// Add the S-2 owned-copy ledger to a fresh run.
+function addCardLedger(run){
+  if(run && !run.bag) run.bag = {};      // cardKey -> owned copies (producers bought/earned, combat added)
+  return run;
+}
+
+// COLLECT one owned copy of a pool card (buy / win-reward / event / rescue "more cards" reward).
+// Returns the new copy count (0 on bad key). Non-mutating when key isn't in the run pool.
+function collectCard(run, key){
+  if(!run || !run.pool || !(run.pool||[]).some(c=>c.key===key)) return 0;
+  addCardLedger(run);
+  run.bag[key] = (run.bag[key]||0) + 1;
+  return run.bag[key];
+}
+
+// How many owned copies of `key` this run holds.
+function cardCount(run, key){ addCardLedger(run); return (run.bag[key]||0); }
+
+// True when the player holds at least one owned copy of `key`.
+function cardOwned(run, key){ return cardCount(run, key) >= 1; }
+
+// Destroy/trim ONE owned copy (A.1 "card destroy/trim exists — deck slim is a tactic"). Gated so a
+// card that is currently mid-ECONOMY cannot be destroyed while it is producing (you must pull it off
+// the node it earns on first — the drag trade is explicit). Returns the new copy count, or -1 if you
+// had none to trim.
+function trimCard(run, key){
+  if(!run) return -1;
+  const n = cardCount(run, key);
+  if(n<=0) return -1;
+  if(isCardProducing(run, key)) return -2;      // can't destroy a card that is parked on a node
+  run.bag[key] = n - 1;
+  if(run.bag[key]===0) delete run.bag[key];      // keep the bag sparse / truthy-free
+  return run.bag[key]||0;
+}
+
+// The list of pool keys the player owns at least one copy of (the "hand/deck" the composition games
+// read — count of a role, pairs of a synergy, cost-curve shape all derive from this).
+function ownedCards(run){
+  addCardLedger(run);
+  return Object.keys(run.bag).filter(k=>run.bag[k]>0);
+}
+// Counts of owned copies grouped by card tag (role-composition read, so a hand-shape reward can ask
+// "how many tanks do you hold" without re-deriving).
+function ownedByTag(run){
+  addCardLedger(run);
+  const out={};
+  const byKey={}; for(const c of (run.pool||[])) byKey[c.key]=c;
+  for(const k of Object.keys(run.bag)){ const c=byKey[k]; if(c&&run.bag[k]>0) out[c.tag]=(out[c.tag]||0)+run.bag[k]; }
+  return out;
+}
+
+// ---- A.1b economy-assignment (pure run state; drag UI + engine read this later). ----
+// A producer card copy beyond FREE_MINER is EITHER producing (assigned to a resource node, keyed here
+// by an opaque node label the engine/UI resolve to a real patch/geyser) OR held in the push. Each
+// assigned entry = one card copy parked on a node. The free baseline miner is NOT in this table.
+function econAssign(run){
+  if(!run) return {};
+  if(!run.assigned) run.assigned = {};   // nodeLabel -> cardKey
+  return run.assigned;
+}
+
+// Park ONE extra producer copy (a worker-tag pool card you own) on `nodeLabel`. Validates: card is a
+// real owned worker def, not already on this node, node not already filled, and the player still holds a
+// free owned copy to spend there (a worker can occupy at most `cardCount` distinct nodes — one copy =
+// one producer). Returns true/false.
+function assignCard(run, key, nodeLabel){
+  if(!run || !run.pool) return false;
+  const def = (run.pool).find(c=>c.key===key);
+  if(!def || def.tag!=='worker') return false;        // only producer (worker) cards sit on the economy
+  const a = econAssign(run);
+  if(nodeLabel in a) return a[nodeLabel]===key;        // this node full: ok only if it already holds THIS card (idempotent)
+  if(!cardOwned(run, key)) return false;              // must actually own a copy to spend it
+  // one owned copy = one producer: count how many nodes this worker already parks on vs owned copies
+  const already = Object.keys(a).filter(l=>a[l]===key).length;
+  if(already >= cardCount(run, key)) return false;     // no spare copy left to spend on a new node
+  a[nodeLabel] = key;
+  return true;
+}
+
+// Pull a card OFF a producing node (it returns to the held-for-war side of the trade). Returns false if
+// the node had nothing assigned.
+function unassignCard(run, nodeLabel){
+  const a = econAssign(run);
+  if(!(nodeLabel in a)) return false;
+  delete a[nodeLabel];
+  return true;
+}
+
+// Labels of every node a card is currently producing on (the "extra producer count" the engine uses to
+// decide how far past the free baseline to go).
+function assignedNodes(run){ return Object.keys(econAssign(run)); }
+
+// Count of card-backed producers currently parked on the economy (beyond the FREE_MINER baseline).
+function assignCount(run){ return assignedNodes(run).length; }
+
+// True if a card key is currently parked on some node (can't trim/play it without pulling it first).
+function isCardProducing(run, key){ return Object.values(econAssign(run)).includes(key); }
+
+// Total producers the player effectively has = FREE_MINER (baseline) + card-backed assignments.
+function producerTotal(run){ return FREE_MINER + assignCount(run); }
+
+// ---- S-2 emission: the economy/ownership slice a battle/UI layer consumes. ----
+// Returns the run-layer read of owned copies + current assignments + free-miner floor. The ENGINE still
+// owns per-harvest rates/caps over C.NODES; this slice is what tells a wrapper (battle opts, map panel)
+// how many owned copies of each card exist and where the extra producers are parked. Undefined fields
+// omitted so an untouched run emits nothing new (existing campaign paths stay byte-identical).
+function emitCardEcon(run){
+  addCardLedger(run);
+  const out = { freeMiner: FREE_MINER };
+  const owned = Object.keys(run.bag).filter(k=>run.bag[k]>0);
+  if(owned.length) out.owned = {};
+  for(const k of owned) out.owned[k] = run.bag[k];
+  const a = Object.keys(run.assigned||{});
+  if(a.length) out.assigned = Object.assign({}, run.assigned);
   return out;
 }
 
@@ -1710,6 +2044,116 @@ function spriteRdr(){
   }
 }
 spriteRdr();
+// A6 (art bake) MENU KEY-ART: when the real boot/start board is showing (in a real browser only),
+// paint an 'army vs swarm FRONT key art' vignette of the ACTUAL faction roster sprites into the
+// .bootArtCv canvas behind the glass — left flank reads as the teal Rebel line, right as the ember
+// Swarm line, both converging on the hot centre divider (read as the locked MENU board's teaser
+// clash, NOT live play). Self-contained local ctx/canvas only; never touches the battlefield ctx/cv.
+// In the DOM-shim/tests there is no real .bootArt nor a decodable Image, so this paints nothing and
+// the coloured-wash fallback they run on is byte-identical -> suite stays green. Pure presentation
+// (no feature/logic change).
+const BOOT_SIDE = { left:['t','g','r'], right:['t','g','g','r'] };
+function bootArtHost(){
+  try{
+    if (typeof document==='undefined' || !document.querySelector) return null;
+    const gate=document.querySelector('#gate.bootGate');
+    if (!gate) return null;
+    const host=gate.querySelector('.bootArtCv');
+    return (host && typeof host.getContext==='function') ? host : null;
+  }catch(e){ return null; }
+}
+function decodeFor(fid, slot){
+  // returns {spr,w,h} decoded sprite or null
+  const s=sprForKey(fid, slot);
+  if(!s || !s.img) return null;
+  return { el:s.img, w:s.w||s.img.naturalWidth||s.img.width||30, h:s.h||s.img.naturalHeight||s.img.height||30 };
+}
+let _bootArtDone=false;
+function drawMenuKeyArt(){
+  const host=bootArtHost();
+  if(!host) return;
+  // bail if already painted a good frame or the board left the screen
+  if(_bootArtDone){ return; }
+  // gate hidden? (run started) → nothing to paint
+  const gate=host.closest && host.closest('#gate');
+  if(!gate) return;
+  // only paint once the specific sprites we need are decoded (real Image onload).
+  const need=['rebels_g','rebels_r','rebels_t',
+              'aliens_g','aliens_r','aliens_t'];
+  for(const k of need){ const s=SPR[k]; if(!s || !s.ok || !s.img) return; }
+  const dpr = (typeof window!=='undefined' && window.devicePixelRatio) ? Math.min(3, window.devicePixelRatio||1) : 1;
+  const rw = host.clientWidth || 1280, rh = host.clientHeight || 800;
+  if(rw<200 || rh<200) return;                    // no layout yet
+  host.width  = Math.round(rw*dpr); host.height = Math.round(rh*dpr);
+  const g2d=host.getContext('2d'); if(!g2d || typeof g2d.drawImage!=='function') return;
+  g2d.save();
+  // full-bleed: clear transparent, keep CSS washes visible beneath the drawn art
+  const W = host.width, H = host.height;
+  g2d.setTransform(1,0,0,1,0,0); g2d.clearRect(0,0,W,H);
+  // hero baseline sits in the lower-middle of the emptiest flank zone (just under the emblem medallions
+  // vertical centre, so the frame's title/menu still read above and the heroes peek in the margins).
+  const floorY = H*0.58;                              // mid-flank: clear of footer + panel bottom
+  const size = Math.max(42, Math.min(96, rh*0.10));   // modest 'skirmish-line' scale (crisper than huge)
+  const centre = W/2;
+  const drawLine=(slots,fid,isL)=>{
+    const n = slots.length;
+    // squad marches from the outer edge toward the centre but STOPS well clear of the wide glass panel:
+    // the broad tank sits outermost where there is wall room; smaller fighters advance toward the clash.
+    const span = rw*0.17*dpr;
+    const o = rw*0.035*dpr;
+    slots.forEach((slot,i)=>{
+      const d=decodeFor(fid,slot); if(!d) return;
+      const sc = size / d.h;
+      const w = d.w*sc, h = size;
+      const depthOff = (i%2==1? -0.05: 0)*rh*dpr;          // ragged advancing line (not a picket fence)
+      const fy = floorY + depthOff;
+      const frac = n===1? 0.5 : i/(n-1);
+      const x  = isL ? (o + span*frac) : (W - o - span*frac);
+      g2d.save();
+      g2d.globalAlpha = .30; g2d.fillStyle='rgba(0,0,0,.55)';
+      g2d.beginPath(); g2d.ellipse(x, fy+1.5*dpr, w*0.5, 5*dpr, 0, 0, Math.PI*2); g2d.fill();
+      g2d.globalAlpha = isL? .22 : .26;
+      g2d.fillStyle = isL? 'rgba(28,199,199,.5)' : 'rgba(255,122,58,.55)';
+      g2d.beginPath(); g2d.ellipse(x, fy, w*0.55, 6*dpr, 0, 0, Math.PI*2); g2d.fill();
+      g2d.globalAlpha=1;
+      const mirror = !isL;
+      g2d.translate(x, fy - h);
+      if(mirror){ g2d.translate(w/2,0); g2d.scale(-1,1); g2d.translate(-w/2,0); }
+      g2d.drawImage(d.el, -w/2, 0, w, h);
+      g2d.restore();
+    });
+  };
+  drawLine(BOOT_SIDE.left, 'rebels', true);
+  drawLine(BOOT_SIDE.right,'aliens', false);
+  // centre clash glint sits exactly at the existing centre divider (translucent, low)
+  g2d.globalAlpha=.42;
+  const cs = Math.min(W,H)*0.16;
+  const glow=g2d.createRadialGradient(W/2, floorY, 2*dpr, W/2, floorY, cs);
+  glow.addColorStop(0,'rgba(255,211,36,.5)'); glow.addColorStop(.45,'rgba(255,211,36,.12)');
+  glow.addColorStop(1,'rgba(255,211,36,0)');
+  g2d.fillStyle=glow; g2d.fillRect(W/2-cs, floorY-cs, cs*2, cs*2);
+  g2d.globalAlpha=1;
+  g2d.restore(); g2d.setTransform(1,0,0,1,0,0);
+  _bootArtDone=true;
+}
+// schedule: repaint a few times while the boot board is live so late-decoding sprite images still land;
+// stops itself as soon as Start hides the gate (cheap, idempotent).
+function bootKeyArtLoop(){
+  if(!bootArtHost()) return;
+  let tries=0;
+  const tick=()=>{
+    const gate=document.querySelector && document.querySelector('#gate.bootGate');
+    const hidden = gate && gate.style && (gate.style.display==='none' || gate.hidden===true);
+    if(!gate || hidden){ return; }                         // board left (Start) → stop
+    drawMenuKeyArt();
+    if(!_bootArtDone && (++tries < 300) && typeof requestAnimationFrame==='function') requestAnimationFrame(tick);
+  };
+  try{
+    if(typeof requestAnimationFrame==='function') requestAnimationFrame(tick);
+    else drawMenuKeyArt();
+  }catch(e){}
+}
+
 // pick the sprite entry for a unit instance; returns null if the faction+slot has no art ready.
 function sprFor(u, sideOrganic){
   const fid  = sideOrganic ? 'aliens' : 'rebels';
@@ -2563,9 +3007,10 @@ function drawSprite(u, footY, teamCol){
 
   ctx.save();
   const lux = en? -swing*3 : swing*3;                        // brief forward lunge toward the foe (world, 0-3px)
-  ctx.translate(u.x + lux, footY + idle*0.35);
-  // row-foot pad + faint team aura so each depth-row is its own little stage
-  ctx.globalAlpha=en? .24:.15; ctx.fillStyle='#000';
+  const airLift = (u.def&&u.def.fly)? Math.round(fs*0.16) : 0; // B-S1: flyers hover, casting a faint ground shadow below
+  ctx.translate(u.x + lux, footY + idle*0.35 - airLift);
+  // row-foot pad + faint team aura so each depth-row is its own little stage (dimmed beneath a flyer)
+  ctx.globalAlpha=(en? .24:.15) - (airLift? .10:0); ctx.fillStyle='#000';
   ctx.beginPath(); ctx.ellipse(0, 1, sz[0]*1.3, 3.4, 0, 0, Math.PI*2); ctx.fill();
   ctx.globalAlpha=.10; ctx.fillStyle=rim;
   ctx.beginPath(); ctx.ellipse(0, 0, sz[0]*1.4, 3.8, 0, 0, Math.PI*2); ctx.fill();
@@ -2616,6 +3061,30 @@ function drawSprite(u, footY, teamCol){
   ctx.fillStyle=rc; ctx.globalAlpha=.95;
   ctx.fillRect(u.x-2, footY-fs-1.8, 4, 3);                   // role colour shines through
   ctx.restore();
+  // B-S1 Pillar-B badges — quiet reads, never overtake the field:
+  //   • flyer: tiny upward chevron born ABOVE the hp bar (dark-keylined, team rim) => airborne silhouette.
+  //   • AA-capable GROUND unit: a small anti-air tick beside its role pennant (readable AA marker).
+  if (u.def&&u.def.fly){
+    ctx.save(); ctx.globalAlpha=.92; ctx.strokeStyle='#05051a'; ctx.lineWidth=2.2; ctx.lineCap='round';
+    const yy=footY-fs-12;
+    ctx.beginPath();
+    ctx.moveTo(u.x-3.6,yy+1); ctx.lineTo(u.x,  yy-2.6); ctx.lineTo(u.x+3.6, yy+1);
+    ctx.stroke();
+    ctx.globalAlpha=.95; ctx.strokeStyle=rim; ctx.lineWidth=1.2;
+    ctx.beginPath();
+    ctx.moveTo(u.x-3,yy+1); ctx.lineTo(u.x, yy-1.6); ctx.lineTo(u.x+3, yy+1);
+    ctx.stroke(); ctx.restore();
+  } else if (u.def&&u.def.aa){
+    ctx.save(); ctx.globalAlpha=.95;
+    ctx.strokeStyle='#9fd8ff'; ctx.lineWidth=1.4; ctx.lineCap='round';
+    const xx=u.x+5.4, yy2=footY-fs-3.4;                     // small radar tick beside the role mark
+    ctx.beginPath();
+    ctx.moveTo(xx,  yy2+3.4); ctx.lineTo(xx+3.6, yy2-1.6);  // angled up-forward cue = can reach air
+    ctx.moveTo(xx-2, yy2+2.2); ctx.lineTo(xx+3.2, yy2-3);
+    ctx.stroke();
+    ctx.fillStyle='#9fd8ff'; ctx.beginPath(); ctx.arc(xx+2.6, yy2+2.2, 1.2, 0, 6.2832); ctx.fill();
+    ctx.restore();
+  }
 }
 
 // Draws the tag silhouette. Origin sits at the foot (up = -y, forward = +x). Colours via BODY.A/B/hi.
@@ -3179,7 +3648,10 @@ $('copyLog').onclick=()=>{
   if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(()=>log('Log copied to clipboard ✓')); }
   else { const ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(ta); }
 };
-window.addEventListener('load',()=>{ /* ui.js runs on mod load; DOM already present since script after body */ });
+window.addEventListener('load',()=>{
+  /* ui.js runs on mod load; DOM already present since script after body */
+  try{ bootKeyArtLoop(); }catch(e){}
+});
 if(typeof window!=='undefined' && window.__dsAutostart){ startRun(); }
 // minimal debug/test bridge so a headless harness can read live run state (never used in normal play)
 if(typeof window!=='undefined'){
