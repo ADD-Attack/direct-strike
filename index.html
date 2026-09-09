@@ -1681,10 +1681,20 @@ function bfBgRdr(){
   }catch(e){ BF_BG.img=null; }
 }
 bfBgRdr();
-// paints the generated backdrop cover-fit to the whole canvas + the light game accents that still need
-// to read over it (a crisp ground line for feet + a dark footer below the ground so nothing bleeds to
-// the DOM edge). Returns true when it painted (so the caller can skip the procedural backdrop branch).
+// A3 (2026-09-08): LIVE-FRAME reskin. Brick locked the battlefield direction as an open WARM field at
+// real army scale (ds-field-liveframe, "PERFECT!" 21:12) — NOT the old full-bleed AI "poster" backdrop.
+// The generated backdrop (BF_BG) is a dark moody landscape with a huge sky that made the live match read
+// as a poster rather than a live warm field. To honour the lock, the deterministic procedural battlefield
+// below (teal-left -> warm umber centre -> ember-right, small craters, clear walk-plane) is now the LIVE
+// frame in every environment (browser + DOM-shim tests see the same field). The poster art stays in the
+// bundle (kept, not deleted) behind LIVE_FRAME_POSTER = false so Brick can flip it back / swap new art
+// later; the code path is intentionally left intact so no work is lost.
+const LIVE_FRAME_POSTER = false;
+// paints the generated backdrop cover-fit to the whole canvas. With LIVE_FRAME_POSTER false this returns
+// false so the caller paints the deterministic warm LIVE-FRAME field instead. Returns true only when it
+// actually painted.
 function drawGeneratedBackdrop(){
+  if(!LIVE_FRAME_POSTER) return false;   // A3 live-frame: deterministic warm field wins over the poster
   if(!BF_BG.ok || !BF_BG.img) return false;
   const iw=BF_BG.img.naturalWidth||BF_BG.img.width||1376, ih=BF_BG.img.naturalHeight||BF_BG.img.height||768;
   const s=Math.max(cv.width/iw, cv.height/ih);     // cover-crop: fill canvas, no letterbox
@@ -2066,75 +2076,81 @@ function draw(){
   // gap between sky and floor — previously a ~10px black seam sat at y390-400 where the sky ended and
   // the field band began, a flat dark slash across the whole arena). Every backdrop layer below paints
   // its full span and covers the canvas top-to-bottom behind the fight. All cosmetic; no sim change. ---
-  // sky (paint all the way to the floor so no black hole can show)
-  // STYLE-BIBLE re-skin (COLORFUL/WARM): deep violet void -> teal-tinted atmosphere -> dusty magenta horizon.
+  // sky (paint all the way to the floor so no black hole can show).
+  // A3 LIVE-FRAME reskin (STYLE-BIBLE field tone): a WARM dusty battle-haze sky — deep umber smoke at the
+  // top warming into a fire-lit ochre/amber band right above the field. This replaces the old dark cold
+  // indigo void so the whole frame reads as a live warm battlefield, not a poster over a void.
   const sky=ctx.createLinearGradient(0,0,0,C.GROUND-40);
-  sky.addColorStop(0,'#140b1f'); sky.addColorStop(0.62,'#1b2b44'); sky.addColorStop(0.85,'#2d4f5a'); sky.addColorStop(1,'#6d2c4e');
+  sky.addColorStop(0,'#2a1d13'); sky.addColorStop(0.45,'#4a3320'); sky.addColorStop(0.8,'#7a5130');
+  sky.addColorStop(1,'#a26a34');
   ctx.fillStyle=sky; ctx.fillRect(0,0,cv.width,C.GROUND-34);
-  // faint vignette grid → reads as a scifi playfield (full field height)
-  ctx.strokeStyle='rgba(60,110,190,.05)'; ctx.lineWidth=1;
+  // warm smoke strata drifting across the sky (kept very soft so the small units stay readable)
+  ctx.strokeStyle='rgba(60,30,12,.05)'; ctx.lineWidth=1;
   for(let gx=40;gx<cv.width;gx+=80){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,C.GROUND); ctx.stroke(); }
-  // horizon atmosphere: a soft warm bloom where the floor plane begins (drawn above the field band's
-  // top edge) — re-skinned so it echoes the magenta horizon + burn of the contested line, not cold blue.
-  ctx.save(); ctx.fillStyle='rgba(109,60,120,.06)';
+  // horizon atmosphere: warm dust + the fire-light of the contested line rising off the field
+  ctx.save();
   const atmo=ctx.createLinearGradient(0,C.GROUND-84,0,C.GROUND-46);
-  atmo.addColorStop(0,'rgba(150,80,130,0)'); atmo.addColorStop(1,'rgba(200,130,120,.16)');
+  atmo.addColorStop(0,'rgba(180,110,60,0)'); atmo.addColorStop(1,'rgba(255,190,120,.20)');
   ctx.fillStyle=atmo; ctx.fillRect(0,C.GROUND-84,cv.width,40); ctx.restore();
-  // subtle star/dust in the upper sky so it isn't empty
-  ctx.save(); ctx.fillStyle='rgba(150,190,240,.4)';
+  // faint embers/ash specks drifting in the upper haze so the sky isn't empty
+  ctx.save(); ctx.fillStyle='rgba(255,200,140,.22)';
   for(let i=0;i<26;i++){ const sx=(i*211+13)%cv.width, sy=(i*97)%(C.GROUND-190);
     ctx.fillRect(sx, sy, 1, 1); } ctx.restore();
-  // field band (ground plays here) — now with recession strata + soft contact ramp so the floor reads
-  // as a depth plane rather than a single flat slab.
-  // STYLE-BIBLE re-skin (COLORFUL/WARM): teal-tinged cool floor instead of the old washed-out navy, so
-  // the ground reads alive + faction-coded; the warmer ember right half is layered by the side wash below.
-  const g=ctx.createLinearGradient(0,C.GROUND-70,0,C.GROUND);
-  g.addColorStop(0,'#153c44'); g.addColorStop(0.55,'#1f5b68'); g.addColorStop(1,'#246d7d');
-  ctx.fillStyle=g; ctx.fillRect(0,C.GROUND-70,cv.width,70);
-  // faint horizontal strata (floor seams) lower on the field band — teal-lit seams to sit on the teal floor
-  ctx.strokeStyle='rgba(150,235,255,.10)'; ctx.lineWidth=1;
-  for(let sy=C.GROUND-16; sy<C.GROUND; sy+=8){ ctx.beginPath(); ctx.moveTo(0,sy); ctx.lineTo(cv.width,sy); ctx.stroke(); }
-  // crisp ground line (where unit feet land) — teal-amber lit line instead of cold blue
-  ctx.fillStyle='#2a6d78'; ctx.fillRect(0,C.GROUND-2,cv.width,2);
-  ctx.fillStyle='rgba(150,240,255,.18)'; ctx.fillRect(0,C.GROUND-3,cv.width,1);
-  // dark foreground below ground
+  // field band where the battle actually plays (ground plane under the units' feet).
+  // A3 LIVE-FRAME reskin (STYLE-BIBLE: battlefield ground teal-left -> ember-right):
+  //   - WARM ochre/umber field reads like a real contested frontier, not a cold navy slab
+  //   - cool TEAL glow floods the ALLY (left) leg of the field, warm EMBER floods the ENEMY (right) leg
+  //   - a fire-lit contested centre (gold/ember) marks where the fronts grind together
+  //   - the whole play strip stays open + uncluttered so the real small army units (~1/9) read clearly
+  const gBand=ctx.createLinearGradient(0,C.GROUND-70,0,C.GROUND);
+  gBand.addColorStop(0,'#8c7b52'); gBand.addColorStop(0.5,'#6d5a38'); gBand.addColorStop(1,'#3f3426'); // warm earth
+  ctx.fillStyle=gBand; ctx.fillRect(0,C.GROUND-70,cv.width,70);
+  // soft recession strata low on the ground (floor seams) so the plane reads as ground, airy not harsh
+  ctx.strokeStyle='rgba(40,26,12,.18)'; ctx.lineWidth=1;
+  for(let sy=C.GROUND-14; sy<C.GROUND-2; sy+=7){ ctx.beginPath(); ctx.moveTo(0,sy); ctx.lineTo(cv.width,sy); ctx.stroke(); }
+  // crisp ground line (where unit feet land) — lit warm so it seats the army on the dirt
+  ctx.fillStyle='#1a1006'; ctx.fillRect(0,C.GROUND-2,cv.width,2);
+  ctx.fillStyle='rgba(255,214,130,.20)'; ctx.fillRect(0,C.GROUND-3,cv.width,1);
+  // dark foreground below ground (trench lip keeps the bottom edge clean)
   const fg=ctx.createLinearGradient(0,C.GROUND,0,cv.height);
-  fg.addColorStop(0,'#060a14'); fg.addColorStop(1,'#03050b');
+  fg.addColorStop(0,'#140b1f'); fg.addColorStop(1,'#080512');
   ctx.fillStyle=fg; ctx.fillRect(0,C.GROUND,cv.width,cv.height-C.GROUND);
-  // behind-ground glow/reflection accents near the bases
-  ctx.fillStyle='rgba(30,50,90,.55)'; ctx.fillRect(0,C.GROUND,cv.width,8);
-  // floor dust / tread specks just on the ground plane (deterministic pattern; reads as broken terrain)
-  ctx.fillStyle='rgba(180,235,255,.14)';
-  for(let i=0;i<46;i++){ const sx=(i*137)%cv.width, sy=C.GROUND-((i*29)%46);
-    ctx.fillRect(sx,sy-1,3+(i%3),1); }
-  // midline (dashed, subtle) — warmer so it sits in the ember zone without being harsh
-  ctx.strokeStyle='rgba(255,160,90,.35)'; ctx.setLineDash([5,9]); ctx.lineWidth=1.4;
+  // behind-ground glow so the field sits on the frame, not floating
+  ctx.fillStyle='rgba(46,24,8,.6)'; ctx.fillRect(0,C.GROUND,cv.width,8);
+  // scattered tread/impact specks on the dirt (deterministic; reads as a fought-in field, not busy)
+  ctx.fillStyle='rgba(28,16,6,.25)';
+  for(let i=0;i<42;i++){ const sx=(i*131+7)%cv.width, sy=C.GROUND-((i*23)%52);
+    ctx.fillRect(sx,sy,2+(i%3),1); }
+  // warm impact pits / torn earth scattered across the strip (deterministic; the mid-field already reads
+  // as the battle's scuffed ground without cluttering the walk-plane where the small units fight)
+  ctx.fillStyle='rgba(18,9,3,.32)';
+  for(let i=0;i<16;i++){ const cx=((i*197+37)%cv.width), cy=C.GROUND-2-((i*31)%44);
+    ctx.beginPath(); ctx.ellipse(cx, cy, 13+(i%3)*4, 3, 0, 0, Math.PI*2); ctx.fill(); }
+  // midline (dashed, warm) marking the neutral strip between the two fronts
+  ctx.strokeStyle='rgba(255,190,120,.3)'; ctx.setLineDash([5,9]); ctx.lineWidth=1.4;
   ctx.beginPath(); ctx.moveTo(C.MID, C.GROUND-70); ctx.lineTo(C.MID, cv.height); ctx.stroke(); ctx.setLineDash([]);
-  // yard markers — brightened + teal-tinted so they stay legible on the now-vivid teal floor
-  ctx.fillStyle='#bff0f5';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
-  ctx.fillText('YOUR FRONT',C.PCORE_X+100,C.GROUND-44);
-  ctx.fillText('ENEMY FRONT',C.ECORE_X-100,C.GROUND-44);
-  // battlefield ambience: soft side territory tints + a contested-line glow so the two halves of the
-  // lane and the likely engagement point read at a glance (pure canvas wash, behind everything else).
-  // STYLE-BIBLE re-skin (COLORFUL/WARM): stronger faction side-wash + a hot ember contested center so the
-  // board reads vivid teal-vs-ember instead of a neutral navy slab.
+  // yard markers — kept small + readable (ice-tint so they sit on warm dirt without getting lost)
+  ctx.fillStyle='#bfe3e6';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+  ctx.fillText('YOUR FRONT',C.PCORE_X+100,C.GROUND-46);
+  ctx.fillText('ENEMY FRONT',C.ECORE_X-100,C.GROUND-46);
+  // faction side-soak + hot contested stripe (behind everything so units stay readable on top)
   ctx.save(); ctx.globalCompositeOperation='lighter';
-  // ally (left) approach washes the faction's brand accent (rebels brass / aliens viridian), enemy
-  // (right) washes ember; both fading toward mid so ownership reads without overpowering the lane.
+  // ALLY (left) cool teal rays inward from the ally base; ENEMY (right) warm ember rays inward from the
+  // enemy base; both fade before the centre so ownership reads without washing the units.
   const aR=allyRGB[0], aG=allyRGB[1], aB=allyRGB[2];
   const allyT=ctx.createLinearGradient(C.MID,0,C.PCORE_X,0);
-  allyT.addColorStop(0,'rgba('+aR+','+aG+','+aB+',0)'); allyT.addColorStop(1,'rgba('+aR+','+aG+','+aB+',.20)');
+  allyT.addColorStop(0,'rgba('+aR+','+aG+','+aB+',0)'); allyT.addColorStop(1,'rgba('+aR+','+aG+','+aB+',.22)');
   ctx.fillStyle=allyT; ctx.fillRect(0,C.GROUND-70,C.MID,70);
   const emyT=ctx.createLinearGradient(C.MID,0,C.ECORE_X,0);
-  emyT.addColorStop(0,'rgba(255,90,40,0)'); emyT.addColorStop(1,'rgba(255,120,40,.20)');
+  emyT.addColorStop(0,'rgba(255,90,40,0)'); emyT.addColorStop(1,'rgba(255,120,40,.24)');
   ctx.fillStyle=emyT; ctx.fillRect(C.MID,C.GROUND-70,cv.width-C.MID,70);
-  // a hot ember+gold glow where the two fronts commonly grind together (mid-lane): white-hot center is
-  // overused in the cramped 70px band, so this reads as a warm burning rendezvous rather than a lens flare.
+  // contested fire glow at the midline rendezvous (ember centre, gold lip) -
+  // narrow + low so it never turns into a lens flare over the playing field
   const mg=ctx.createLinearGradient(0,C.GROUND-70,0,C.GROUND);
-  mg.addColorStop(0,'rgba(255,190,90,.16)'); mg.addColorStop(0.5,'rgba(255,140,60,.20)'); mg.addColorStop(1,'rgba(255,90,45,.26)');
-  ctx.fillStyle=mg; ctx.fillRect(C.MID-70,C.GROUND-70,140,70);
+  mg.addColorStop(0,'rgba(255,200,90,.14)'); mg.addColorStop(0.5,'rgba(255,140,60,.2)'); mg.addColorStop(1,'rgba(255,90,45,.28)');
+  ctx.fillStyle=mg; ctx.fillRect(C.MID-80,C.GROUND-70,160,70);
   ctx.restore();
-  } // end of procedural-backdrop fallback (generated art backdrop used when decoded)
+  } // end of battlefield backdrop (deterministic warm LIVE-FRAME field)
   // resource nodes — OBJ-4 visuals: minerals read as blue ◆ crystal PATCHES low to the ground,
   // gas geysers as violet ◈ VENTS with a rising plume/glow, so the precious node is obvious at a glance.
   for(const n of C.NODES){
