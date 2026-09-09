@@ -295,9 +295,21 @@
      Direct keeps the in-flow card look. The row ids (#upgRow/#cardRow/#relicRow) and children are untouched,
      so the pinned reward-row DOM tests stay green. */
   #endOv.endScreen{position:fixed;inset:0;z-index:15;background:radial-gradient(1200px 700px at 50% -8%,#1c2d4d,#0a1020 72%);display:flex!important;flex-direction:column;align-items:center;justify-content:flex-start;overflow:auto;padding:22px 18px 40px;text-align:center}
-  #endOv.endScreen h2{font-size:26px;margin:6px 0 4px}
+  /* A7 REWARD-BAKE: the promoted post-win reward view (#endOv.endScreen) is the locked REWARD screen — a
+     structural clone of the SHOP board, distinct from the END one-card result. Its header is the shop's
+     big WHITE all-caps title (NOT the end-card XP-green it was hardcoded to, and NOT the END warmth), over
+     a deep-indigo reward view, with a gold-to-teal victory light-rail feeding in from the vicOv beat. The
+     content reads as a clean centred indigo column of shop-clone reward cards per the locked reward board,
+     not scattered green text. Pure presentation: row ids (#upgRow/#cardRow/#relicRow),
+     DOM children + flow untouched so the pinned reward tests stay green. */
+  #endOv.endScreen::after{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#FFD324 22%,#1CC7C7 78%,transparent);opacity:.92;pointer-events:none}
+  #endOv.endScreen h2{margin:2px auto 2px;font-size:27px;letter-spacing:.6px;font-weight:900;color:#ffffff!important;text-transform:uppercase;text-shadow:0 2px 0 rgba(0,0,0,.35),0 0 22px rgba(255,211,36,.18)}
+  #endOv.endScreen p{color:#A7B6DC;max-width:640px;margin:2px auto 14px;font-size:13px;line-height:1.5}
+  /* reward rows sit together in a centred column band under the header */
+  #endOv.endScreen #upgRow,#endOv.endScreen #cardRow,#endOv.endScreen #relicRow{width:min(760px,100%)}
   #endOv.endScreen .rcard{width:min(860px,100%);max-width:none}
-  #endOv.endScreen #upgRow,#endOv.endScreen #cardRow,#endOv.endScreen #relicRow{width:min(860px,100%)}
+  #endOv.endScreen #endSub{letter-spacing:.2px}
+  #endOv.endScreen h2 .vicFlag{display:inline-block;margin:0 4px 0 0;font-size:.85em;vertical-align:baseline}
   /* Reward-row polish: fit the row width instead of hugging 120px (leaves awkward empty space + cramped,
      dense tap targets). Flex-basis uses the row so buttons read wider but still wrap evenly -> bigger, more
      readable rewards. CSS-only; row ids/children untouched so DOM tests stay green. */
@@ -3687,7 +3699,9 @@ function campsWin(){
   }
   const over = camp.battle>=CAMP_BATTLES;
   $('endTxt').textContent= over? '🏆 RUN VICTORY' : ('🏆 Battle '+camp.battle+' WON');
-  $('endTxt').style.color='#79f0c5';
+  // A7 REWARD-BAKE: drop the inline XP-green title (green is scout/XP-only in the locked palette; the
+  // win/reward/end family is gold/white/teal). Color now flows from the data-out CSS (#endOv[data-out=
+  // 'victory'] h2 -> warm gold on the end card; #endOv.endScreen h2 -> white reward header below).
   if(over){
     $('endSub').textContent= 'You cleared all '+CAMP_BATTLES+' escalating battles in '+C.fmtT(st.t)+' with '+countUpgs()+' upgrade'+(countUpgs()===1?'':'s')+' carried.';
     recap(); setRunPill();
@@ -3728,7 +3742,8 @@ function showRewardsStep(){
   if(!camp){ nextBattle(false,true); return; }
   const mapNext = _winAdvance==='map';
   $('endTxt').textContent='🏆 Battle '+camp.battle+' WON — claim your reward';
-  $('endTxt').style.color='#79f0c5';
+  // A7 REWARD-BAKE: no inline green on the reward header — the .endScreen title is styled white via CSS
+  // below (locked REWARD board 'big white all-caps copy' over the shop-clone modal).
   $('endSub').textContent='Victory '+camp.wins+'/'+CAMP_BATTLES+'. Choose ONE reward below — a run upgrade, a leveled unit card, or a relic.'+(mapNext? ' Then a fork opens and you pick your commander for battle '+(camp.battle+1)+'.':'');
   $('againBtn').style.display='none'; $('copyLog').style.display='none';
   showUpgradePicker(); showCardPicker(); showRelicRow();
