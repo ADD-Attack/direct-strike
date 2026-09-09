@@ -199,6 +199,13 @@
     #endOv{padding:12px;max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
     #endOv h2{font-size:20px;margin-bottom:3px}
     #endOv p{font-size:13px;line-height:1.4}
+    /* B-S3: the slot reel-frame compact on phones (it is a reward-panel accent, not the whole board) */
+    #endOv.endScreen #slotMachine{padding:6px 8px;margin:0 auto 8px;width:100%}
+    #endOv.endScreen #slotMachine .slotReel{flex:0 1 58px;min-width:44px;height:84px}
+    #endOv.endScreen #slotMachine .slotSym{font-size:20px}
+    #endOv.endScreen #slotMachine .slotSym.slotMid{font-size:26px}
+    #endOv.endScreen #slotMachine .slotCtrl{flex-direction:column;align-items:stretch}
+    #endOv.endScreen #slotMachine .slotResult{flex:0 0 auto;width:100%;text-align:center}
     #cardRow,#relicRow{display:flex;flex-direction:column;align-items:stretch;gap:6px;margin:8px 0 4px}
     #cardRow > div:first-child,#relicRow > div:first-child{position:static;margin:0 0 2px;font-size:13px}
     #cardRow button.cardp,#relicRow button.relicp,.again,button.again{width:100%;max-width:none;min-width:0;
@@ -465,6 +472,53 @@
   #endOv.endScreen button.upg .rowUpg b,#endOv.endScreen button.cardp b,#endOv.endScreen button.relicp b{color:#fff;font-size:13px;letter-spacing:.2px}
   #endOv.endScreen button.upg .hint,#endOv.endScreen button.cardp .hint,#endOv.endScreen button.relicp .hint{color:#AFC0DE;font-size:11.5px;line-height:1.45;display:block;margin-top:4px;padding-top:5px;border-top:1px dashed rgba(45,45,127,.7)}
   /* reward-row deck/relic/upgrade cards now read as shop-clone slabs; DOM + in-column look untouched. */
+
+  /* ================= B-S3 (Pillar C) SLOT-REWARD PRESENTATION =================
+     A Vampire-Survivors-style “jackpot pull” wraparound for the post-win reward step. It mounts INSIDE
+     the locked reward overlay (#endOv.endScreen) as a compact glass reel-frame strip ABOVE the real
+     choose rows — never full-bleed (G3: fanfare stays ON the reward panel). Three cosmetic reels riffle
+     the real reward-kind faces, then clatter to land on one OFFERED family whose gold ring lights the
+     matching row container. Pure presentation: row ids/children + one-strong-reward + one-battle-per-pick
+     untouched. Row containers get a data-hot attribute (NOT a child) so no DOM row-count assertion breaks.
+     Palette: gold #FFD324 jackpot / rare magenta #E026FF accent / deep-indigo glass on the locked panel
+     family (#0B0B2E panel, card #23234F, edge #2D2D7F). */
+  #endOv.endScreen #slotMachine{width:min(720px,100%);margin:2px auto 10px;padding:6px 12px 10px;
+    background:linear-gradient(180deg,#141536,#0B0B2E 70%,#05051A);border:1px solid #3A3F92;
+    border-radius:14px;box-shadow:inset 0 1px 0 rgba(143,255,255,.14),inset 0 -2px 10px rgba(0,0,0,.5),0 0 24px rgba(28,199,199,.10);
+    overflow:hidden;position:relative}
+  #endOv.endScreen #slotMachine::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,#1CC7C7 30%,#FFD324 55%,#E026FF 80%,transparent);opacity:.85}
+  .slotLed{font-size:10px;letter-spacing:2.6px;text-align:center;color:#FFE08A;font-weight:800;
+    text-transform:uppercase;text-shadow:0 0 10px rgba(255,211,36,.35);margin:2px 0 8px;
+    animation:slotLedPulse 1.6s ease-in-out infinite}
+  @keyframes slotLedPulse{0%,100%{opacity:.75}50%{opacity:1}}
+  .slotBody{display:flex;justify-content:center;gap:12px;align-items:stretch}
+  .slotReel{position:relative;flex:0 1 92px;min-width:64px;height:118px;overflow:hidden;
+    background:linear-gradient(180deg,#080a22,#05051A);border:1px solid #2D2D7F;border-radius:10px;
+    box-shadow:inset 0 0 0 1px #0B0F2F,inset 0 1px 4px rgba(0,0,0,.6);display:flex;flex-direction:column;padding:2px}
+  .slotReel::before{content:"";position:absolute;top:34%;left:0;right:0;height:32%;
+    background:linear-gradient(180deg,transparent,rgba(14,16,46,.85) 45%,rgba(14,16,46,.85) 55%,transparent);
+    pointer-events:none;border-top:1px dashed rgba(255,255,255,.10);border-bottom:1px dashed rgba(255,255,255,.10)}
+  .slotSym{flex:0 0 32%;height:32%;display:flex;align-items:center;justify-content:center;font-size:30px;line-height:1;filter:brightness(.85);transition:transform .05s}
+  .slotSym.slotMid{font-size:40px;filter:none;color:#fff}
+  #slotMachine.landed .slotSym{filter:none;color:#FFE08A;text-shadow:0 0 14px rgba(255,211,36,.6)}
+  .slotCtrl{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;flex-wrap:wrap}
+  .slotPull{padding:9px 18px;font-size:13px;font-weight:800;letter-spacing:.6px;border:0;border-radius:10px;cursor:pointer;
+    background:linear-gradient(180deg,#3a2e63,#241a45);color:#F2E9FF;border:1px solid rgba(224,194,255,.5);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 3px 12px rgba(0,0,0,.45);transition:filter .1s,transform .06s}
+  .slotPull:hover{filter:brightness(1.15);transform:translateY(-1px)}
+  .slotResult{flex:1 1 300px;min-width:190px;font-size:11.5px;line-height:1.45;color:#FFE08A;font-weight:700;
+    text-align:left;opacity:0;transition:opacity .18s}
+  .hotPillTray{display:flex;justify-content:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .hotPill,.slotMarq-hit{font-size:10px;letter-spacing:.5px;font-weight:800;padding:2px 8px;border-radius:20px;
+    border:1px solid rgba(255,211,36,.7);color:#FFE08A;background:rgba(255,211,36,.08);box-shadow:0 0 10px rgba(255,211,36,.25)}
+  .slotMarq-hit{color:#fff;background:linear-gradient(180deg,#7a5510,#4d3205)}
+  /* gold corner-ring on whichever real reward row the machine landed, lit by its data-hot attr */
+  #endOv.endScreen #upgRow[data-hot],#endOv.endScreen #cardRow[data-hot],#endOv.endScreen #relicRow[data-hot]{
+    outline:2px solid rgba(255,211,36,.55);outline-offset:-1px;border-radius:14px;
+    box-shadow:0 0 0 1px rgba(0,0,0,.2),0 0 22px rgba(255,211,36,.22) inset,0 0 18px rgba(255,211,36,.18)
+  }
+  #endOv.endScreen button.upg[data-hot],#endOv.endScreen button.cardp[data-hot]{outline:1px solid rgba(255,211,36,.8);box-shadow:0 0 14px rgba(255,211,36,.3)}
 
   /* ============================================================================
      A6 (art bake) MAIN-MENU / START-SCREEN STYLE-DIFF + FIX toward the LOCKED MENU board
@@ -2493,6 +2547,60 @@ function attemptRescue(run, node, opts={}){
   return result;
 }
 
+// src/slot.mjs — B-S3 (Pillar C) VAMPIRE-SURVIVORS SLOT-REWARD PRESENTATION model (pure, headless-testable).
+//
+// What this is: the reward step after a won battle now READS as a slot-machine "jackpot pull" instead
+// of a plain menu — but it is a *presentation + chance-feel* layer over the REAL prize table (per
+// PHASE3-BETA.md S-3 / §C.1, NOT a loot box). The locked reward rows still own the actual claim + the
+// strict "advance exactly ONE battle per pick" rule and every reward-mutation test. This module computes
+// the reel faces + a deterministic "hot lane" landing from which reward *kinds* are actually offered
+// that battle, plus the reel-cycle helpers the UI animates with. Pure (no DOM), so a headless test can
+// assert the reel always lands on a live-offered family and never claims a lane that has nothing real.
+//
+// Reward-kind faces (map to real rows / palette):
+//   upgrade ⭐  — the 2 global run upgrades (#upgRow, magenta-violet .upg family)
+//   card    🂡  — level a unit card (#cardRow, teal .cardp family)
+//   relic   ⚡  — claim a relic (#relicRow, ice-grey .relicp family) — only offered when one is open
+//   harvest ⛏  — train an owned harvester for the economy (#cardRow .harvTrain, gold/teal) — when live
+// A reel column cycles these; the landing picks one of the actually-offered kinds so the marquee chip
+// always points the player at a REAL current reward (never a hollow lane).
+//
+// Determinism: given the same availability + battle counter it lands the same way (reproducible for
+// tests / no feel-of-randomness churn), which fits the prior sub-slices' deterministic conventions.
+
+const SLOT_FACES = [
+  { key:'upgrade', ic:'⭐', label:'UPGRADE', row:'upgRow' },
+  { key:'card',    ic:'🂡', label:'CARD',    row:'cardRow' },
+  { key:'relic',   ic:'⚡', label:'RELIC',   row:'relicRow' },
+  { key:'harvest', ic:'⛏', label:'HARVEST', row:'harvPick' },
+];
+
+// A reel "hit": pick a hot lane among the kinds that are genuinely offerable this win.
+// avail = { upgrade:bool, card:bool, relic:bool, harvest:bool } (what the reward step actually renders).
+// seed = integer (use camp.battle+camp.wins so it rotates per battle but is reproducible).
+function slotLand(avail, seed){
+  const offer = SLOT_FACES.filter(f=>avail && avail[f.key]);
+  if(!offer.length){ return { faces:SLOT_FACES, hot:null, avail:{}, kick:null, note:'' }; }
+  const n = offer.length;
+  const i = ((seed>>>0) % n + n) % n;
+  const hot = offer[i];
+  const kick = n>=3 ? 'JACKPOT' : 'BONUS';
+  const availMap = {};
+  for(const f of SLOT_FACES){ availMap[f.key]=!!(avail && avail[f.key]); }
+  return { faces:offer, hot, avail:availMap, kick, note:deskNote(hot.key) };
+}
+
+// the marquee copy naming what the machine "hit" (the real family the player can claim).
+function deskNote(key){
+  switch(key){
+    case 'upgrade': return 'The reels clatter on a GLOBAL UPGRADE — bank one of the run-wide options below.';
+    case 'card':    return 'The reels clatter on a LEVELED CARD — draft a unit-card boost below.';
+    case 'relic':   return 'The reels clatter on a RELIC — claim the persistent relic below.';
+    case 'harvest': return 'The reels clatter on a HARVESTER — your economy bite is hot this battle.';
+    default: return '';
+  }
+}
+
 // ui.js — browser glue + rendering + input. Bundled after core/units/game.
 
 const $=id=>document.getElementById(id);
@@ -3884,6 +3992,7 @@ function showRewardsStep(){
   showUpgradePicker(); showCardPicker(); showRelicRow();
   const ov=$('endOv'); ov.style.display='block';
   ov.classList.add('endScreen');                    // full-viewport rewards screen (Branch): covers field+shop
+  mountSlotMachine();                                // B-S3 wrap the reward step in the slot pull (over rows, non-blocking)
 }
 function showUpgradePicker(){
   clearPicker();
@@ -4482,10 +4591,156 @@ function resolveRoute(r, bn){
 // not just text — the ui loop may fire endOfMatch a couple of times around battle end, so rebuild is idempotent)
 function clearPicker(){
   const o=$('endOv'); if(o) o.classList.remove('endScreen');   // exit full-screen reward presentation if shown
+  unmountSlotMachine();                                        // B-S3: tear down the slot frame with the reward view
   const row=$('upgRow'); if(row){ while(row.firstChild) row.removeChild(row.firstChild); row.textContent=''; }
   clearCardPicker();   // P2-A.next: the parallel #cardRow draft must vanish on advance/retry too
   clearRelicRow();     // P2-C: any pending #relicRow reward too
 }
+
+// ---- B-S3 (Pillar C): VAMPIRE-SURVIVORS SLOT-REWARD PRESENTATION --------------------------------
+// The reward step is now wrapped in a slot-machine “jackpot pull” feel — a compact reel-frame strip that
+// mounts at the top of the #endOv reward panel (ON the locked reward screen, never full-bleed — the G3
+// fanfare-stays-on-panel rule). It cycles real reward-kind faces, then clatters to land on a HOT family
+// that is actually offered that battle, lights that family’s row with a coin-spill pulse + ka-ching, and
+// names it in the little marquee. Rows are NEVER hidden/reordered and the machine NEVER claims on its
+// own: the real one-strong-reward choose + “advance exactly one battle per pick” rule + every
+// reward-mutation test still win (only presentation + chance-feel added, per S-3/§C.1, not a loot box).
+let _slotRAFs=null;          // queue of frame callbacks the animated reel is running (cancellable)
+let _slotNode=null;          // the mounted #slotMachine node (kept by ref so id-cache/order never breaks)
+let _slotHost=null;          // the node that owns the slot (#endOv) — lets us remove the frame regardless of shim parentNode quirks
+let _slotAudioCtx=null;      // lazily-created WebAudio ctx (guarded: absent headless => sound no-ops)
+const _SLOT_SPIN_FRAMES=64;  // full-cycle reel spin length (~1s of 60fps) before the clatter land
+function reducedMotion(){ try{ const g=$('gate'); return !!(g&&g.getAttribute&&g.getAttribute('data-reducefx')!=null); }catch(e){ return false; } }
+// shim-safe attribute write: many DOM shims lack el.setAttribute — fall back to dataset for data-* (no-op else).
+function _setA(el,k,v){ try{ if(el&&typeof el.setAttribute==='function'){ el.setAttribute(k,v); return true; } if(el&&el.dataset&&k.indexOf('data-')===0){ el.dataset[k.slice(5)]=String(v); return true; } }catch(e){} return false; }
+// which reward kinds are genuinely offerable this win (drives the reel so a landing is always claimable).
+function slotAvailNow(){
+  const a={ upgrade:true, card:true, relic:false, harvest:false };
+  try{
+    if(camp){ a.card=!!(camp.factionId && FACTIONS && FACTIONS[camp.factionId]); }
+    if(camp){ const rel=(camp.relics&&camp.relics.length)? relicChoices(camp.relics):[]; a.relic=!!(rel&&rel.length); }
+    // harvest offer only when the living faction fields a worker (the reward mounts a ⛏ Train pick).
+    const f=camp&&camp.factionId&&FACTIONS?FACTIONS[camp.factionId]:null;
+    if(f&&f.roster&&f.roster.some(d=>d.tag==='worker')) a.harvest=true;
+  }catch(e){}
+  return a;
+}
+// (re)play the reel spin + land. A landing re-computes from live availability each call (SPIN AGAIN re-hits).
+function playSlotHit(ovRef){
+  const ov=ovRef||_slotNode; if(!ov) return;
+  try{ const st0=$('slotResult'); if(st0&&st0.style) st0.style.opacity='0'; }catch(e){}
+  const avail=slotAvailNow();
+  const seed=(camp?camp.battle+camp.wins:1)*7 + 3;
+  const L=slotLand(avail, seed);
+  _setA(ov,'data-hot', L.hot? L.hot.key : '');
+  // faces for the three (or fewer) reel columns — repeat the offered set so a full column has enough to spin.
+  const pool=L.faces.length? L.faces : SLOT_FACES;
+  const cols=[].slice.call((ov.querySelectorAll&&ov.querySelectorAll('.slotReel'))||[]);
+  // riffle symbols (short runs of the offered kind icons) as each reel column “rolls”.
+  let f=0;
+  const spin=()=>{
+    if(!ov.parentNode) return;
+    for(let r=0;r<cols.length;r++){
+      const c=cols[r]; if(!c) continue;
+      const syms=c.querySelectorAll&&c.querySelectorAll('.slotSym')||[];
+      let place=r;
+      for(let k=0;k<syms.length;k++){ const p=pool[(f+place+k)%pool.length]; const s=syms[k]; if(s&&p){ try{ s.textContent=p.ic; }catch(e){} } place+=pool.length-1; }
+    }
+    f++;
+    tickSound();          // sharp reel-tick while spinning (guarded silent headless)
+    if(f>=_SLOT_SPIN_FRAMES){ land(); return; }
+    _slotRAFs=[requestAnimationFrame(spin)];  // each frame replaces the queue so a land can cancel it
+  };
+  const land=()=>{
+    _slotRAFs=[];
+    if(!ov.parentNode) return;
+    const hot=L.hot; if(!hot){ marquee(''); return; }
+    // clatter each reel onto the SAME hot face (the machine lands on its prize).
+    for(let r=0;r<cols.length;r++){ const c=cols[r]; if(!c) continue; const syms=c.querySelectorAll&&c.querySelectorAll('.slotSym')||[]; for(const s of syms){ try{ s.textContent=hot.ic; }catch(e){} } }
+    try{ ov.classList.remove('landed'); void ov.offsetWidth; ov.classList.add('landed'); }catch(e){}
+    marquee(L.kick+' · '+hot.label+' · '+L.note);
+    kongSound(L.kick==='JACKPOT');
+    pulseHotRow(hot);
+  };
+  const marquee=(txt)=>{ const m=$('slotResult'); if(m){ m.textContent=txt||''; try{ m.style.opacity='1'; }catch(e){} } };
+  const pulseHotRow=(hot)=>{ try{
+    const hn=ov.querySelectorAll&&ov.querySelectorAll('.hotPill')||[];
+    for(const h of hn){ h.style.display=(h.getAttribute&&h.getAttribute('data-k')===hot.key)?'':'none'; }
+    const m=ov.querySelectorAll&&ov.querySelectorAll('.slotMarq-hit')||[];
+    for(const x of m){ x.style.display=(x.getAttribute&&x.getAttribute('data-k')===hot.key)?'':'none'; if(x.getAttribute&&x.getAttribute('data-k')===hot.key){ try{ x.textContent= hot.ic+' '+hot.label+' HOT ♨'; }catch(e){} } }
+    // light the real reward row that machine “hit” (gold corner-ring on its container, NOT a new child).
+    for(const fn of SLOT_FACES){ const r=document.getElementById(fn.row); if(r&&r.setAttribute){ if(fn.key===hot.key) r.setAttribute('data-hot',''); else if(r.hasAttribute) r.removeAttribute('data-hot'); } }
+  }catch(e){} };
+  // reduced-motion / flair-off: skip straight to the landing (accessibility, C.2).
+  if(reducedMotion()){ f=_SLOT_SPIN_FRAMES; }
+  _slotRAFs=[requestAnimationFrame(spin)];
+}
+// tiny WebAudio reel-tick + landing ka-ching (guarded: no ctx headless / on failure = silent no-op).
+function tickSound(){ chime(8800,'square',0.016,0.04); }
+function kongSound(jack){ chime(jack?1568:1046, 'triangle', jack?0.5:0.22, 0.22); }
+function chime(freq,type,dur,gain){
+  try{
+    if(typeof window==='undefined'||!window.AudioContext) return;
+    if(!_slotAudioCtx){ _slotAudioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
+    const ac=_slotAudioCtx; if(!ac||ac.state==='suspended'){ /* wait for user-gesture resume */ return; }
+    const o=ac.createOscillator(),g=ac.createGain();
+    o.type=type||'square'; o.frequency.value=freq;
+    g.gain.value=gain||0.05; g.gain.setValueAtTime(g.gain.value,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+(dur||0.1));
+    o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+(dur||0.1)+0.02);
+  }catch(e){}
+}
+// build the slot reel-frame strip + PLAY-button + marquee, inserted between the reward header and rows.
+function mountSlotMachine(){
+  const ov=$('endOv'); if(!ov) return;
+  // compute BEFORE building so the reel only ever falls on a live family.
+  const L=slotLand(slotAvailNow(), ((camp?camp.battle+camp.wins:1)*7)+3);
+  remSlotNode();
+  const wrap=document.createElement('div'); wrap.id='slotMachine'; wrap.className='slotMachine';
+  _setA(wrap,'data-kick', L.kick||'');
+  // animated marquee header band.
+  const band=document.createElement('div'); band.className='slotLed';
+  band.textContent='◆ PULL THE LEVER · ONE STRONG REWARD · PULL THE LEVER ◈';
+  wrap.appendChild(band);
+  const body=document.createElement('div'); body.className='slotBody';
+  // reel columns (always 3 cosmetic columns that riffle the offered faces; symbols get the landing face).
+  for(let r=0;r<3;r++){
+    const re=document.createElement('div'); re.className='slotReel';
+    for(let k=0;k<4;k++){ const s=document.createElement('div'); s.className='slotSym'+(k===1?' slotMid':''); s.textContent= L.faces.length? L.faces[(r+k+1)%L.faces.length].ic : (SLOT_FACES[(r+k)%4].ic); re.appendChild(s); }
+    body.appendChild(re);
+  }
+  // play-lever + landing marquee chip.
+  const ctrl=document.createElement('div'); ctrl.className='slotCtrl';
+  const spinBtn=document.createElement('button'); spinBtn.type='button'; spinBtn.className='slotPull';
+  spinBtn.textContent='⟳ SPIN AGAIN'; spinBtn.onclick=()=>{ try{ playSlotHit(wrap); }catch(e){} };
+  const marq=document.createElement('div'); marq.className='slotResult'; marq.id='slotResult';
+  marq.textContent=''; ctrl.appendChild(spinBtn); ctrl.appendChild(marq);
+  // hot pills that light the corresponding reward-row header when the machine lands.
+  const pills=document.createElement('div'); pills.className='hotPillTray';
+  for(const f of SLOT_FACES){ const h=document.createElement('span'); h.className='hotPill'; _setA(h,'data-k',f.key); h.style.display='none'; h.textContent=f.ic+' '+f.label; pills.appendChild(h); }
+  for(const f of SLOT_FACES){ const m=document.createElement('span'); m.className='slotMarq-hit'; _setA(m,'data-k',f.key); m.style.display='none'; pills.appendChild(m); }
+  wrap.appendChild(body); wrap.appendChild(ctrl); wrap.appendChild(pills);
+  // insert between #endSub (header) and #upgRow (rows) — a sibling of the rows, never inside them.
+  _slotHost=ov;
+  const rows=$('upgRow');
+  try{ if(rows&&typeof rows.parentNode!=='undefined'&&rows.parentNode) rows.parentNode.insertBefore(wrap, rows); else ov.appendChild(wrap); }
+  catch(e){ try{ ov.appendChild(wrap); }catch(e2){} }
+  // track the fresh node by ref so later $('slotMachine') id-cache order never bites (headless shims cache per-id).
+  _slotNode=wrap;
+  // reduce-reel-flair uses immediate land (never spins); otherwise auto-run one hit on entry.
+  _slotRAFs=[];
+  try{ playSlotHit(wrap); }catch(e){ /* mount error: not fatal — reward rows still fully claimable */ if(console&&console.error) console.error('slot:', e&&e.message); }
+}
+function remSlotNode(){
+  try{
+    const host=_slotHost;
+    const t=_slotNode;
+    // best-effort: remove from a real parent first, else pull by index out of the host's child list (robust to shims that never set parentNode).
+    if(t){ if(t.parentNode&&t.parentNode.removeChild){ try{ t.parentNode.removeChild(t); }catch(e){} } else if(host&&host.children){ const i=host.children.indexOf(t); if(i>=0){ try{ host.children.splice(i,1); }catch(e){} } } }
+  }catch(e){}
+  _slotNode=null; _slotHost=null; _slotRAFs=[];
+}
+function unmountSlotMachine(){ remSlotNode(); _slotRAFs=[]; }
 function countUpgs(){ if(!camp||!camp.upgrades) return 0; return Object.keys(camp.upgrades).reduce((s,k)=>s+(camp.upgrades[k]||0),0); }
 // legacy/Match-log recap — proves end-of-battle state lands in the copied log (kept + extended for campaign)
 function recap(){
@@ -4571,6 +4826,9 @@ if(typeof window!=='undefined'){
     park:ecoPark, producerCopies, parkedProducers, workerKey:ECO_WORKER_KEY, slots:ECO_SLOTS.map(s=>s.label),
     openPanel:openEcoPanel, closePanel:closeEcoPanel,
   };
+  // B-S3 (Pillar C): expose the slot-reward availability + landing read so a headless gate can assert a
+  // reel pull never lands on a family with no real reward (the rows stay the one-strong-reward source).
+  window.__ds.slot = { avail:slotAvailNow, land:slotLand };
 }
 // ---- Phase-2a BRANCH MAP (between-battle next-leg preview + opt-in re-route). ----
 // §2.5 wants a "next-choice preview" so a run feels like a journey rather than isolated fights, AND a
