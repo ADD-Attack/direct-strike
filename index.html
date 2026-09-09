@@ -1934,6 +1934,13 @@ function give(stMut, en, tag, n){
 }
 
 const TAGLBL={worker:'⛏ economy',melee:'⚔ melee',swarm:'swarm',ranged:'🎯 ranged',tank:'🛡 tank',splash:'💥 splash',healer:'💚 healer',burst:'⚡ burst',special:'★ SPECIAL'};
+// A2 HUMAN ROLE-COLOR-DIFF: one authoritative per-ROLE accent set. Field marker, attack-spark and the
+// vector fallback all read from this so a role is colour-coded consistently across every surface
+// (keeps it a CLASS cue — faction/team identity is the rim + body, never these). Values follow the
+// locked DECK-board role scheme (yellow ranged/equipment, cyan burst/marine, steel-white heavy/tank leans
+// its rim, green scout/heal lens, ember splash flash, magenta-gold special, amber worker).
+const ROLE_ACC = { worker:'#ffcf6e', melee:'#ffe06a', swarm:'#ff8a3c', ranged:'#ffd324',
+  burst:'#7ee7ff', tank:'#8fd6e0', splash:'#ff9b3d', healer:'#7cfc9c', special:'#d79bff' };
 let _btnDef={};   // def.key -> {btn, badge, qty, last} for live affordability + alive-count refresh
 
 function liveAlive(st,def){ let n=0; for(const u of st.pUnits) if(u.alive && u.def===def) n++; return n; }
@@ -2472,8 +2479,7 @@ function drawSprite(u, footY, teamCol){
   const rim = teamCol;                                               // ally teal / enemy ember
   // Per-ROLE accent so a clump of one faction doesn't read as a monochrome blob: head/weapon/emblem parts
   // below get tinted by the unit's class, not just the faction tone. (keeps faction body + team rim.)
-  const ACC = { melee:'#ffe06a', swarm:'#ff8a3c', ranged:'#5ec8ff', burst:'#7ee7ff',
-                tank:'#ff6b8a', splash:'#ff9b3d', healer:'#79f0c5', special:'#d79bff' }[tag] || '#fff';
+  const ACC = ROLE_ACC[tag] || '#fff';
 
   ctx.save();
   const lux = en? -swing*3 : swing*3;                        // brief forward lunge toward the foe (world, 0-3px)
@@ -2519,6 +2525,16 @@ function drawSprite(u, footY, teamCol){
   ctx.fillStyle='#0a0f1f'; ctx.fillRect(u.x-hpw/2, footY-fs-8, hpw, 4);
   ctx.fillStyle = hp>0.5? rim : (hp>0.25? '#ffd24a' : '#ff5d5d');
   ctx.fillRect(u.x-hpw/2, footY-fs-8, hpw*hp, 4);
+  ctx.restore();
+  // A2 class-chevron: a tiny role-coloured pennant just under the hp bar. In a wide real army the sprite
+  // silhouettes blur, so a role stays identifiable by COLOUR via this marker; ringed with a dark keyline it
+  // reads against both the warm field and the ui strip. Same ROLE_ACC drives body, slash and this marker.
+  const rc = ROLE_ACC[tag] || '#ffffff';
+  ctx.save(); ctx.globalAlpha=.96;
+  ctx.fillStyle='#05051a';
+  ctx.fillRect(u.x-3, footY-fs-2.5, 6, 4.5);                 // dark keyline seats the colour
+  ctx.fillStyle=rc; ctx.globalAlpha=.95;
+  ctx.fillRect(u.x-2, footY-fs-1.8, 4, 3);                   // role colour shines through
   ctx.restore();
 }
 
