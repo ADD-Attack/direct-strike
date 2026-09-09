@@ -2930,6 +2930,17 @@ function setRunPill(){
     const rel=(camp.relics||[]); if(rel.length) core+=' · 💠'+(rel.map(id=>(RELIC_DEFS[id]?RELIC_DEFS[id].ic:'💠')).join(''));
     const lane=camp&&camp.lanes&&camp.lanes.credit||{}; const lk=Object.keys(lane).filter(a=>lane[a]>0);
     if(lk.length && isBranch()) core+=' · 🏁'+lk.map(a=>(({balanced:'⚖',rusher:'🗡',economist:'🏭'})[a]||a)+'×'+lane[a]).join('');
+    // B-S2 A.1b card-economy read (closeout): surface the run's owned-harvest / parked-producer
+    // position right in the battle HUD so the drag-assign trade stays visible while it pays off
+    // (each owned harvest card you PARKED = +1 extra starting harvester this battle; the rest are
+    // held in reserve). Guarded so a run with no owned harvest stack renders byte-identically.
+    if(isBranch() && camp.run){ try{
+      if(producerCopies(camp.run)>0){
+        const pkr=parkedProducers(camp.run); const own=producerCopies(camp.run);
+        core+=' · ⛏'+pkr+' producing'+(pkr>0?(' (+'+pkr+' miner'+(pkr===1?'':'s')+' this battle)'):'')+
+              (own>pkr?(' · 🃏'+ (own-pkr)+' held'):'');
+      }
+    }catch(e){} }
     p.textContent=core;
   } else p.textContent='Standard';
 }
