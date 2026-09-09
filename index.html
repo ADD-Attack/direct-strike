@@ -142,6 +142,27 @@
   .eb i{background:linear-gradient(90deg,#ff5d6c,#ff9d6a)}.pb i{background:linear-gradient(90deg,var(--ally0),var(--ally1))}
   .pb{transform:scaleX(-1)} .pb i{background:linear-gradient(90deg,var(--ally0),var(--ally1))}
   .cbl{font-size:11px;color:#9fb2d6;width:56px}
+  /* B-S4 FIELD-OPS battle console (#fieldOps) — the one-tap carry-forward bar inside #battleHud. It is a
+     full-width second row (flex:1 1 100%) under the stat/core row, an OPAQUE glass well (Design Law #1)
+     cut through the warm field, with per-kind accent (spell violet, belt teal, build ember-gold) and G3
+     palette (no stray green). Absent armed kit it is not mounted => untouched battles show nothing. */
+  #battleHud #fieldOps{flex:1 1 100%;display:flex;flex-direction:column;gap:4px;width:100%;margin:2px 0 0;padding:8px 10px;
+    border:1px solid #3a3a7a;border-radius:12px;background:linear-gradient(180deg,rgba(16,16,44,.96),rgba(10,10,32,.96));
+    box-shadow:inset 0 1px 0 rgba(143,255,255,.10),0 4px 14px rgba(0,0,0,.35)}
+  #battleHud #fieldOps .fopCap{font-size:10px;font-weight:800;letter-spacing:.5px;color:#a9b6ff;text-transform:uppercase;margin:0 0 2px}
+  #battleHud #fieldOps>div:not(.fopCap){display:flex;flex-wrap:wrap;gap:6px}
+  #battleHud #fieldOps .fop{display:flex;align-items:center;gap:6px;font-size:10.5px;padding:6px 10px;border-radius:10px;cursor:pointer;font-weight:800;color:#e9f0ff;
+    background:linear-gradient(180deg,#2a2a5c,#1c1c48);border:1px solid #4a4a9a;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:transform .05s,filter .1s}
+  #battleHud #fieldOps .fop:hover{transform:translateY(-2px);filter:brightness(1.12)}
+  #battleHud #fieldOps .fop .fi{font-size:16px}
+  #battleHud #fieldOps .fop .fn{display:flex;flex-direction:column;line-height:1.15;text-align:left}
+  #battleHud #fieldOps .fop .fn em{font-size:8px;font-style:normal;text-transform:uppercase;letter-spacing:.4px;color:#a9c7ff}
+  #battleHud #fieldOps .fop.fopSpell{border-color:#8a6ae9;background:linear-gradient(180deg,#332a66,#241c50)}
+  #battleHud #fieldOps .fop.fopSpell .fn em{color:#d9b8ff}
+  #battleHud #fieldOps .fop.fopBelt{border-color:#2fa8a8;background:linear-gradient(180deg,#1e3f4f,#17303f)}
+  #battleHud #fieldOps .fop.fopBelt .fn em{color:#8effe0}
+  #battleHud #fieldOps .fop.fopBuild{border-color:#e0a050;background:linear-gradient(180deg,#4a3520,#39291a)}
+  #battleHud #fieldOps .fop.fopBuild .fn em{color:#ffce90}
   #logbox{display:none;max-height:170px;overflow:auto;overflow-wrap:break-word;word-break:break-word;font-size:11px;line-height:1.6;color:#a9bce0;white-space:pre-wrap;min-width:0}
   /* A7 END-FRAME BAKE (LOCKED ds-end-board: warm-wins / ember-loses two-panel result frame). The base
      #endOv result card (non-.endScreen) reads as a themed RESULT FRAME, not a bare centered card:
@@ -319,6 +340,29 @@
   #mapOv .ecoCard .rsTx{flex:1;display:flex;flex-direction:column;gap:3px;font-size:12px;color:#bfd6e0;line-height:1.35}
   #mapOv .ecoCard .rsTx b{font-size:12px;letter-spacing:.5px;color:#eff7ff}
   #mapOv .ecoCard .rsGo{font-size:10.5px;white-space:nowrap;background:rgba(28,199,199,.16);border:1px solid rgba(28,199,199,.55);color:#8effe0;border-radius:9px;padding:6px 10px;font-weight:800;letter-spacing:.3px}
+  /* B-S4 FIELD-OPS GRANT offer: the same map-body side-card grammar as eco/rescue but themed for the
+     ember-objective / construction family (auto-fire turret warm, spell violet, belt teal). Non-`.node`
+     (route fork stays 3). Reads as a construct/expedite offer; CLAIM chips let the player pick ONE tool
+     per map open. G1 opaque border on the map; G3 gold/teal/violet accents, no stray green. */
+  #mapOv .fopCard{display:flex;align-items:flex-start;gap:12px;width:100%;max-width:580px;margin:8px auto 2px;padding:10px 12px;cursor:default;text-align:left;
+    border:1px solid #7a5a8a;border-radius:14px;color:#f0e6ff;
+    background:linear-gradient(180deg,#26214a 0%,#1c1838 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 14px rgba(160,120,255,.12),0 6px 16px rgba(5,5,20,.4)}
+  #mapOv .fopCard .ecIc{font-size:24px;filter:drop-shadow(0 0 6px rgba(226,209,120,.4));flex:0 0 auto}
+  #mapOv .fopCard .rsTx{flex:1;display:flex;flex-direction:column;gap:3px;font-size:12px;color:#cdc4ec;line-height:1.35}
+  #mapOv .fopCard .rsTx b{font-size:12px;letter-spacing:.5px;color:#f2ecff}
+  #mapOv .fopCard .fopGo{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  #mapOv .fopCard .fopClaim{font-size:10px;min-width:0;padding:6px 9px;border-radius:10px;cursor:pointer;font-weight:800;display:flex;flex-direction:column;gap:1px;line-height:1.2;color:#e8f1ff;
+    background:linear-gradient(180deg,#2a2a5a,#1c1c46);border:1px solid #4a5a9a}
+  #mapOv .fopCard .fopClaim em{font-size:8.5px;font-style:normal;text-transform:uppercase;letter-spacing:.4px;color:#a9c7ff}
+  #mapOv .fopCard .fopClaim.s{border-color:#8a6ae9}
+  #mapOv .fopCard .fopClaim.s em{color:#e0b8ff}
+  #mapOv .fopCard .fopClaim.b{border-color:#e0a050}
+  #mapOv .fopCard .fopClaim.b em{color:#ffce90}
+  #mapOv .fopCard .fopClaim.lim{opacity:.45;cursor:default}
+  #mapOv .fopCard .fopClaim.claimed{border-color:#FFD324;box-shadow:0 0 12px rgba(255,211,36,.25);cursor:default}
+  #mapOv .fopCard .fopClaim.claimed em{color:#ffe9a0}
+  #mapOv .fopCard .rbDummy{display:none}
   #mapOv .rescardOverpass{display:none}
   /* RESCUE OVERLAY — a fixed opaque modal that CUTS THROUGH the map (Design Law #1). Lists owned
      cards, per-card pass contribution, a running total vs the distress threshold, and the SEND call
@@ -940,7 +984,33 @@ const HIVE_SUMMON_CD = 3.5;     // wall-clock seconds between summons
 const HIVE_SUMMON_MAX_LIVE = 6; // max friendly live 'g' summons from tenders
 // Saboteur bonus vs tanks
 const SABOTEUR_TANK_BONUS = 18; // extra flat dmg when sniping a tank
+// ---- B-S6 expansion-faction UNIQUE mechanics (Robots overload / Federation airdrop) ----
+// Robots Overlord-Core 'overclock': a front command-bruiser whose overclock aura toggles ON once the
+// fight 'closes' (an enemy press enters the near window) — then nearby friendly melee/swarm grind
+// harder. Mirrors the aliens Hive-Tender aura slot but WITHOUT any free summon (robots are precise and
+// mineral-hungry, not breeders); it only powers up under pressure.
+// Federation Comms-Officer 'airdrop': a ranged artillery-officer backliner that periodically calls a
+// free 'g' trooper airdrop onto its advancing line (real orbital logistics, capped so it can't snowball).
+const OVERCLOCK_MULT = 1.35;     // ×damage on overclocked friendly melee/swarm in the aura
+// (N.B. an 'overclock' commander turning on as the foe CLOSES is the species story: never heal, but
+//  press harder the closer the enemy gets.)
+const OVERCLOCK_AURA_R = 130;    // friendly-fight reach over which the boost applies (like Hive_Tender)
+const OVERCLOCK_NEAR_R = 200;    // an enemy within THIS of the commander = 'the fight has closed'
+const AIRDROP_CD = 4.5;          // wall-clock seconds between free airdrop calls
+const AIRDROP_MAX_LIVE = 3;      // max live 'g' drops this officer can have out at once
 // Worker shuttle # cadence constant below
+
+// --- B-S8 no-stalemate guard: DECISIVE battle-length ceiling --------------------
+// Every match resolves. Two ultra-defensive compositions (healers out-pulsing the enemy's damage, or a
+// mountain of tanks that neither side can push through) otherwise grind forever with no path to a core
+// fall — the 'no-stalemate / ~90-180s' S-8 goal. Once t crosses DECISIVE_T and the match hasn't ended,
+// simStep declares the currently-LEADING side the winner (see game.js decisiveWinner): the side that
+// holds more of the field (health-pool of living units + barriers + core) takes the call, so a genuine
+// perpetual stall still crowns the side that actually preserved/pushed furthest — it never runs on. This
+// is set to the SAME bar balance.mjs already treats as a 'runaway' (>360s / never-resolve), so no normal
+// battle is touched (measured AI battles resolve ~90-115s) and the guard only fires on a true stall.
+const DECISIVE_T = 360;     // wall-clock seconds: crown the leader once the match passes this and no core has fallen
+
 
 // deterministic-ish rng (seeded) for tests; in browser use Math.random
 let rngState = (Date.now() & 0xffffff) || 1;
@@ -974,9 +1044,15 @@ const C = {
   HIVE_SUMMON_CD,
   HIVE_SUMMON_MAX_LIVE,
   SABOTEUR_TANK_BONUS,
+  OVERCLOCK_MULT,
+  OVERCLOCK_AURA_R,
+  OVERCLOCK_NEAR_R,
+  AIRDROP_CD,
+  AIRDROP_MAX_LIVE,
   BARRIER_HP,
   PBAR_X,
   EBAR_X,
+  DECISIVE_T,
   rand,
   fmtT,
 };
@@ -1273,6 +1349,563 @@ function lazarusRevive(st, u){
 // Human list of held relic ids (for a run/pill view).
 function held(st){ return (st && Array.isArray(st.relics) && st.relics.filter(id=>RELIC_DEFS[id])) || []; }
 
+// kit.mjs — B-S4 (Pillar §4 carry-forward) ONE-TIME BATTLE KIT: spells + held consumables.
+// The "field kit" of a run: a small faction-agnostic catalogue of one-time powers the player can carry
+// INTO a battle and CAST there once (AoE damage, heal wave, damage-buff) — separate from the persistent
+// deck/relics (those are passive long-run), these are active, one-shot, spend-and-forget actions.
+//
+// Layering follows the rest of the codebase:
+//   • THIS module owns the DEFS (id→name/ic/desc/kind) + the PURE run-ledger helpers (gain stock / spend
+//     from the held belt / ask what is held) + the emission a battle opener reads to know which powers
+//     are armed this fight. NO DOM, NO engine mutation.
+//   • game.js owns the ACTUAL battlefield effect (it holds `dmg`/heal/buffs and the live st bodies) via
+//     a single exported `applyPower(st, powId, x?)` hook (engine-side truth, headless-testable).
+//   • ui.js is the presenter: it arms st from the run's held belt at battle start and exposes a cast
+//     surface; absent an armed kit every existing run/test stays byte-identical (default on).
+//
+// Two families:
+//   • SPELLS  (kind:'spell')   — one-time effects the player can use exactly ONCE per acquisition,
+//                                cast directly on a battle (they never persist a held count — you use it
+//                                or lose it when the battle ends).
+//   • CONSUMABLES (kind:'cons') — a HELD BELT that carries across battles: you stock charges, they ride
+//                                into a battle armed, and casting spends ONE charge from the belt.
+// Both are pure data + run bookkeeping here; what they DO to the field is decided by game.js (the sim
+// truth), never this layer.
+
+const KIT_DEFS = {
+  // --- spells (one-shot, cast immediately on the battle they were earned for) ---
+  orbital: {
+    kind:'spell', ic:'☄️', name:'Orbital Strike', fac:'player',
+    desc:'One-time: call an orbital barrage at a field point — heavy damage to every enemy unit near it.',
+    fx:{ type:'aoe', team:'enemy', dmg:60, radius:90 },
+  },
+  medwave: {
+    kind:'spell', ic:'💚', name:'Med-Wave', fac:'player',
+    desc:'One-time: a triage pulse that heals every living allied soldier on the field.',
+    fx:{ type:'heal', team:'allies', amount:55 },
+  },
+  // --- consumables (stocked charges ride into a battle, cast once each) ---
+  rally: {
+    kind:'cons', ic:'📣', name:'Rally Cry', fac:'player',
+    desc:'Consumable: your troops fight harder — +dmg for a while after the cry.',
+    fx:{ type:'buff', team:'allies', dur:14, dmgMul:1.6 },
+  },
+  frag: {
+    kind:'cons', ic:'🧨', name:'Frag Pack', fac:'player',
+    desc:'Consumable: lob a fragmentation charge at a field point — small AoE burst vs clustered foes.',
+    fx:{ type:'aoe', team:'enemy', dmg:40, radius:70 },
+  },
+};
+
+// A human list/read of the kit catalogue (for a run/pill / cast button label).
+function kitById(id){ return KIT_DEFS[id] || null; }
+function kitList(){ return Object.keys(KIT_DEFS).map(id=>KIT_DEFS[id]); }
+
+// --- run ledger: a held BELT of consumable charges + the spells banked this run ---
+// A run owns:
+//   run.kit = { spells:[], belt:{} }      spells = ids earned (each useable once, cleared when cast);
+//                                         belt   = consumableId -> stocked charge count.
+// Mirror helpers keep it /run.mjs/-shaped (newRun seeds an empty kit via addKitLedger below so the
+// ledger is always present without changing any untouched shape byte).
+
+function addKitLedger(run){
+  if(run && !run.kit){
+    run.kit = { spells:[], belt:{} };
+  }
+  return run;
+}
+function kitSpells(run){ addKitLedger(run); return run.kit.spells; }
+function kitBelt(run){ addKitLedger(run); return run.kit.belt; }
+
+// GAIN a one-time spell (spend into the battle it was earned for). Returns the new spells list length.
+function addSpell(run, id){
+  if(!run || !KIT_DEFS[id] || KIT_DEFS[id].kind!=='spell') return -1;
+  addKitLedger(run);
+  if(!run.kit.spells.includes(id)) run.kit.spells.push(id);
+  return run.kit.spells.length;
+}
+// Stock ONE consumable charge into the run's held belt (caps so a belt can't unboundedly snowball).
+function stockCons(run, id, n=1){
+  if(!run || !KIT_DEFS[id] || KIT_DEFS[id].kind!=='cons') return -1;
+  addKitLedger(run);
+  const cap = 3;                                    // sane ceiling per id: 3 charges at once
+  run.kit.belt[id] = Math.min(cap, (run.kit.belt[id]||0) + Math.max(0,n|0));
+  return run.kit.belt[id];
+}
+// How many charges of a consumable id the run holds.
+function consStock(run, id){ addKitLedger(run); return (run.kit.belt[id]||0); }
+
+// CAST (spend) a banked one-shot SPELL: the run owns it exactly once and, once the player casts it on a
+// battle, the id leaves the spells bank so it is NOT re-armed into the next battle. Returns the new
+// spells-bank size (0 when this cleared the last one) or -1 when the run holds no such spell / id isn't a
+// spell. Called by the LIVE cast console when the player fires a carried spell (use-or-ride-forward: an
+// uncast spell stays banked for the next battle, matching the additive model where emitKit re-emits only
+// what remains in run.kit).
+function useSpell(run, id){
+  if(!run){ return -1; }
+  const adds = addKitLedger(run);
+  const arr = run.kit && run.kit.spells ? run.kit.spells : [];
+  if(!KIT_DEFS[id] || KIT_DEFS[id].kind!=='spell') return -1;
+  const i = arr.indexOf(id);
+  if(i<0) return -1;                              // not currently banked => never spends
+  arr.splice(i,1);
+  return arr.length;
+}
+
+// CONSUME one held consumable charge (called by the UI when the player casts it in battle). Returns the
+// NEW stock (0 when depleted). Refuses when the run holds no charge, or id isn't a consumable.
+function useCons(run, id){
+  if(!run || !KIT_DEFS[id] || KIT_DEFS[id].kind!=='cons') return -1;
+  const s = consStock(run, id);
+  if(s<=0) return -2;
+  run.kit.belt[id] = s-1;
+  if(run.kit.belt[id]===0) delete run.kit.belt[id];   // keep the belt sparse
+  return run.kit.belt[id]||0;
+}
+// True AFTER a consumable charge was used: stock gone from the previous held count (helper for UI/tests).
+function usedCons(run, id, was){ const now=consStock(run,id); return now < (was||0); }
+
+// Human read of everything the run is currently carrying into the NEXT battle.
+//   { spells:['orbital',...], belt:{frag:2,...} }  (both default empty => emits {spells:[],belt:{}}).
+// Absent run.kit returned as an all-empty read so untouched campaigns stay shape-stable.
+function emitKit(run){
+  if(!run){ return { spells:[], belt:{} }; }
+  return { spells: (run.kit && run.kit.spells) ? run.kit.spells.slice() : [],
+           belt:   Object.assign({}, (run.kit && run.kit.belt)||{}) };
+}
+
+// build.mjs — B-S4 (Pillar §4 carry-forward) STATIC BUILDINGS: defs + run ledger.
+// The "field works" of a run: deployable structures the player owns going INTO a battle and places on
+// their side, where they keep working all fight — distinct from the one-time kit (kit.mjs, spells +
+// consumable belt) because builds are PERSISTENT-through-the-battle structures rather than spend-and-
+// forget casts. The carry-forward scope §4 names four deploy categories:
+//     auto-fire / income / free-field / wall.
+//
+// Layering mirrors the rest of the codebase (same as kit.mjs):
+//   • THIS module owns the pure DEFS (id→name/ic/kind + the run ledger: acquire an owned building and
+//     read what the run carries into the NEXT battle) + the emission an opener/UI reads. NO DOM, NO
+//     engine mutation.
+//   • game.js owns the ACTUAL on-field behaviour via a single exported `deployBuilding(st, bldId, x)`
+//     engine hook (spawns the static body) + an additive `structures()` pass inside simStep that makes
+//     each kind do its thing each frame. Engine-side truth, headless-testable.
+//   • ui.js (a later slice) arms owned builds into a battle state and presents a placement surface.
+// Absent armed buildings every existing run/test stays byte-identical (default on → empty array).
+//
+// Engines implemented / validated here:
+//   • turret   (auto-fire) — static auto-attack tower, cheapest §4 "auto-fire" deployable: shoots the
+//     nearest living enemy unit inside its range on a cooldown (mirrors the core-tower cadence).
+//   • extractor(income)    — a static mineral harvester: every work-beat it credits the owner's mineral
+//     pool (a real economy lift, not a cosmetic flag).
+//   • foundry  (free-field) — a barracks that periodically fields ONE free combatant from that side's
+//     own roster so the line snowballs without spending.
+//   • bulwark  (wall)      — scope §4 lists the WALL as the fourth category. Its data + ledger live here
+//     (data-complete), but its on-field engine behaviour (a lane-blocking barricade enemy movers must
+//     stop-and-chew on) requires a carefully-gated touch to the locked mover branch — bound to the NEXT
+//     B-S4 building slice so this slice stays one clean green gate. deployBuilding refuses it (no silent
+//     no-op) until that wiring lands.
+
+const BUILD_DEFS = {
+  // --- auto-fire: static anti-infantry tower ---
+  turret: {
+    kind:'build', cat:'fire', ic:'🗼', name:'Auto-Turret',
+    desc:'Static deployable: auto-fires at the nearest living enemy in range.',
+    fx:{ type:'turret', dmg:9, rate:1.4, range:170, hp:260 },
+  },
+  // --- income: static mineral extractor ---
+  extractor: {
+    kind:'build', cat:'income', ic:'⛏️', name:'Field Extractor',
+    desc:'Static deployable: trickles minerals every work-beat while it stands.',
+    fx:{ type:'extractor', work:3.2, income:18, hp:220 },
+  },
+  // --- free-field: barracks that fields a free unit on a cadence ---
+  foundry: {
+    kind:'build', cat:'field', ic:'🏗️', name:'Foundry',
+    desc:'Static deployable: periodically fields one free combatant from your roster.',
+    fx:{ type:'foundry', every:9, hp:240, cap:6 },
+  },
+  // --- wall (blocking barricade). Data complete; engine routing lands next slice. ---
+  bulwark: {
+    kind:'build', cat:'wall', ic:'🧱', name:'Bulwark',
+    desc:'Static deployable wall/barricade that enemy soldiers must stop and chew through.',
+    fx:{ type:'wall', hp:900 }, blockDef:true,
+  },
+};
+
+// Human single/lists reads of the building catalogue.
+function buildById(id){ return BUILD_DEFS[id] || null; }
+function buildList(){ return Object.keys(BUILD_DEFS).map(id=>BUILD_DEFS[id]); }
+
+// --- run ledger: the buildings THIS run owns and carries into the NEXT battle. ---
+// A run owns:  run.builds = { id: count }
+// Mirror helpers keep it /run.mjs/-shaped (newRun seeds an empty builds ledger so the key is always
+// present without changing any untouched shape byte).
+function addBuildLedger(run){
+  if(run && !run.builds){ run.builds = {}; }
+  return run;
+}
+function buildOwned(run, id){ addBuildLedger(run); return (run.builds[id]||0); }
+function buildsHeld(run){ addBuildLedger(run); return run.builds; }
+
+// ACQUIRE one owned building (a run can own each id at most once for now — no unbounded snowball).
+// Returns the new owned count (1) or -1 for an unknown id / a repeat.
+function addBuilding(run, id){
+  if(!run || !BUILD_DEFS[id] || BUILD_DEFS[id].kind!=='build') return -1;
+  addBuildLedger(run);
+  if(run.builds[id]) return -1;                       // already owned
+  run.builds[id] = 1;
+  return run.builds[id];
+}
+
+// Human read of every building the run is carrying into the NEXT battle.
+//   { turret:1, extractor:1 } (default {} => absent-buildings runs are shape-stable).
+function emitBuilds(run){
+  if(!run){ return {}; }
+  return Object.assign({}, (run.builds)||{});
+}
+
+// hero.mjs — B-S5 (Pillar §4 carry-forward) HEROES: the run's CHAMPION.
+// Scope §4 "heroes — single champion/side, level across run, faction identity." Each faction fields
+// exactly ONE champion that rides into every battle as a free, run-persistent fielded body and LEVELS
+// UP across the run (wins feed XP), so the hero is the emotional spine of the campaign — a named,
+// faction-identity leader whose power grows with your run — distinct from the deck cards you buy per
+// battle.
+//
+// Layering mirrors kit.mjs/build.mjs (the S-4 precedent), so this module is a clean, headless unit:
+//   • THIS module owns the pure DEFS (one champion per faction w/ name/ic/faction identity) + the pure
+//     run-ledger (pick which champion a run fields, its LEVEL + XP) + the emission a battle opener reads
+//     (emitHero) + the level-scaling helper that turns a champion def + a level into battle-time stats.
+//     NO DOM, NO engine mutation.
+//   • game.js owns the ACTUAL on-field body: a single exported `grantHero(st, heroId, factionId, en, x)`
+//     engine hook that free-fields the champion (scaled by the level the battle was armed at), additive
+//     so an un-armed battle stays byte-identical. ui.js (a later slice) arms st from the run.
+//
+// One champion per SIDE ("champion/side"): the model catalogues both the player faction champion and the
+// enemy side champion, each keyed under its faction id, so a battle opener can field the run-chosen hero
+// AND the opposing faction's hero (the finale boss-feel). Absent an armed hero every existing run stays
+// byte-identical (default: no hero body => unchanged sims).
+
+// -------------------------------- DEFS --------------------------------
+// Each faction's ONE champion, designed to carry that faction's identity at army scale (NOT poster —
+// the body reads like a slightly-larger, visually-distinct standard unit, per the B-S5 style stub:
+// "cleanly reads small-on-field but distinct (role-diff law); not poster-scale").
+//
+// Champion body defs use the SAME unit-def field vocabulary as the roster (hp/dmg/atk/range/move/cost 0
+// because a hero never costs — it is free-fielded by the hero hook) + hero-only fields:
+//   heroLevelScaling base stats + per-level growth handled by heroStats() below.
+const HERO_DEFS = {
+  // -------- Rebels champion: "Colonel Voss" --------
+  // Rebel identity = scrappy asymmetric precision tech (saboteur line, snipers, walkers, skiffs). A
+  // hero who embodies that reads as a battle-hardened sharp-shooter COMMANDER: moderate body, real
+  // single-target damage with a tank-breaker streak, precise not swarmy. Teal accent family.
+  rebels: {
+    id:'rebels', name:'Colonel Voss', ic:'🎖️', role:'COMMANDER',
+    desc:'Rebel commander — precise single-target fire that focuses the strongest foe and punches through armor. Levels with every battle cleared.',
+    // battle-time base (level 1); heroStats scales these. dmg/atk lean precision (higher per-hit than
+    // an equivalent melee, slower rate) matching the saboteur-line feel.
+    def:{ hp:360, dmg:30, atk:0.9, range:150, move:40, tag:'ranged' },
+    // per-level growth (additive; tuned loose pre-B-S8 balance):
+    lvl:{ hp:52, dmg:5, atk:0.04 },      // +hp+52, +dmg+5, atk-rate +0.04 per level beyond 1
+  },
+  // -------- Aliens champion: "Brood Matriarch" --------
+  // Alien identity = vicious fast-breeding swarm w/ hive regen (hive-tender summons, cheap bodies).
+  // The champion embodies that as a tanky BREEDING leader: soaks the line and periodically spawns a
+  // free Chitterling so the swarm snowballs around it. Ember/orchid accent family.
+  aliens: {
+    id:'aliens', name:'Brood Matriarch', ic:'👑', role:'MATRIARCH',
+    desc:'Alien brood queen — a living hive that soaks the front and swarms the line around her. Levels with every battle cleared.',
+    // frontline bruiser: heavy hp + steady melee that reads as the living wall of the swarm (no special
+    // summon routed in slice 1 — hive-breeding is the Hive-Tender\'s niche; the champion leads as a tank).
+    def:{ hp:560, dmg:17, atk:1.3, range:20, move:32, tag:'tank' },
+    lvl:{ hp:70, dmg:3, atk:0.02 },       // +hp+70, +dmg+3, atk-rate +0.02 per level beyond 1
+  },
+  // -------- Robots champion: "Warden-01" --------
+  // Robot identity = the deadly automaton legion (overclock line: cold plates, cheap, mineral-hungry
+  // war-host that presses a closing fight). The champion embodies it as the overclock WAR-BRAIN: a
+  // tanky central controller that soaks the line and overclocks the frames around it as the foe closes.
+  // Ice-silver accent family.
+  robots: {
+    id:'robots', name:'Warden-01', ic:'🧠', role:'OVERLORD',
+    desc:'The Automaton legion\'s central war-brain — a living overclock that soaks the front and sharpens every robot around it. Levels with every battle cleared.',
+    // front controller: heavy hp + steady mid melee; reads as the command hub of the plate column.
+    def:{ hp:600, dmg:19, atk:1.15, range:24, move:30, tag:'tank' },
+    lvl:{ hp:74, dmg:4, atk:0.03 },        // +hp+74, +dmg+4, atk-rate +0.03 per level beyond 1
+  },
+  // -------- Federation champion: "Commodore Vale" --------
+  // Federation identity = the professional deep-space army (airdrop line: fewer, tougher, coordinated +
+  // orbital support). The champion embodies it as the air-support COMMANDER: a precise ranged officer
+  // who calls the professional push — reads as the coordination spine of the human line. Cobalt accent.
+  federation: {
+    id:'federation', name:'Commodore Vale', ic:'🎖️', role:'COMMANDER',
+    desc:'Federation commodore — a precise ranged officer who coordinates the professional push and calls in support on the front. Levels with every battle cleared.',
+    def:{ hp:430, dmg:32, atk:0.85, range:155, move:42, tag:'ranged' },
+    lvl:{ hp:60, dmg:6, atk:0.05 },        // +hp+60, +dmg+6, atk-rate +0.05 per level beyond 1
+  },
+};
+
+function heroById(fid){ return HERO_DEFS[fid] || null; }
+function heroList(){ return Object.keys(HERO_DEFS).map(id=>HERO_DEFS[id]); }
+
+// -------------------------------- level scaling --------------------------------
+// Turn a champion def + an integer level (>=1) into the battle-time STATS its field body should carry.
+// Pure: returns a fresh def clone (never mutates the shared hero def — engine + tests may read freely).
+// Growth is additive per level BEYOND 1 (level 1 = the base def unchanged, so a level-1 hero fields
+// exactly its catalogued stats — an obvious, readable floor).
+function heroStats(hero, level){
+  if(!hero) return null;
+  const lv = Math.max(1, (level|0) || 1);
+  const extra = lv - 1;                                   // levels beyond 1 add growth
+  const g = hero.lvl || {};
+  const d = Object.assign({}, hero.def || {});            // clone so we NEVER mutate the shared def
+  d.hp  = Math.round((d.hp||0)  + (g.hp||0)  * extra);
+  d.dmg = Math.round((d.dmg||0) + (g.dmg||0) * extra);
+  if(g.atk) d.atk = +( +(d.atk||0) + g.atk * extra).toFixed(3);
+  return d;
+}
+
+// -------------------------------- run ledger --------------------------------
+// A run owns which champion it fields + that champion's LEVEL + XP:
+//   run.hero = { factionId, level }       level starts 1; wins (or other events) feed XP -> level.
+// Mirror helpers keep it /run.mjs/-shaped (newRun seeds an empty hero slot via addHeroLedger below so
+// the ledger is always present without changing any untouched shape byte).
+function addHeroLedger(run){
+  if(run && !run.hero){ run.hero = null; }        // null = no champion fielded (default, byte-identical)
+  return run;
+}
+
+// PICK the champion this run will field (a faction's own champion). Returns the new hero read, or null
+// on a bad faction. A run may only field ITS faction's champion (one per side) — picking again re-picks
+// the same id (idempotent) and never resets level.
+function pickHero(run, fid){
+  if(!run || !HERO_DEFS[fid]) return null;
+  addHeroLedger(run);
+  if(run.hero && run.hero.factionId===fid) return run.hero;   // already fielding that champion
+  run.hero = { factionId:fid, level:1 };                       // fresh champion at level 1
+  return run.hero;
+}
+
+// Read the champion THIS run fields (its faction+current level) or null.
+function heroOf(run){ addHeroLedger(run); return run.hero || null; }
+// The level of a run's champion (1 when none fielded / not picked — a usable floor).
+function heroLevel(run){ const h=heroOf(run); return (h && h.level>0)? h.level : 1; }
+
+// The HERO DEF entry matching the faction the run currently champions (null if it doesn't field one).
+function heroChampion(run){ const h=heroOf(run); return h? heroById(h.factionId) : null; }
+
+// LEVEL UP the run champion. Returns the new level, or -1 when the run fields no champion and -2 for a
+// bad requested delta (only forward moves are meaningful, but we allow re-set for test convenience).
+function levelHero(run, toLevel){
+  const h=heroOf(run);
+  if(!h) return -1;
+  const want = Math.max(1, (toLevel|0)||1);
+  if(want>h.level) h.level = want;                 // only ever grow (never regress)
+  return h.level;
+}
+
+// Human read of what a battle opener needs: which champion (by faction) + at what level to field it.
+//   { factionId:'rebels', level:3 }   (null => absent, stable)
+function emitHero(run){
+  const h = heroOf(run);
+  if(!h) return null;
+  return { factionId: h.factionId, level: h.level };
+}
+
+// -------------------------------- XP / level-up-across-a-run --------------------------------
+// The champion LEVELS ACROSS THE RUN — wins feed XP, XP fills toward the next level (the slice-1
+// comment promised the run ledger carries "its LEVEL + XP", so this is that XP half, added additively
+// in the live slice). Pure: a run-only ledger read/write; a battle opener just reads the resulting
+// level via emitHero/heroLevel. The curve is deliberately readable pre-B-S8 balance (one win's worth of
+// XP = one level) so a 4-battle run's champion grows measurably as you advance — the hero you win your
+// early battles with is visibly stronger by the finale. Granting XP can only ever GROW the level (never
+// regress a level set higher by another source), so it composes cleanly with levelHero()/emitHero.
+// A run with no champion fielded refuses XP (returns -1) => no-champion runs stay byte-identical.
+const HERO_XP_WIN = 25;            // quest-completion XP a battle win banks toward the champion
+// XP required to reach the NEXT level beyond 1 (one win per level in this tentative pre-S-8 curve).
+const HERO_XP_PER_LEVEL = 25;
+// Cumulative XP needed for a champion to BE at `level` (level 1 = 0 XP).
+function xpForLevel(level){ return Math.max(0, ((level|0)||1) - 1) * HERO_XP_PER_LEVEL; }
+// The level a given XP total qualifies for (level 1..; never below 1).
+function levelForXp(xp){ return 1 + Math.floor(Math.max(0, (xp|0)||0) / HERO_XP_PER_LEVEL); }
+// How many xp the run champion currently holds (0 when none fielded).
+function heroXp(run){ const h=heroOf(run); return (h && h.xp>0) ? h.xp : 0; }
+// BANK XP toward the run champion (wins feed this). Returns the NEW level after any auto level-up, or
+// -1 when the run fields no champion. Sets run.hero.xp once fielded; never lowers the current level.
+function grantHeroXp(run, xp){
+  const h = heroOf(run);
+  if(!h) return -1;
+  const add = Math.max(0, (xp|0)||0);
+  if(!add) return h.level;
+  h.xp = (h.xp>0? h.xp : 0) + add;
+  const lv = levelForXp(h.xp);
+  if(lv > h.level){ h.level = lv; }         // only ever grow (win-driven level-up, never a regress)
+  return h.level;
+}
+
+// factions.mjs — B-S6 (Pillar §4 content carry-forward) FACTION-EXPANSION CATALOG.
+// Scope §4: "Robots + Federation factions (unique hero + mechanic + roster + expansion of the Aliens/
+// Rebels pool to buildings/spells/hero/upgrade trees), class/species modifiers per faction".
+//
+// THIS SLICE is the pure DATA + MODEL backbone: two complete, engine-ready faction defs (Robots and
+// Federation), each with its own worker + fighting roster (melee/swarm/ranged/burst/tank/splash/healer
+// + a per-faction flyer, AA answer and UNIQUE special), a per-faction species/CLASS identity read, and
+// widening entries for the existing pools. It does NOT yet put these factions on the live boot gate —
+// the gate and every engine side assumption stay rebels/aliens, so every existing run is byte-identical
+// and the full suite stays green. Wiring them into a real pick/battle flow is a later B-S6 slice that
+// consumes this catalog.
+//
+// Faction def schema mirrors units.js FACTIONS entries exactly (worker 'node' + fighting keys g/s/r/t/b/
+// w plus a flyer and a special), so the consumer slice can register them into FACTIONS / the shop / the
+// engine with no structural change. Each also carries a `classTag`/`species` read (B-S6 "classes/species
+// modifiers per faction") — pure data, engine-agnostic.
+
+// Robots the armored automaton legion — cold, disciplined mineral-hungry machinery. Their "species"
+// modifier = they never heal organically; they field more per-mineral cheap bodies and overclock against
+// a closing fight (the live mechanic slot). Sand/silver cold family.
+const ROBOTS = {
+  id:'robots', name:'Automaton Legion', color:'#cfe6f0', accent:'#8fd8f0',
+  desc:'Merciless robot war-host. Cheap, precise, mineral-hungry plates that press the line and overclock when the foe closes.',
+  unique:'overclock', species:'machine',
+  roster:[
+    { key:'node', icon:'⚙️', name:'Sapper-Unit', tag:'worker', hp:70, move:44, cost:{min:30}, emoji:'⚙️',
+      desc:'Automaton harvester. Mines minerals & gas from the field.' },
+    { key:'g', icon:'🤖', name:'Gear-Grunt', tag:'melee', hp:86, dmg:10, atk:1.5, range:16, move:52, cost:{min:28}, emoji:'🤖',
+      desc:'Stamped mass-produced assault frame.' },
+    { key:'s', icon:'⚡', name:'Sparker Swarm', tag:'swarm', hp:42, dmg:5, atk:2.2, range:13, move:66, cost:{min:15}, emoji:'⚡', qty:2,
+      desc:'Two buzzing capacitor drones — a cheap zerg of volts.' },
+    { key:'r', icon:'🎯', name:'Rail-Sniper', tag:'ranged', aa:true, hp:56, dmg:13, atk:0.9, range:165, move:36, cost:{min:45,gas:6}, emoji:'🛰',
+      desc:'Magnetic rail fire. AA: tracks + denies flyers.' },
+    { key:'t', icon:'🧱', name:'Bulwark-Tread', tag:'tank', hp:340, dmg:11, atk:1.25, range:20, move:27, cost:{min:74}, emoji:'🧱',
+      desc:'Armored siege-tread wall that grinds forward.' },
+    { key:'b', icon:'💠', name:'Plasma-Caster', tag:'splash', hp:88, dmg:17, atk:1.0, range:42, move:38, cost:{min:56,gas:5}, emoji:'💠', splash:58,
+      desc:'Scatters super-heated plasma on clumps.' },
+    { key:'w', icon:'🩻', name:'Repair-Bot', tag:'healer', hp:64, dmg:0, atk:0.8, range:92, move:42, cost:{min:58,gas:9}, emoji:'🔧', heal:7,
+      desc:'Welds integrity back into adjacent frames.' },
+    // B-S1 flyer: silent air-recon interceptor (only anti-air / air can hit it)
+    { key:'f', icon:'✈️', name:'Strike-Drone', tag:'ranged', fly:true, hp:42, dmg:10, atk:1.15, range:130, move:70, cost:{min:98,gas:22}, emoji:'✈️',
+      desc:'FLYING drone — sweeps over the ground fight and strafes the enemy core. AA-only counter.' },
+    { key:'u', icon:'⚙️', name:'Overlord-Core', tag:'special', specialKind:'overclock', hp:230, dmg:9, atk:0.9, range:24, move:24, cost:{min:118,gas:28}, emoji:'🧠',
+      desc:'UNIQUE: central war-brain that overclocks nearby robots as the fight closes in.' },
+  ],
+};
+
+// Federation the disciplined combined-arms expedition — precise professional human military with real
+// orbital logistics. Their "species" modifier = human professional: fewer, harder, coordinated frames
+// (an air-support airdrop unique). Steel/cobalt-blue accent family.
+const FEDERATION = {
+  id:'federation', name:'Star Federation', color:'#bcd8ff', accent:'#7fb2ff',
+  desc:'Professional deep-space army. Fewer, tougher, coordinated; calls orbital air support down on the push.',
+  unique:'airdrop', species:'human',
+  roster:[
+    { key:'node', icon:'🛠️', name:'Service-Drone', tag:'worker', hp:66, move:42, cost:{min:31}, emoji:'🛠️',
+      desc:'Orbital drop harvester. Mines minerals & gas from the field.' },
+    { key:'g', icon:'🪖', name:'Trooper', tag:'melee', hp:92, dmg:10, atk:1.5, range:16, move:52, cost:{min:30}, emoji:'🪖',
+      desc:'Line infantry of the Federation — disciplined and tough.' },
+    { key:'s', icon:'🔍', name:'Breach-Cell', tag:'burst', hp:52, dmg:28, atk:0.9, range:118, move:44, cost:{min:54,gas:8}, emoji:'🎯',
+      desc:'High-alpha breach team — deletes a single backliner.' },
+    { key:'r', icon:'🚁', name:'AA-Gunner', tag:'ranged', aa:true, hp:58, dmg:12, atk:1.2, range:175, move:38, cost:{min:44,gas:6}, emoji:'🎖',
+      desc:'Designation turret on legs. AA: lights up + denies flyers.' },
+    { key:'t', icon:'🛡️', name:'Paladin-Mech', tag:'tank', hp:330, dmg:12, atk:1.25, range:22, move:27, cost:{min:76}, emoji:'🛡️',
+      desc:'Powered-armor bulwark that holds the professional line.' },
+    { key:'b', icon:'🚀', name:'Scattershock', tag:'splash', hp:84, dmg:19, atk:0.95, range:45, move:38, cost:{min:59,gas:5}, emoji:'🚀', splash:60,
+      desc:'Mini-rocket payloads for grouped targets.' },
+    { key:'w', icon:'💉', name:'Combat-Med', tag:'healer', hp:62, dmg:0, atk:0.9, range:96, move:44, cost:{min:58,gas:8}, emoji:'💉', heal:8,
+      desc:'Field triage that keeps the professional line standing.' },
+    // B-S1 flyer: orbital strike-skiff (only anti-air / air can hit it)
+    { key:'v', icon:'🛩️', name:'Sky-Lancer', tag:'ranged', fly:true, hp:46, dmg:12, atk:1.05, range:134, move:72, cost:{min:102,gas:21}, emoji:'🛩️',
+      desc:'FLYING attack-skiff — dives past ground walls to rake the enemy core.' },
+    { key:'u', icon:'📡', name:'Comms-Officer', tag:'special', specialKind:'airdrop', hp:140, dmg:20, atk:1.3, range:128, move:50, cost:{min:124,gas:26}, emoji:'📡',
+      desc:'UNIQUE: calls a free orbital airdrop reinforcement when the line needs it.' },
+  ],
+};
+
+const EXPANSION_FACTIONS = { robots: ROBOTS, federation: FEDERATION };
+
+// B-S6 slice 3 flips the LIVE gate from the core pair to the full FOUR-faction union. Rebels keeps
+// the FIRST slot so it stays the gate default (rebels' campaign contract in the DOM tests + the boot
+// grid's default `.sel` tile); the two core + two expansion ids are all now genuinely pickable and
+// playable in a real browser run (each resolves through the union roster helper `rosterFor`/allOf).
+// Order = the boot-tile presentation order. Kept a frozen top-level list so every downstream loop
+// that wants to show/iterate the LIVE gates iterates exactly the playable set.
+const LIVE_FACTION_IDS = Object.freeze(['rebels','aliens','robots','federation']);
+
+// Faction catalog accessor shorthands the live/UI layer reaches through (flattened into scope).
+// allOf(): one union map of the LIVE factions (core FACTIONS + EXPANSION_FACTIONS) so any caller can
+//   resolve a FACTION id ('rebels'/'aliens' via FACTIONS, 'robots'/'federation' via our catalog) with a
+//   single object read — mirroring what the battle engine does through its own resolve helper in game.js.
+// defOf(fid):  resolve ONE faction def by id across the union (null on unknown). opponentOf(fid):
+//   deterministic round-robin through the LIVE set to a DIFFERENT faction (rebels→aliens preserved so the
+//   existing rebels-vs-aliens campaign contract + DOM tests hold byte-identical).
+function allOf(core){
+  const base = core || (typeof FACTIONS!=='undefined' ? FACTIONS : {});
+  return Object.assign({}, base, EXPANSION_FACTIONS);
+}
+function defOf(fid, core){ return allOf(core)[fid] || null; }
+function opponentOf(fid, live){
+  const list = (live && live.length)? live : LIVE_FACTION_IDS;
+  const me = list.indexOf(fid);
+  if (me<0) return null;
+  for (let i=1;i<list.length;i++){ const j=(me+i)%list.length; if(list[j]!==fid) return list[j]; }
+  return null;
+}
+
+// B-S6 widening: extra class/species entries offered to the EXISTING pools (Aliens/Rebels) as draft/
+// upgrade variants. Each = a full def shaped like the roster entries above, keyed to the parent faction
+// + a `variantOf` (which base-keyed unit it upgrades) so a later reward/upgrade tree can offer it.
+// Deliberately lean here — the backbone proves the shape; the live tree is a later slice.
+const CLASS_ENTRIES = {
+  // Aliens gain a "brood-species" armored brute variant of their tank — growth that reads as species.
+  aliens: [
+    { key:'t2', icon:'🦣', emoji:'🦣', name:'Brood-Behemoth', variantOf:'t', species:'brood', tag:'tank', hp:460, dmg:15, atk:1.0,
+      range:20, move:24, cost:{min:120,gas:20}, desc:'Matured brood-tank — slower, far harder, bloats the swarm front.' },
+  ],
+  // Rebels gain a salvage "guerilla" burst variant of their Spotter that trades range for punch.
+  rebels: [
+    { key:'r2', icon:'🎯', emoji:'⚡', name:'Guerrilla-Sniper', variantOf:'r', species:'guerilla', tag:'burst', aa:true, hp:52,
+      dmg:22, atk:0.8, range:110, move:44, cost:{min:58,gas:9},
+      desc:'Salvaged long-gun that hits harder up close. AA answer that punishes flyers.' },
+  ],
+};
+
+// B-S6 REWARD-TREE WIDENING (the remaining live slice): surface each faction's CLASS_ENTRIES species
+// variants onto the PLAYER's live shop + post-win card draft, so the widened pools are genuinely
+// fieldable in a campaign. extraRoster(fid) returns the extra variant defs for a faction (aliens/rebels
+// have entries; robots/federation/none return an empty list). The extras are appended ONLY by the
+// browser/campaign UI reads (shop + reward tree) — the base engine/newState/AI rosters and the core
+// FACTIONS/EXPANSION_FACTIONS defs are left byte-identical, so the enemy AI and every headless engine
+// sim (which resolve their own factions through the base defs) never see or buy a variant and balance
+// is untouched. Returning a COPY (never the shared CLASS_ENTRIES array mutated by a caller) keeps the
+// pure catalog readers (speciesOf/rosterFor/fightPoolCount) and existing suites green.
+function extraRoster(fid){
+  const e = (fid && CLASS_ENTRIES[fid]) || null;
+  return e ? e.map(def=>Object.assign({}, def)) : [];
+}
+
+// Human/species read: which species-clan a faction belongs to (used for faction flavour + any class
+// modifiers a later slice gates on). Returns the species key or 'organic'/'mech' default.
+function speciesOf(fid){
+  const f = EXPANSION_FACTIONS[fid];
+  if (f) return f.species;
+  if (fid==='aliens') return 'organic';
+  if (fid==='rebels') return 'human';
+  return null;
+}
+
+// Catalog accessor: the full engine-ready roster for a faction id, whether a core (rebels/aliens via the
+// FACTIONS caller passes in) or an expansion (collected here). Returns null for an unknown faction.
+function rosterFor(factions, fid){
+  if (!factions || !fid) return null;
+  if (factions[fid]) return factions[fid].roster;
+  const e = EXPANSION_FACTIONS[fid];
+  return e ? e.roster : null;
+}
+
+// Total per-faction fighting pool count (excluding the worker) — a lean invariant read for pool/deck
+// sizing. Worker key is 'node'; everything else fights.
+function fightPoolCount(factions, fid){
+  const r = rosterFor(factions, fid);
+  if (!r) return 0;
+  return r.filter(u=>u.key!=='node').length;
+}
+
 // game.js — battle simulation engine (pure logic, no DOM/render).
 // Movement/combat ported from working clone with the race-to-tower fix:
 //   units engage the nearest foe AHEAD; melee closes; ranged holds; advance to enemy core when clear.
@@ -1291,12 +1924,20 @@ function held(st){ return (st && Array.isArray(st.relics) && st.relics.filter(id
 
 
 function newState(factionId, difficulty, enemyFactionId, opts){
-  const f = FACTIONS[factionId];
+  // B-S6: a caller may ask for a faction that isn't in the LIVE two-faction gate (rebels/aliens) but IS
+  // in the engine-ready EXPANSION catalog (robots / federation). Resolve any faction through ONE helper
+  // so the battle engine can genuinely sim an expansion faction head-to-head. The gate/ui never pass
+  // these (still rebels/aliens), so every existing run/browser path is byte-identical — only a headless
+  // caller asking for robots/federation gets the expansion roster.
+  const resolveFaction = (fid) => (fid && FACTIONS[fid]) ? FACTIONS[fid] : (fid && EXPANSION_FACTIONS[fid]);
+  const f = FACTIONS[factionId] || EXPANSION_FACTIONS[factionId] || null;
   // OBJ-7 faction-vs-faction: when a valid enemyFactionId is passed the AI fields that OTHER roster;
   // otherwise (legacy callers — tests passing 2 args, or a stray {} opts) the enemy reuses the
-  // player's faction so nothing that relied on a single shared roster shifts.
-  const eid = (typeof enemyFactionId==='string' && FACTIONS[enemyFactionId]) ? enemyFactionId : factionId;
-  const af = FACTIONS[eid];
+  // player's faction so nothing that relied on a single shared roster shifts. B-S6: confirm against
+  // the union of the live gate AND the expansion catalog.
+  const eid = (typeof enemyFactionId==='string' && resolveFaction(enemyFactionId))
+    ? enemyFactionId : factionId;
+  const af = resolveFaction(eid) || f;
   const diffObj = (C.DIFF[difficulty] || C.DIFF.standard);
   const diff = Object.assign({}, diffObj);            // clone so per-battle campaign escalation never pollutes C.DIFF
   const o = (opts && typeof opts==='object')? opts : {};
@@ -1331,6 +1972,7 @@ function newState(factionId, difficulty, enemyFactionId, opts){
     pBar:C.BARRIER_HP, eBar:C.BARRIER_HP,  // economy-shield barriers (spawn each match; fall before the core)
     towers:{p:{cd:0},e:{cd:0}},
     fx:[], log:[],
+    buildings:[],   // B-S4 static deployables (player-owned structures). Empty by default => every existing sim is byte-identical.
     aiT:0, buyStack:[],
     // OBJ-3 behaviour ledger (headless proof + match-log evidence)
     stats:{
@@ -1340,6 +1982,8 @@ function newState(factionId, difficulty, enemyFactionId, opts){
       snipes:0,    tankHits:0,
       towerShots:0,
       workerTrips:0,
+      // B-S6 expansion-faction unique counters (robots overclock / federation airdrop) — 0 by default
+      overclocks:0, airdrops:0,
     },
   };
   return st;
@@ -1394,12 +2038,17 @@ function emitFx(st,x,kind,sub){ st.fx.push({ kind, x, t:0.5, sub: sub||0 }); }
 // ============================================================
 function simStep(st, dt){
   if (st.over) return st;
+  // B-S8 no-stalemate guard: once the clock passes DECISIVE_T without a core falling, resolve the
+  // genuinely-stuck match to the current leader instead of grinding forever. Additive — a normal battle
+  // ends by core fall long before DECISIVE_T, so untouched sims stay byte-identical.
+  if (st.t >= C.DECISIVE_T){ return decisiveResolve(st); }
   st.t += dt;
   economy(st, dt);
   AI(st, dt);
   moveAndFight(st, st.pUnits, st.eUnits, dt, false);
   moveAndFight(st, st.eUnits, st.pUnits, dt, true);
   towers(st, dt);            // obj 3e: core auto-turrets
+  structures(st, dt);        // B-S4: player static buildings (turret/extractor/foundry) act on the field
   projectiles(st, dt);       // obj 3b: advances/expires tracer fx only (AoE resolves on impact)
   for (const fx of st.fx) if (fx.t>0){ fx.t -= dt; if(fx.t<0)fx.t=0; }
   // prune fx + trim corpses (kept arrays small)
@@ -1410,6 +2059,8 @@ function simStep(st, dt){
 function rewardsAndTrim(st){
   const pa=[]; for(const u of st.pUnits) if(u.alive) pa.push(u); st.pUnits=pa;
   const ea=[]; for(const u of st.eUnits) if(u.alive) ea.push(u); st.eUnits=ea;
+  // B-S4: prune destroyed buildings (nothing alive by default)
+  const ba=[]; for(const b of (st.buildings||[])) if(b.alive) ba.push(b); st.buildings=ba;
 }
 
 // ============================================================
@@ -1560,6 +2211,27 @@ function freeSpawn(st, def, en, x){
   return nu;
 }
 
+// ---- B-S5 HEROES: free-field the run's CHAMPION onto the field (engine-side truth). ----
+// `fid` = which faction's champion to field (its HERO_DEFS[id]); `level` = the run-champion level the
+// battle was armed at (1 default). The body is a freeSpawn (never charges a cost / never counts toward
+// 'bought' bookkeeping — the champion rides along as a fielded leader every battle, not a shop buy).
+// Stats come from heroStats() (the pure level-scaling) so level-1 == the catalogued base def, and each
+// level beyond grows hp/dmg (loose pre-S-8 tuning). Absent an armed champion there is no body => every
+// existing run/test is byte-identical. Returns the spawned body (null on an unknown faction/no def).
+function grantHero(st, fid, level, en, x){
+  const heroDef = (fid && HERO_DEFS[fid]) ? HERO_DEFS[fid] : null;
+  if(!heroDef || !st) return null;
+  const lv = Math.max(1, (level|0) || 1);
+  let bodyDef = heroStats(heroDef, lv);
+  if(!bodyDef) return null;
+  // tag the champion (so render/AI/recap can read it as a hero, not a plain roster card):
+  bodyDef = Object.assign({}, bodyDef, { hero:true, heroFid:fid, heroLevel:lv, name: heroDef.name, ic: heroDef.ic });
+  const sx = (typeof x==='number')? x : homeAnchor(en);
+  const body = freeSpawn(st, bodyDef, en, sx);
+  if(st.stats) st.stats.heroF = (st.stats.heroF||0)+1;   // hero-fielded ledger (headless proof)
+  return body;
+}
+
 // ============================================================
 // AI (enemy only — plus keeps BOTH sides' worker economies healthy so gas unlocks)
 // ============================================================
@@ -1642,6 +2314,19 @@ function moveAndFight(st, units, foes, dt, en){
     if (u.def.tag==='special'){ special(st,u,en,dt,foes); continue; }
     // ---- standard combatants (melee/swarm/ranged/burst/splash/tank) ----
     u.cd -= dt;
+    // B-S4 bulwark: enemy movers stop & chew the nearest living player WALL ahead of them (a barricade
+    // that behaves like an extra barrier line). Only the ENEMY team chews player walls; with no wall in
+    // the path this returns null instantly so every untouched sim stays byte-identical.
+    if (en){
+      const w = wallAhead(st, u);
+      if (w){
+        if (Math.abs(u.x-w.x) <= u.def.range + 6 || Math.abs(u.x-w.x) <= (C.ENGAGE||60)+6){
+          if(u.cd<=0){ u.cd=1/(u.def.atk||1); chewWall(st, u, w); }
+          continue;
+        }
+        u.x += dir*u.def.move*dt; u.x=clampLane(u.x); continue;   // advance up to the wall
+      }
+    }
     const cX = frontStopX(st,!en);          // stop at the barrier while it stands, else the core
     if ((en? u.x<=cX+4 : u.x>=cX-4)){ if(u.cd<=0){ u.cd=1/(u.def.atk||1); strikeFront(st,u,!en); } continue; }
     const { foe, dist } = nearestAhead(u, foes);
@@ -1687,8 +2372,12 @@ function clampLane(x){ return Math.max(6, Math.min(C.LANE_W-6, x)); }
 
 // ---------------- specials (OBJ 3c): faction uniques ----------------
 function special(st, u, en, dt, foes){
+  // B-S6 expansion uniques come from the roster's own specialKind (robots 'overclock', federation
+  // 'airdrop'); legacy factions fall back by faction id (aliens hive, else saboteur) unchanged.
   const kind = u.def.specialKind || (st.factionId==='aliens'?'hive':'saboteur');
-  if (kind==='hive') specialHive(st,u,en,dt,foes);
+  if (kind==='overclock') specialOverclock(st,u,en,dt,foes);
+  else if (kind==='airdrop') specialAirDrop(st,u,en,dt,foes);
+  else if (kind==='hive') specialHive(st,u,en,dt,foes);
   else specialSaboteur(st,u,en,dt,foes);
 }
 
@@ -1752,6 +2441,56 @@ function specialSaboteur(st, u, en, dt, foes){
   u.x = clampLane(u.x);
 }
 
+// B-S6.REBOTS UNIQUE 'overclock' — Automaton Overlord-Core: a front command-bruiser that advances and
+// fights just like the aliens Hive-Tender, but instead of summoning it OVERCLOCKS its nearby melee/
+// swarm when the fight CLOSES. Species story (machine): robots never heal — instead they press harder
+// the closer an enemy gets. `_ocOn` toggles ON only while a foe is within OVERCLOCK_NEAR_R (the closing
+// window); then friendly melee/swarm within OVERCLOCK_AURA_R of ANY live overclock commander read the
+// +damage (the attack() melee block multiplies ×OVERCLOCK_MULT and counts st.stats.overclocks). With no
+// foe near it stays off, so a lone defending robot has no free power.
+function specialOverclock(st, u, en, dt, foes){
+  const dir = geomDir(en);
+  u.cd -= dt;
+  // “has the fight closed?” — a living enemy press near this commander (either side of the lane)
+  let near = false;
+  for (const f of foes){ if (!f.alive) continue; if (Math.abs(f.x-u.x) <= C.OVERCLOCK_NEAR_R){ near = true; break; } }
+  u._ocOn = near;
+  const cX = frontStopX(st,!en);
+  if (en? u.x<=cX+4 : u.x>=cX-4){ if(u.cd<=0){ u.cd=1/(u.def.atk||1); strikeFront(st,u,!en); } return; }
+  const { foe, dist } = nearestAhead(u, foes);
+  if (foe && dist<=u.def.range){ if(u.cd<=0){ u.cd=1/(u.def.atk||1); attack(u,foe,foes,st,en); } }
+  else u.x += dir*u.def.move*dt;
+  u.x = clampLane(u.x);
+}
+
+// B-S6 FEDERATION UNIQUE 'airdrop' — Comms-Officer: a ranged artillery-officer backliner. It fights from
+// range like a normal ranged unit, and periodically calls a FREE 'g' trooper airdrop onto its advancing
+// line (orbital logistics). Capped (AIRDROP_MAX_LIVE live friends of that key) so it can't snowball —
+// a lone officer ashore just marks targets, it doesn't flood the lane.
+function specialAirDrop(st, u, en, dt, foes){
+  const dir = geomDir(en);
+  u.cd -= dt;
+  u.spCd -= dt;
+  // periodic orbital call — a free trooper airdrop dropped just ahead of the officer toward the foe
+  if (u.spCd<=0 && !st.over){
+    const gDef = (en? (st.aifac||st.faction) : st.faction).roster.find(d=>d.key==='g');
+    const teamG = aliveTeam(st,en).filter(a=>a.def.key==='g').length;
+    if (gDef && teamG < C.AIRDROP_MAX_LIVE){   // strict under-cap: only call when we can add one without exceeding
+      freeSpawn(st, gDef, en, u.x + (en? -22 : 22));
+      st.stats.airdrops++;
+      emitFx(st,u.x,'summon');
+      u.spCd = C.AIRDROP_CD;
+    } else u.spCd = 0.4;
+  }
+  // fight from range like a standard ranged backliner (advance to the structure when clear)
+  const cX = frontStopX(st,!en);
+  if (en? u.x<=cX+4 : u.x>=cX-4){ if(u.cd<=0){ u.cd=1/(u.def.atk||1); strikeFront(st,u,!en); } return; }
+  const { foe, dist } = nearestAhead(u, foes);
+  if (foe && dist<=u.def.range){ if(u.cd<=0){ u.cd=1/(u.def.atk||1); attack(u,foe,foes,st,en); } }
+  else u.x += dir*u.def.move*dt;
+  u.x = clampLane(u.x);
+}
+
 // ---------------- attack (shared): splash = real AoE on impact ----------------
 function attack(u, foe, foes, st, en){
   const tag = u.def.tag;
@@ -1776,7 +2515,22 @@ function attack(u, foe, foes, st, en){
         if (h===me) continue;
         if (h.def.specialKind==='hive' && Math.abs(h.x-me.x)<=HIVE_AURA_R){ d=Math.round(d*HIVE_AURA_MULT); st.stats.buffedHits++; break; }
       }
+      // B-S6 ROBOTS 'overclock': a live overclock commander in pressure (_ocOn) within reach buffs
+      // friendly melee/swarm damage. Purely additive — absent any such commander d is unchanged, so
+      // the whole existing (rebels/aliens) suite stays byte-identical.
+      if (!u.def.fly){ // ground melee/swarm (the cheap robot bodied line) — flyers don't take the buff
+        for(const h of aliveTeam(st,en2)){
+          if (h===me) continue;
+          if (h._ocOn && h.def.specialKind==='overclock' && Math.abs(h.x-me.x)<=C.OVERCLOCK_AURA_R){
+            d=Math.round(d*C.OVERCLOCK_MULT); st.stats.overclocks++; break;
+          }
+        }
+      }
     }
+    // B-S4 one-time kit: an allied 'Rally Cry' consumable multiplies PLAYER standard-attacker damage
+    // for a short window (field fx `_rally` armed by applyPower; never present by default => an
+    // untouched state is byte-identical to before, so the whole existing suite stays green).
+    if (!u.isEnemy && st && st._rally && st.t < st._rally.until){ d = Math.round(d * (st._rally.mul||1)); }
     dmg(foe, d, st, u);
   }
 }
@@ -1798,6 +2552,65 @@ function dmg(u, amt, st, src){
 // show a brief forward lunge + weapon/muzzle flash. NEVER read back into sim decisions, and u.swing is
 // never decremented — it decays purely by st.t advancing. Sim math is byte-identical.
 const LUNGE_T = 0.18;
+
+// ============================================================
+// B-S4 (Pillar §4 carry-forward) ONE-TIME BATTLE KIT — applyPower (the engine-side sim truth).
+// A single entry point the UI calls when the player CASTS a one-time kit power (spell or consumable)
+// on the LIVE battle state `st`. All real effects (damage/heal/buff) mutate st here — never in the
+// pure kit.mjs layer, which only owns defs + run bookkeeping. `powId` is validated against the canned
+// effect specs below (NO unknown id ever touches the field), and missing/absent cases return null so a
+// caller can tell a fizzle from a successful cast. x is an optional lane point used by AoE powers
+// (default = midlane). This hook is ADDITIVE: untouched states (no _rally / no cast) behave exactly as
+// before => the whole existing suite stays green.
+// ============================================================
+
+// Arm the 'Rally Cry' damage window on `st` (called by applyPower for the rally consumable).
+function applyPower(st, powId, x){
+  if(!st || st.over) return null;
+  const X = (typeof x==='number') ? x : C.MID;
+  const now = st.t;
+  const hit = { ok:true, pow:powId, atX:X, killed:0, healed:0 };
+  if(!st.stats) st.stats = {};
+  switch(powId){
+    // SPELLS (one-shot: orbital barrage / med-wave heal)
+    case 'orbital': {                    // heavy AoE damage at a field point vs every living enemy unit
+      const R = 90, amt = 60;
+      const foes = st.eUnits;
+      for(const f of foes){ if(!f.alive) continue;
+        const d2 = Math.abs(f.x-X);
+        if(d2<=R){ dmg(f, amt, st, null); if(!f.alive) hit.killed++; } }
+      st.stats.kitAoe=(st.stats.kitAoe||0)+1; st.stats.kit=(st.stats.kit||0)+1;
+      emitFx(st, X, 'aoe');
+      return hit;
+    }
+    case 'medwave': {                    // heal every living allied combatant on the field
+      const amt = 55;
+      for(const a of st.pUnits){ if(!a.alive||a.def.tag==='worker') continue;
+        if(a.hp>0){ const healed=Math.min(amt, a.maxHp - a.hp); if(healed>0){ a.hp += healed; hit.healed++; } } }
+      st.stats.kit=(st.stats.kit||0)+1; st.stats.kitHeal=(st.stats.kitHeal||0)+1;
+      emitFx(st, C.MID, 'heal');
+      return hit;
+    }
+    // CONSUMABLES (held belt charges; the UI spends run.belt BEFORE calling this)
+    case 'rally': {                      // +dmg for a brief window (players only)
+      st._rally = { mul:1.6, until: now + 14 };
+      st.stats.kit=(st.stats.kit||0)+1; st.stats.kitBuff=(st.stats.kitBuff||0)+1;
+      emitFx(st, C.MID, 'rally');
+      return hit;
+    }
+    case 'frag': {                       // smaller AoE burst via a staged lob
+      const R = 70, amt = 40;
+      const foes = st.eUnits;
+      for(const f of foes){ if(!f.alive) continue;
+        if(Math.abs(f.x-X)<=R){ dmg(f, amt, st, null); if(!f.alive) hit.killed++; } }
+      st.stats.kit=(st.stats.kit||0)+1; st.stats.kitAoe=(st.stats.kitAoe||0)+1;
+      emitFx(st, X, 'boom');
+      return hit;
+    }
+    default:
+      return null;                       // unknown id => fizzle (never touch the field)
+  }
+}
 function rewardKill(st, src, victim){
   if (victim.def.tag==='worker') return;
   const bounty = victim.def.tag==='tank' ? 10 : 6;
@@ -1921,7 +2734,167 @@ function shotFromIsPlayerCore(st, isPlayerCore, dt){
 // already carry the visual. Kept as a hook so 3b's "splash travel" can be added later if wanted.
 function projectiles(st, dt){ /* resolved on impact in attack()/towers() */ }
 
+// ============================================================
+// B-S4 (Pillar §4 carry-forward) STATIC BUILDINGS — engine-side sim truth.
+// B-S4 bulwark WALL routing helpers (called from moveAndFight for the enemy team; additive — with no
+// player wall present they never run, so the whole existing suite stays byte-identical).
+
+// Return the nearest living PLAYER wall building that is directly AHEAD of the enemy mover `u` (i.e. lies
+// at a smaller x, in the enemy's direction of march toward the player side). Null when none / not an
+// enemy mover / no player wall is in the path.
+function wallAhead(st, u){
+  const arr = st.buildings; if(!arr || !arr.length) return null;
+  let best=null, bestX=-1e9;                       // want the wall closest in front (max x still < u.x)
+  for(const b of arr){
+    if(!b || !b.alive || !b.def || b.def.cat!=='wall' || b.side!=='p') continue;
+    if(b.x < u.x && b.x > bestX){ bestX=b.x; best=b; }
+  }
+  return best;
+}
+
+// Chew the wall: damage it on the attacker's atk cadence exactly like the barrier/core strike. When the
+// wall dies (alive=false) it is pruned by rewardsAndTrim and the mover resumes toward the core/barrier.
+function chewWall(st, u, w){
+  u.swing = st.t;                                   // cosmetic lunge cue
+  const amt = u.def.dmg/5;                          // same per-hit cadence as barrier/core strikes
+  w.hp = Math.max(0, (w.hp||0) - amt);
+  if(w.hp<=0) w.alive = false;
+}
+
+// deployBuilding() is the single entry the UI/opener calls to place an owned building (def lives in
+// build.mjs; behaviour lives HERE). Each spawned body is appended to st.buildings (a PLAYER-owned
+// structure by default; the array is empty in every untouched state so the whole existing suite stays
+// byte-identical). The `structures()` pass (called from simStep right after the core towers) makes each
+// deployed body do its thing every frame.
+//
+// Implemented kinds:
+//   • turret    (auto-fire)  — static tower, fires at the nearest living enemy in range (shares the core-
+//                              tower cadence, counting its own towerShots state).
+//   • extractor (income)     — every work-beat credits the owner's mineral pool directly.
+//   • foundry   (free-field) — fields one free combatant from the OWNER's roster on a cadence (capped so
+//                              a line can't unboundedly snowball). Player-side here => uses st.faction.
+//   • bulwark   (wall)       — a static barricade. Enemy MOVERS stop and chew it (like the player barrier)
+//                              until it is destroyed, then they push on. Player units ignore their own
+//                              walls (they're placed defensively ahead of/superfluously to the line). The
+//                              routing lives in moveAndFight (see wallAhead/chewWall) + this pass prunes it.
+// ============================================================
+function deployBuilding(st, bldId, x){
+  if(!st || st.over) return null;
+  const def = (BUILD_DEFS && BUILD_DEFS[bldId]) || null;
+  if(!def || def.kind!=='build') return null;               // unknown id => never touches the field
+  const fx = def.fx || {};
+  const body = {
+    bld:bldId, def, side:'p', isBuilding:true, alive:true, x:clampLane(x==null ? C.PBAR_X+40 : x),
+    hp:(fx.hp!=null? fx.hp : 200), maxHp:(fx.hp!=null? fx.hp : 200),
+    cd:0, work:0, boom:0, fired:0, spawned:0,
+  };
+  // each building kind carries its own behaviour stat cache
+  if(!st.stats) st.stats={};
+  if(!st.stats.kitBuilds) st.stats.kitBuilds=0;
+  st.stats.kitBuilds++;
+  st.buildings = st.buildings || [];
+  st.buildings.push(body);
+  emitFx(st, body.x, (def.cat==='income')? 'mine' : 'summon');   // placement cue (cosmetic, guarded)
+  return body;
+}
+
+function structures(st, dt){
+  const arr = st.buildings;
+  if(!arr || !arr.length) return;                     // no buildings => zero cost, byte-identical
+  for(const b of arr){
+    if(!b.alive) continue;
+    const kind = b.def && b.def.cat;
+    if(kind==='fire')   structureFire(st, b, dt);
+    else if(kind==='income') structureIncome(st, b, dt);
+    else if(kind==='field') structureField(st, b, dt);
+  }
+}
+
+// turret — static auto-fire (mirror of the core-tower cadence, per-building cooldown + shots ledger).
+function structureFire(st, b, dt){
+  b.cd = (b.cd||0) - dt;
+  if (b.cd>0) return;
+  const R = (b.def.fx && b.def.fx.range) || 170;
+  const dmgAmt = (b.def.fx && b.def.fx.dmg) || 9;
+  const rate = (b.def.fx && b.def.fx.rate) || 1.4;
+  let t=null, td=1e9;
+  // a player structure scans to its RIGHT (toward the enemy) over living, non-worker enemy units.
+  for(const a of st.eUnits){ if(!a.alive||a.def.tag==='worker') continue;
+    if(a.x < b.x) continue;                       // only incursions to the right of the turret
+    if(a.x - b.x > R) continue;
+    const d = a.x - b.x;                          // nearest (deepest) incursion takes priority
+    if(d<td){ td=d; t=a; }
+  }
+  if(t){
+    b.cd = 1/rate; b.boom = st.t; b.lastTx = t.x; b.fired++;
+    dmg(t, dmgAmt, st, null);
+    if(st.stats) st.stats.kitTurretShots=(st.stats.kitTurretShots||0)+1;
+    emitFx(st,t.x,'shot',dmgAmt);
+  } else b.cd = 0.05;   // re-scan quickly when empty
+}
+
+// extractor — income: every work-beat, credit the OWNER's mineral pool directly (a real economy lift).
+function structureIncome(st, b, dt){
+  b.work = (b.work||0) - dt;
+  if(b.work>0) return;
+  const beat = (b.def.fx && b.def.fx.work) || 3.2;
+  const amt  = (b.def.fx && b.def.fx.income) || 18;
+  b.work = beat;
+  if(b.side!=='e'){ st.min += amt; if(b.side!=='e' && st.stats) st.stats.kitMined=(st.stats.kitMined||0)+amt; }
+  else st.eMin += amt;
+  emitFx(st, b.x, 'mine');
+}
+
+// foundry — free-field: periodically fields ONE free combatant of the OWNER's roster (a real snowball;
+// capped so it can't explode the field). Body derives like grantUnit (spawnDef honours deck upgrades).
+function structureField(st, b, dt){
+  b.cd = (b.cd||0) - dt;
+  if(b.cd>0) return;
+  const every = (b.def.fx && b.def.fx.every) || 9;
+  const cap = (b.def.fx && b.def.fx.cap) || 6;
+  b.cd = every;
+  const en = (b.side==='e');
+  const pool = en? (st.aifac||st.faction).roster : st.faction.roster;
+  const pick = pool && pool.find(d=>d.tag==='melee');       // foundry fields a basic line-holder
+  if(!pick) return;
+  // live-field cap against the current army size (simple global line guard)
+  const onField = (en? st.eUnits : st.pUnits).filter(u=>u.alive).length;
+  if(onField >= cap) return;                      // live cap reached => skip this beat
+  if(!en){ grantUnit(st, pick, false, b.x-20); } else { grantUnit(st, pick, true, b.x+20); }
+  b.spawned++;
+  if(st.stats) st.stats.kitFields=(st.stats.kitFields||0)+1;
+  emitFx(st, b.x, 'summon');
+}
+
 function end(st, win){ if(st.over)return; st.over=true; st.win=win; st.logWin=st.t; }
+
+// -------------------------------- B-S8 no-stalemate / decisive ceiling ----------------------------
+// A match may only end by a core falling OR by this decisive-resolution guard once t passes DECISIVE_T.
+// Two ultra-defensive compositions (healers out-pulsing the enemy's damage, or tank walls neither side
+// can push through) otherwise grind forever with no path to a core fall — the 'no-stalemate' S-8 goal.
+// `decisiveWinner` is the PURE leader-read the guard uses: it picks the side that is AHEAD by the amount
+// of the field it still holds — total remaining value (living-unit health pool + the economy barrier +
+// the main core) summed per side. The side that preserved more / pushed further takes the call; a dead
+// tie breaks to the PLAYER (defender-friendly default). It never mutates st, so tests can read it.
+function decisiveWinner(st){
+  if(!st) return true;                       // no state => default player (never reached in practice)
+  let pv = (st.pCore||0) + (st.pBar||0);
+  let ev = (st.eCore||0) + (st.eBar||0);
+  for(const u of (st.pUnits||[])) if(u && u.alive) pv += (u.hp||0);
+  for(const u of (st.eUnits||[])) if(u && u.alive) ev += (u.hp||0);
+  if(pv === ev) return true;                 // exact tie => player
+  return pv > ev;                            // true = player ahead, false = enemy ahead
+}
+// Resolve a battle that crossed DECISIVE_T to the current leader (never a silent infinite grind).
+// Additive: it only fires when st is NOT already over AND the clock passed the ceiling, so a normal
+// battle (which its core falls long before DECISIVE_T) never reaches it.
+function decisiveResolve(st){
+  if(!st || st.over) return st;
+  const pWins = decisiveWinner(st);
+  end(st, pWins);
+  if(st.log) st.log.push('⚖ decisive resolution @'+Math.round(st.t)+'s — no core fell by '+C.DECISIVE_T+'s; '+(pWins?'the player':'the enemy')+' held the field, crowned winner (no-stalemate).');
+  return st;
+}
 
 // sprites_data.mjs — 16 generated unit sprites (transparent PNG), on-field roster. Colorized per-unit.
 // Auto-generated from art_probe/generated/<id>_30px.png. Re-run: node art_probe/gen_sprites_data.mjs
@@ -2002,6 +2975,9 @@ function newRun({ factionId, enemyId, difficulty, deckBudget = 0, roster }){
   };
   addCardLedger(run);                 // S-2 owned-copy ledger (bag) open on every fresh run
   run.assigned = {};                  // S-2 A.1b nodeLabel -> cardKey (extra producers beyond FREE_MINER)
+  addKitLedger(run);                  // B-S4 S-4 kit ledger (spells + consumable belt) open on every fresh run
+  addBuildLedger(run);               // B-S4 S-4 BUILD ledger (owned static buildings) open on every fresh run
+  addHeroLedger(run);                // B-S5 hero ledger (champion slot + level) open on every fresh run
   return run;
 }
 
@@ -2602,7 +3578,607 @@ function deskNote(key){
   }
 }
 
+// save.mjs — B-S7 (meta-unlock persistence, scope §4 'meta-unlock persistence' / S-7) PURE SAVE MODEL.
+// The roguelite spine: a run must be RESUMABLE (Browser Back/refresh / close-and-continue) and the game
+// needs a small CROSS-RUN meta ledger so a finished run leaves durable progress (unlock flags + a meta
+// credit bank) behind. This module owns the pure, DEF-agnostic encode/decode of a live campaign into a
+// versioned JSON-safe snapshot and back, plus the pure META state a later ui.js slice persists across
+// runs. Headless + DOM-free (the B-S4a/B-S5-slice1/B-S6-slice1 engine/model-first precedent): NO storage
+// adapter, NO ui.js wiring here — a later B-S7 live slice maps this onto localStorage + the LOAD/CONTINUE
+// navLoad shell + meta-unlock select UI.
+//
+// Layering (keeps the battle sim + the run model the source of truth):
+//   run model (deck/relics/eco/kit/build/hero ledgers)   src/run.mjs + ./deck relics kit build hero
+//   THIS SAVE MODEL (snapshot encode/decode + meta bank)  src/save.mjs   (pure, no DOM)
+//   browser wiring (save-on-advance / navLoad CONTINUE / unlock UI)   src/ui.js   (later B-S7 slice)
+//
+// WHY a versioned *plain-snapshot* rather than localStorage.setItem(camp): the live `camp` is owned by
+// the browser wrapper and may carry incidental runtime fields / DOM-tied references. Serializing it raw
+// leaks those + couples the storage format to ui.js internals. This module instead PICKS the known
+// durable shape (the run-model plain ledgers + the small camp wrapper) into a versioned structure so a
+// future B-S7 slice (or schema bump) can extend it without coupling to the DOM layer, and DECODE rebuilds
+// that exact plain shape deterministically.
+
+const RUN_SAVE_VERSION = 1;
+
+// ---- which camp-wrapper fields are durable (the campaign shell, not the engine state) ----
+const CAMP_FIELDS = ['factionId','enemyId','difficulty','mode','battle','wins','upgrades','lanes'];
+// ---- which run-model ledgers are durable (all plain JSON — deck/relics/bag/assigned/kit/builds/hero
+//      are values only, and `pool` is a self-contained copy so a snapshot is byte-exact without a roster) ----
+const RUN_FIELDS = ['factionId','enemyId','difficulty','battle','wins','upgrades','deck','relics','seen',
+  'pool','budget','archetypes','bag','assigned','kit','builds','hero','__wind'];
+
+// ---- encode: turn a live `camp` (as startRun produces: camp.run = the newRun() model, camp.deck/relics/
+//      relicPool aliasing it) into a compact versioned JSON-safe snapshot. Returns null on a bad shape. ----
+function encodeCampState(camp){
+  if(!camp || !camp.run || typeof camp.run!=='object') return null;
+  const run = camp.run;
+  const out = { v:RUN_SAVE_VERSION, t:Date.now(), camp:{} };
+  for(const f of CAMP_FIELDS){ if(f in camp) out.camp[f]=_clone(camp[f]); }
+  if(camp.laneBoons){
+    // lane boons (branching finale) ride the wrapper in some live trees — preserve if present.
+    out.camp.laneBoons = _clone(camp.laneBoons);
+  }
+  out.camp.run = {};
+  for(const f of RUN_FIELDS){ if(f in run) out.camp.run[f]=_clone(run[f]); }
+  return out;
+}
+function _clone(v){
+  if(v===undefined) return undefined;
+  try{ return JSON.parse(JSON.stringify(v)); }catch(e){ return undefined; }  // circular/incidental -> drop
+}
+
+// ---- decode: rebuild a plain camp-shaped object (NOT wired to any live DOM/engine) from a snapshot.
+//      Returns null when the schema is unknown / malformed. The later ui.js slice hands this to a
+//      "resume" helper that attaches camp.run + the aliases (deck/relicPool/relics) + engines a battle. ----
+function decodeCampState(snap){
+  if(!snap || snap.v!==RUN_SAVE_VERSION) return null;
+  const s = snap.camp; if(!s || !s.run || !s.factionId) return null;
+  const out = {};
+  for(const f of CAMP_FIELDS){ if(f in s) out[f]=_clone(s[f]); }
+  if(s.laneBoons) out.laneBoons=_clone(s.laneBoons);
+  const r = {};
+  for(const f of RUN_FIELDS){ if(f in s.run) r[f]=_clone(s.run[f]); }
+  if(!s.run.pool || !(s.run.pool.length>0)) return null;       // need the unit-card pool to be playable
+  out.run = r;
+  return out;
+}
+
+// ---- the pure resume bundle helper a ui.js slice calls to turn a decoded plain camp back into a LIVE
+//      run. Since the run model is plain data and shares no live references, this re-attaches the run +
+//      the wrapper aliases (deck/relicPool/relics all alias the run) exactly the way startRun did, in one
+//      place, so the caller never hand-wires fields. Returns the resumed camp (suitable to assign to the
+//      global `camp` + then nextBattle(false,false)) or null on malformed input. ----
+function resumeDecodedCamp(decoded, hooks){
+  // hooks: { rosterOf:(fid)=>roster, allyRGB? } optional — future live slice may pass faction art. For the
+  // PURE model no roster re-derivation is needed because the snapshot stores its own self-contained pool.
+  if(!decoded || !decoded.run || !decoded.factionId) return null;
+  const run = decoded.run;
+  // normalize: ensure the eco/kit/build/hero ledgers exist (they are plain, but guarantee the keys the
+  // pure helpers expect are present so nothing downstream has to `??{}` defensively).
+  const camp = Object.assign({}, decoded);
+  camp.run = run;
+  return camp;
+}
+
+// ============================================================
+// META ROGUELITE BANK (cross-run durable progress — S-7 'meta-unlock persistence')
+// ============================================================
+// A small PERSISTENT (cross-RUN, not cross-battle) ledger of roguelite progress a completed run banks so
+// the NEXT run starts a step ahead (classic unlock-spine: finish a run -> earn a meta credit / unlock a
+// durable perk). Pure state + pure helpers — a later B-S7 slice persists this object (via the same
+// storage adapter as the run save) and the select UI reads it (e.g. a faction-class unlock checkbox or a
+// difficulty unlock tile). Keeping it DURABLE-ONLY makes a failed run never wipe progress (roguelite-not-
+// roguelike).
+const META_DEFAULT = { v:1, runsWon:0, runsPlayed:0, credits:0, unlocks:{} };
+
+function metaReset(){ return JSON.parse(JSON.stringify(META_DEFAULT)); }
+// Coerce any parsed/mutated object into a well-shaped meta bank (fills missing keys, keeps unlocks). This
+// is the *single* normalization a load path uses so a malformed/corrupt older entry degrades gracefully.
+function metaNormalize(m){
+  const base = metaReset();
+  if(!m || typeof m!=='object') return base;
+  base.runsWon  = Math.max(0, (m.runsWon|0)||0);
+  base.runsPlayed= Math.max(0,(m.runsPlayed|0)||0);
+  base.credits   = Math.max(0, (m.credits|0)||0);
+  if(m.unlocks && typeof m.unlocks==='object' && !Array.isArray(m.unlocks)){
+    for(const k in m.unlocks){ if(m.unlocks[k]===true) base.unlocks[k]=true; }
+  }
+  return base;
+}
+// Finish a run: bank a win (+ a credit) or a loss (played only — never a credit, never a wipe). Returns
+// the new meta object.
+function metaBankRun(meta, won){
+  const m = metaNormalize(meta);
+  m.runsPlayed += 1;
+  if(won){ m.runsWon += 1; m.credits += 1; }
+  return m;
+}
+// Bank a meta-credit without a run boundary (a rolled reward could feed this). Returns the new credit count.
+function metaBankCredit(meta, n){
+  const m = metaNormalize(meta); m.credits += (n|0)||0; return m.credits;
+}
+// Unlock / read durable perks. An unlock is a named flag the select UI maps to a real starting perk for
+// the NEXT run (never mutated mid-run). unlockMeta returns the new object; metaUnlocked reads one flag.
+function metaUnlock(meta, id){
+  const m = metaNormalize(meta); m.unlocks[id]=true; return m;
+}
+function metaUnlocked(meta, id){ const m=metaNormalize(meta); return m.unlocks[id]===true; }
+function metaUnlockList(meta){ const m=metaNormalize(meta); return Object.keys(m.unlocks).filter(k=>m.unlocks[k]); }
+// Affordability read a select/unlock UI uses: spend `n` credits returns false when the bank is short and
+// never mutates. Returns the new credit count when affordable (mutates), -1 when short.
+function metaSpendCredits(meta, n){
+  const m = metaNormalize(meta); const c = m.credits - ((n|0)||0);
+  if(c < 0) return -1; m.credits=c; return m.credits;
+}
+
+// persist.mjs — B-S7 (meta-unlock roguelite persistence) LIVE layer: the storage adapter + save-on-advance
+// + LOAD/CONTINUE genuine-resume + meta-credit banking on top of the slice-1 PURE SAVE MODEL (save.mjs).
+// Flattened into the single Distrike.html top-level scope right before ui.js, so it shares camp /
+// selFac / selDiff / nextBattle / encodeCampState / decodeCampState / resumeDecodedCamp / meta helpers
+// (top-level lets/functions from the same flattened script). CORRUPTION-SAFE: this is a NEW isolated
+// module — no edits to ui.js's existing em-dash-heavy bodies beyond two minimal, byte-safe Node call
+// insertions (see below). Pure storage/state logic here; one tiny ui.js patch wires it onto the navLoad
+// CONTINUE button + the run save-points.
+//
+// WHY a real storage adapter instead of calling localStorage directly from ui.js: every save/load path
+// funnels through ONE tiny guarded store so (a) headless DOM-shim suites (no real localStorage) degrade
+// to an in-memory store and can still drive the FULL save→continue loop headlessly, (b) a corrupt/
+// absent stored blob degrades to "no save" (never a silent bad resume), and (c) the schema key is a
+// single const we can bump on a future snapshot-version change.
+
+// ---- storage: one guarded adapter. Prefers a real window.localStorage when present; else returns an
+//      in-memory object (session-only) so headless suites + webview contexts without storage stay safe.
+const _memStore = (function(){ try{ const s={}; return { getItem:k=>(k in s?s[k]:null), setItem:(k,v)=>{s[k]=String(v);}, removeItem:k=>{delete s[k];} }; }catch(e){ return null; } })();
+let _storeOverride = null;                 // __ds.persist.setStore(mock) lets a headless gate inject a fake localStorage
+function _store(){
+  if(_storeOverride) return _storeOverride;
+  try{ if(typeof window!=='undefined' && window.localStorage) return window.localStorage; }catch(e){}
+  try{ if(typeof localStorage!=='undefined') return localStorage; }catch(e){}
+  return _memStore;
+}
+// ---- durable keys (v1 — bump alongside RUN_SAVE_VERSION) ----
+const PKEY_CAMP = 'ds.camp.v1';     // the current run snapshot (resumable), written at each save-point
+const PKEY_META = 'ds.meta.v1';     // cross-run roguelite bank (credits + durable unlocks)
+
+function persistGetCampStore(){ try{ return _store().getItem(PKEY_CAMP); }catch(e){ return null; } }
+function persistHasSave(){ return !!persistGetCampStore(); }
+
+// ---- SAVE the live campaign (if one is running) to the store as its versioned snapshot. ----
+// Sets selFac/selDiff from the live camp so a CONTINUE later + a fresh NEW run after a resume both
+// default to the carried faction/difficulty. Writes a tiny info record (savedAt + battle + faction +
+// enemy + wins + difficulty) alongside so the LOAD modal can read the resume line without decoding the
+// whole snapshot. Returns the info object on success, null when no live/consistent camp to save.
+function persistSaveCamp(){
+  try{
+    if(typeof camp==='undefined' || !camp || !camp.run) return null;
+    const snap = encodeCampState(camp);
+    if(!snap || !snap.camp || !snap.camp.run) return null;
+    if(typeof selFac!=='undefined' && camp.factionId) selFac = camp.factionId;
+    if(typeof selDiff!=='undefined' && camp.difficulty) selDiff = camp.difficulty;
+    const info = {
+      v:1,
+      savedAt: Date.now(),
+      battle: camp.battle||1,
+      wins:  camp.wins||0,
+      factionId: camp.factionId,
+      enemyId:   camp.enemyId,
+      difficulty:camp.difficulty,
+    };
+    _store().setItem(PKEY_CAMP, JSON.stringify({ info: info, snap: snap }));
+    return info;
+  }catch(e){ return null; }
+}
+// ---- CLEAR the stored run (used when a run finishes / is abandoned). ----
+function persistClearCamp(){ try{ _store().removeItem(PKEY_CAMP); }catch(e){} }
+
+// ---- LOAD: read the stored run, decode to a plain camp, return {decoded, info, campShape} or null. ----
+// `campShape` is the decoded durable run (deck/relics/pool/eco/kit/builds/hero all present) that a
+// CONTINUE passes to the live re-arm. Returns null when absent/corrupt/unknown-schema (never a bad
+// resume — the CONTINUE button only arms when this resolves).
+function persistLoadCamp(){
+  try{
+    const raw = persistGetCampStore(); if(!raw) return null;
+    const blob = JSON.parse(raw);
+    const info = (blob && blob.info) || null;
+    const decoded = (blob && blob.snap)? decodeCampState(blob.snap) : null;
+    if(!decoded || !decoded.run) return null;
+    return { decoded: decoded, info: info, savedAt: (info&&info.savedAt)||null };
+  }catch(e){ return null; }
+}
+
+// ---- LIVE CONTINUE: re-arm the loaded plain camp into the CURRENT running wrapper (`camp` global) and
+//      re-enter the battle it was parked at. Runs at a save-point boundary so there is no mid-battle
+//      engine state being discarded — nextBattle(false,false) RETRIES the same pre-battle checkpoint the
+//      save-point stored (win/upgrade/relic/lane state all ride the run snapshot, so nothing is lost).
+//      Mirrors what startRun does to attach camp.deck/camp.relicPool/camp.relics aliases off the run and
+//      how it shows the gate-less live battle. Returns true on a successful resume, false if no valid save.
+function persistResume(){
+  try{
+    const L = persistLoadCamp(); if(!L) return false;
+    if(typeof camp==='undefined' || typeof nextBattle!=='function') return false;
+    const dec = L.decoded;
+    if(!dec.factionId || !dec.difficulty || !dec.run) return false;
+    if(typeof selFac!=='undefined') selFac = dec.factionId;
+    if(typeof selDiff!=='undefined') selDiff = dec.difficulty;
+    // rewrap into the exact startRun-shaped live wrapper (run + the deck/relic aliases the engine reads).
+    const r = dec.run;
+    const wrapped = resumeDecodedCamp(dec, null);           // run attached (wrapped.run === dec.run)
+    if(typeof wrapped!=='object' || wrapped===null) return false;
+    camp = Object.assign({}, wrapped);                      // a fresh live wrapper carrying the decoded run
+    camp.run = r;
+    camp.deck      = r.deck;
+    camp.relicPool = r.pool;
+    camp.relics    = r.relics;
+    const hadHero = false; try{ if(camp && camp.run && camp.factionId) pickHero(camp.run, camp.factionId); }catch(e){}
+    if(!camp.battle) camp.battle = 1;
+    nextBattle(false, false);                                // re-enter the SAME pre-battle checkpoint, no full wipe
+    return true;
+  }catch(e){ return false; }
+}
+// ---- META (cross-run roguelite bank) live store adapter. ----
+function persistMeta(){ try{ const raw=_store().getItem(PKEY_META); return metaNormalize(raw? JSON.parse(raw):null); }catch(e){ return metaNormalize(null); } }
+function persistSaveMeta(m){ try{ _store().setItem(PKEY_META, JSON.stringify(metaNormalize(m))); }catch(e){} }
+// Bank a run outcome through the live adapter + persist it. `won` true = bank a win + a meta credit.
+function persistBankRunMeta(won){
+  const m = persistMeta();
+  const next = metaBankRun(m, won);
+  persistSaveMeta(next);
+  return next;
+}
+// Spend credits through the live bank (returns new balance, or -1 when short — no mutation).
+function persistSpendMetaCredits(n){
+  const m = persistMeta();
+  const bal = metaSpendCredits(m, n);
+  if(bal>=0) persistSaveMeta(m);
+  return bal;
+}
+// durable-unlock helpers through the live bank.
+function persistUnlockMeta(id){ const m=persistMeta(); const nx=metaUnlock(m,id); persistSaveMeta(nx); return nx; }
+function persistUnlockedMeta(id){ return metaUnlocked(persistMeta(), id); }
+
+// ---- LOAD/CONTINUE MODAL PRESENTER: when the LOAD nav button opens, reflect the CURRENT save state so
+//      the player can genuinely continue instead of reading a static no-save stub. Renders a live
+//      "▶ CONTINUE" row (only when a valid resumable run exists) + a meta-bank credit read into the
+//      modal's existing .bmBody, appending rather than replacing. No-op cleanly when headless/DOM-free.
+function persistPresentLoad(){
+  try{
+    const ov=(typeof document!=='undefined' && document.querySelector)? document.querySelector('#navLoadOv') : null;
+    if(!ov) return;
+    // fill the modal's description body with current persistence state.
+    const body=document.querySelector('#navLoadOv .bmBody'); if(!body) return;
+    const has = persistHasSave(); const L = has? persistLoadCamp(): null;
+    const meta = persistMeta();
+    // strip any previously rendered live zone (we own a .persist-live child) so reopens don't stack.
+    let old=body.querySelector ? body.querySelector('.persist-live') : null;
+    if(old && old.parentNode) old.parentNode.removeChild(old);
+    const zone=document.createElement('div'); zone.className='bmBodyRow persist-live';
+    // meta bank read (glass gutter line): credits banked from completed runs.
+    const creds=document.createElement('div');
+    creds.style.cssText='border-top:1px dashed rgba(45,45,127,.7);margin:6px 0;padding-top:6px;color:#c6d4f0;font-size:12px;';
+    creds.innerHTML='<b style="color:#FFD324">◆ META BANK</b> — '+(meta.credits||0)+' credit'+(meta.credits===1?'':'s')+' · '+meta.runsWon+'/'+meta.runsPlayed+' runs won'+
+      (persistUnlockListLocal(meta).length? ' · unlocked: '+persistUnlockListLocal(meta).join(', '):'')+
+      bossCodexReadout() ;
+    zone.appendChild(creds);
+    if(has && L){
+      const bi=L.info||{};
+      const bn=(bi.battle===4)?'the FINALE':('battle '+bi.battle+'/'+CAMP_BATTLES);
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px;flex-wrap:wrap;';
+      const tx=document.createElement('span');
+      tx.style.color='#e7eeff'; tx.style.fontWeight='700';
+      tx.textContent='🔄 SAVED RUN — '+bn+' ('+((facById&&bi.factionId)? (function(){try{const f=facById(bi.factionId);return f?f.name:bi.factionId;}catch(e){return bi.factionId;}})():bi.factionId)+') · '+bi.wins+'/'+CAMP_BATTLES+' wins · '+((bi.difficulty)||'?' );
+      const go=document.createElement('button'); go.type='button';
+      go.style.cssText='padding:6px 14px;border-radius:10px;border:1px solid #1CC7C7;background:linear-gradient(180deg,#12353f,#0c242c);color:#6ff0f0;font-weight:900;font-size:12.5px;letter-spacing:1px;cursor:pointer;';
+      go.textContent='▶ CONTINUE';
+      go.onclick=function(){
+        const okk=persistResume(); if(okk){
+          // hide the boot gate + the modal: re-enter the live battle.
+          const gates=(typeof document!=='undefined')? document.querySelectorAll : null;
+          if(gates){ try{ const g=document.querySelector('#gate'); if(g) g.style.display='none'; const mo=document.querySelector('#navLoadOv'); if(mo) mo.classList.remove('show'); }catch(e2){} }
+        }
+      };
+      row.appendChild(tx); row.appendChild(go);
+      zone.appendChild(row);
+    } else {
+      const no=document.createElement('div');
+      no.style.cssText='margin-top:6px;color:#9fb2d9;font-size:12.4px;';
+      no.innerHTML='<b style="color:#9fb2d9">No saved run</b> — start a fresh campaign from the menu, or <b>⟲ Load/Continue</b> later after a battle checkpoint autosaves.';
+      zone.appendChild(no);
+    }
+    body.appendChild(zone);
+  }catch(e){ /* presentational only — a fail leaves the plain doc-stub modal */ }
+}
+function persistUnlockListLocal(meta){ try{ const m=metaNormalize(meta); return Object.keys(m.unlocks||{}).filter(k=>m.unlocks[k]); }catch(e){ return []; } }
+
+// ---- SAVE-POINT HOOKS (called from small ui.js insertions) ----
+// save at a settled boundary ready to become a checkpoint. `afterRoute` = we are parked right before a
+// routed next battle (map resolved), so the checkpoint IS the next fight. Always saves the live camp.
+function persistCheckpointSave(){ return persistSaveCamp(); }
+
+// ---- wire the LOAD nav button so it presents live save state instead of the static stub. Called once
+//      from the ui.js setup (after the bootNavShell IIFE that docks navLoad). No DOM-feature churn.
+function bindLiveContinue(){
+  try{
+    const b=(typeof document!=='undefined' && document.querySelector)? document.querySelector('#navLoad'):null;
+    if(!b) return;
+    const ov=(typeof document!=='undefined' && document.querySelector)? document.querySelector('#navLoadOv'):null;
+    b.onclick=function(){
+      if(ov && ov.classList && typeof ov.classList.add==='function'){ try{ ov.classList.add('show'); }catch(e){} }
+      persistPresentLoad();
+    };
+  }catch(e){ /* no navLoad node in this context — pure no-op */ }
+}
+
+// B-S7 BOSS CODEX gutter read: a short 'bosses faced' line reusing the durable codex log from the
+// bosses.mjs finale event set (hoisted same-scope readers; no-throw, safe when no codex yet).
+function bossCodexReadout(){ try{
+  const ids = (typeof bossCodexList==='function') ? bossCodexList() : [];
+  if(!ids.length) return '';
+  const names = ids.map(id=>{ const b=(typeof bossById==='function')? bossById(id): null; return b? (b.ic+' '+b.name) : id; });
+  return ' · ☠ bosses faced: '+names.join(', ');
+  }catch(e){ return ''; } }
+
+// metaperk.mjs — B-S7 (meta-unlock roguelite persistence, scope §4 / S-7 'full select UI') META-PERK
+// SELECT UI + START-PERK slice. Sits on top of slice-1 (save.mjs pure meta bank) + slice-2 (persist.mjs
+// live store adapter): a small boot/select-screen surface where a finished run's banked meta credits buy
+// DURABLE "starting-perk" unlocks (roguelite), and the player then ARMS one unlocked perk for the NEXT
+// fresh run. Flattened into the single Distrike.html top-level scope right after persist.mjs (before
+// ui.js), so it shares the same top-level `camp` / upgrade helpers / meta functions by hoisting.
+//
+// Perk IDs are the EXISTING run-upgrade ids battleOpts already honors purely from `camp.upgrades`
+// (income / warchest / gas — proven engine-read paths). Unlocking a perk just makes that id pickable as a
+// STARTING BOON; arming it seeds camp.upgrades[id] on a NEW run (metaperk.seedBoon) so bmupdate, at every
+// battle, applies the exact same +%%/+◆/+◈ opener bonus the equivalent in-run upgrade already grants each
+// battle. That reuses a locked/tested economy path — no new economy math, no feature/balance re-scope
+// (per the A7 guardrail), just a durable roguelite entry point to a real start state.
+//
+//   Durable source of truth = the persisted META bank (persist.mjs): credits (banked only by a completed
+//   RUN win) + `unlocks.perk:<id>` flags (unlock costs ◆1, spent through the affordability guard).
+//   Non-durable boot choice = the armed perk id (session-level `selPerk`); unlock persistence is the
+//   durable 'start perk surfaced on the boot screen'. Purely cosmetic/optional: no perk armed = a
+//   byte-identical fresh run (seeded only when ONE unlocked perk is armed).
+
+// ---- the start-perk catalogue. id doubles as the run-upgrade id battleOpts honors (see ui.js
+//      battleOpts: income -> minMult, warchest -> +50◆ opener, gas -> +6◈ opener). ----
+const META_PERK_DEFS = {
+  income: { id:'income', ic:'◆', name:'Bounty Seed', desc:'A rested supply line — start THIS run at +35% mineral trickle on every battle.' },
+  warchest:{ id:'warchest', ic:'💰', name:'War Chest', desc:'A horde for the war ahead — every battle of THIS run opens with a +50◆ stockpile.' },
+  gas:    { id:'gas', ic:'◈', name:'Gas Vouchers',  desc:'Field your special sooner — every battle of THIS run opens with +6◈ gas.' },
+};
+const META_PERK_COST = 1;              // unlocks cost one banked meta credit (roguelite)
+const META_PERK_LOCKKEY = (id)=>( 'perk:'+id );
+
+function perkList(){ return Object.keys(META_PERK_DEFS).map(id=>META_PERK_DEFS[id]); }
+function perkById(id){ return META_PERK_DEFS[id] || null; }
+
+// ---- live store reads through the slice-2 adapter ----
+function _liveMeta(){ try{ return metaNormalize(persistMeta()||null); }catch(e){ return metaNormalize(null); } }
+function _saveMeta(m){ try{ persistSaveMeta(m); }catch(e){} }
+function metaPerkCredits(){ return _liveMeta().credits; }
+// unlocked read: a perk is unlocked when its durable flag is true in the bank.
+function perkUnlocked(id){ const m=_liveMeta(); return !!(m&&m.unlocks&&m.unlocks[META_PERK_LOCKKEY(id)]===true); }
+
+// ---- UNLOCK a starting perk: spend META_PERK_COST credit(s) (affordability-guarded, never below 0) then
+//      persist the durable unlock flag. Returns 1 on success, -1 when the perk is unknown, -2 when the
+//      player cannot afford it, 0 when it was already unlocked (no spend). Durable: survives reloads. ----
+function perkUnlock(id){
+  if(!perkById(id)) return -1;
+  if(perkUnlocked(id)) return 0;                       // idempotent — never double-spend an owned perk
+  const bal = metaPerkCredits();
+  if(bal < META_PERK_COST) return -2;                  // cannot afford (roguelite: no debt, no wipe)
+  const m=_liveMeta();
+  const nb = metaSpendCredits(m, META_PERK_COST);      // pure affordability-path spend (returns new count; -1 short)
+  if(nb < 0) return -2;
+  m.credits = nb;                                      // metaSpendCredits returns the new count on a FRESH normalize copy
+                                                       // (it does not mutate `m`), so write the spent balance back to our object
+  m.unlocks = m.unlocks || {};
+  m.unlocks[META_PERK_LOCKKEY(id)] = true;             // same for metaUnlock: it too returns a normalize copy without
+                                                       // mutating `m`, so set the durable flag directly on our object
+  _saveMeta(m);
+  return 1;
+}
+
+// ---- ARM one unlocked perk for the NEXT NEW run (session-level boot choice; NOT the durable unlock).
+//      Returns the armed id, null if cleared/unarmed, -1 when the perk is unknown, -2 when not unlocked. ----
+let _selPerk = null;                                    // armed starting-boon id (reset each boot)
+function setArmedPerk(id){
+  if(id==null || id===''){ _selPerk = null; return null; }
+  if(!perkById(id)) return -1;
+  if(!perkUnlocked(id)) return -2;
+  _selPerk = id;
+  return id;
+}
+function armedPerk(){ return _selPerk; }
+function clearArmedPerk(){ _selPerk = null; return null; }
+
+// ---- SEED the armed starting boon into a FRESH run's camp.upgrades so battleOpts honors it (call from
+//      ui.js startRun right before nextBattle(true)). Camp is ui.js the fresh wrapper already built with
+//      an empty upgrades {}. Returns the seeded perk id, or null when none armed / camp bad. Safe no-op:
+//      an unarmed run is byte-identical (no camp.upgrades touched). ----
+function metaSeedBoon(camp){
+  try{
+    if(!_selPerk || !camp || typeof camp!=='object') return null;
+    if(!perkUnlocked(_selPerk)) return null;           // never seed an unlock that a reload lost
+    const id=_selPerk;
+    camp.upgrades = camp.upgrades || {};
+    camp.upgrades[id] = (camp.upgrades[id]||0) + 1;    // exactly the +1 an in-run take does
+    return id;
+  }catch(e){ return null; }
+}
+
+// ---- BOOT-SCREEN PRESENTER: mount a '◆ META — STARTING BOON' selector into the #gate boot menu (real
+//      DOM) right after the difficulty row and before DEPLOY. Reads the current bank (credits + durable
+//      unlocks) and renders a compact glass row-group: one chip per perk — 🔒 locked (shows its ◆1 unlock
+//      price + an unlock button) vs unlocked (an ARM radio chip). Armed perk renders a teal ring + a
+//      '▶ armed for next run' note. Idempotent (guarded by a marker) + a pure no-op in a DOM-less shim so
+//      headless suites stay green; the real surface is purely presentational glue over the logic above. ----
+let _bootInit=false;
+function renderMetaPerks(){
+  if(_bootInit) return;                                // idempotent — render once per boot
+  try{
+    if(typeof document==='undefined' || !document.querySelector) return;
+    const gate=document.querySelector('#gate'); if(!gate) return;
+    const mount=(function(){ try{ return document.querySelector('#metaPerkMount'); }catch(e){ return null; } })();
+    if(mount && mount.parentNode) return;              // already present
+    // insert point: right after the difficulty row's parent group, before the start button.
+    const diff=document.querySelector('#diffRow'); if(!diff) return;
+    const host=(function(){ try{ const d=diff.closest('.bootMenu'); return d||diff.parentNode; }catch(e){ return diff.parentNode; } })();
+    const frag=document.createElement('div');
+    frag.id='metaPerkMount'; frag.className='metaPerkMount';
+    host.insertBefore(frag, diff.nextSibling);
+    _bootInit=true;
+    paintMetaPerks(frag);
+  }catch(e){ /* presentational only — leave the gate untouched */ }
+}
+// re-render the mounted zone from current bank state (used by unlock/arm callbacks).
+function paintMetaPerks(mount){
+  try{
+    if(!mount) return;
+    const meta=_liveMeta(); const creds=meta.credits||0;
+    const wrap=document.createElement('div'); wrap.className='metaPerkZone';
+    const head=document.createElement('div'); head.className='fcaption bootCap metaCap';
+    head.innerHTML='◆ META — starting boon <span style="float:right;color:#FFD324;font-weight:800">'+creds+' credit'+(creds===1?'':'s')+'</span>';
+    wrap.appendChild(head);
+    const chipWrap=document.createElement('div'); chipWrap.className='metaPerkChips';
+    for(const p of perkList()){
+      const unlocked=perkUnlocked(p.id); const armed=(_selPerk===p.id);
+      const c=document.createElement('button'); c.type='button';
+      c.className='metaPerk '+(unlocked?'un':'locked')+(armed?' armed':'');
+      c.style.cssText='display:inline-block;margin:0 6px 6px 0;padding:7px 10px;border-radius:10px;'+
+        'border:1px solid '+(armed?'#1CC7C7':(unlocked?'#23234F':'#2a2a55'))+';'+
+        'background:'+(unlocked?'linear-gradient(180deg,#16184a,#0c0c30)':'linear-gradient(180deg,#1b1b3d,#101028)')+';'+
+        'color:'+(unlocked?'#dfe9ff':'#7c88b8')+';font-size:12.3px;line-height:1.35;cursor:'+(unlocked?'pointer':'not-allowed')+';vertical-align:top;';
+      const ic=document.createElement('div'); ic.style.cssText='font-size:17px;text-align:left';
+      ic.innerHTML=p.ic+' <b style="color:#f2f6ff">'+p.name+'</b>';
+      const ds=document.createElement('div'); ds.style.cssText='color:#9fb2d9;font-size:11px;max-width:250px;text-align:left;margin:2px 0 4px';
+      ds.textContent=p.desc;
+      const st=document.createElement('div'); st.style.cssText='font-size:10.6px;letter-spacing:.4px;text-align:left';
+      if(unlocked){
+        st.innerHTML=armed
+          ? '<b style="color:#1CC7C7">▶ ARMED FOR NEXT RUN</b>'
+          : '<span style="color:#6fa0c8">unlocked · click to arm for next run</span>';
+        c.onclick=function(){ const r=setArmedPerk(p.id); if(r!==-1&&r!==-2&&mount) paintMetaPerks(mount); };
+      } else {
+        const afford=creds>=META_PERK_COST;
+        st.innerHTML='<b style="color:'+(afford?'#E026FF':'#7c88b8')+'">🔒 unlock '+META_PERK_COST+'◆</b>';
+        if(afford){ c.onclick=function(){ const r=perkUnlock(p.id); if(mount) paintMetaPerks(mount); }; }
+      }
+      c.appendChild(ic); c.appendChild(ds); c.appendChild(st);
+      chipWrap.appendChild(c);
+    }
+    wrap.appendChild(chipWrap);
+    const note=document.createElement('div'); note.className='hint bootHint metaNote';
+    note.textContent='Bank a meta credit by finishing a full campaign (run victory). Spend one to unlock a starting boon for all future runs; armed boons seed the same +% / +mineral / +gas bonus an in-run upgrade gives every battle — pick one, then DEPLOY a new run.';
+    wrap.appendChild(note);
+    mount.textContent=''; mount.appendChild(wrap);
+  }catch(e){ /* presentational only */ }
+}
+// bind: called once after ui.js has built the menu DOM (safe in real browser; no-op headless).
+if(typeof document!=='undefined' && document.querySelector){
+  try{ renderMetaPerks(); }catch(e){}
+}
+
+// bosses.mjs — B-S7 (Pillar S-7 'boss event set') FINALE BOSS ROSTER + durable Boss Codex.
+// The run's finale (battle 4) already reads as a harder escalation with a nemesis front + a free enemy
+// tank (locked sim/balance behavior the oracle pins). THIS slice gives that finale a real *event*
+// identity WITHOUT touching the sim: a roster of NAMED per-faction final warlords (boss events), a pure
+// resolver that says which warlord leads the final line for a given run, and a durable cross-run
+// "Boss Codex" so the faces you meet/overcome bank into the SAME meta store the perks use (roguelite
+// content breadth). Everything here is presentational/data — it never changes battle outcome, economy,
+// units, archetypes, or the balance oracle.
+//
+// Flattened into the single Distrike.html top-level scope right after metaperk.mjs (after
+// persist.mjs/save.mjs), so the durable codex helpers can reference the hoisted persist/save meta
+// functions at CALL time (never at load). Pure reads + data here; the live surfacing hooks live in a
+// tiny #bossEvent ribbon + recap/victory/defeat lines in ui.js (below this file in the pack).
+
+// ---- the FINALE WARLORD ROSTER ("boss event set"). One named commander per LIVE enemy faction, so a
+//      campaign finale meets a faction-identity boss (mirrors the per-faction champion story). ----
+const BOSS_DEFS = {
+  rebels: {
+    id:'rebels', ic:'🗡', name:'Marshal Kessa Vane',     faction:'Rebels',
+    title:'Warlord of the Southern Front',
+    line:'A hardened survivor who has out-bluffed every invader — she commands the final rebel line, betting her whole world on one stand.',
+    stance:{ balanced:'measured', rusher:'feral', economist:'patient' },
+    sigil:'⚔', accent:'#1CC7C7',
+  },
+  aliens: {
+    id:'aliens', ic:'🕸', name:'The Brood Matriarch Prime', faction:'Aliens',
+    title:'Hive-Maw of the Deep Swarm',
+    line:'The hivemind at last turns its full attention on you — every hatchling in the walls answers to her single will.',
+    stance:{ balanced:'swarming', rusher:'voracious', economist:'feeding' },
+    sigil:'◉', accent:'#E026FF',
+  },
+  robots: {
+    id:'robots', ic:'⚙', name:'Overlord-Core Prime',   faction:'Robots',
+    title:'The Automaton Legion Arbiter',
+    line:'One cold directive governs the legion: eliminate the organic threat. Overclocked servitors answer its silent broadcast.',
+    stance:{ balanced:'methodical', rusher:'relentless', economist:'efficient' },
+    sigil:'◆', accent:'#9FB4C7',
+  },
+  federation: {
+    id:'federation', ic:'✪', name:'Commodore Vale of the Star Federation', faction:'Federation',
+    title:'Sky-General of the Expeditionary Fleet',
+    line:'The Federation throws its full banner behind one officer — she will hold the line and call down everything she has to break yours.',
+    stance:{ balanced:'disciplined', rusher:'surgical', economist:'logistical' },
+    sigil:'✪', accent:'#A0EFFF',
+  },
+};
+// A fallback crowd boss when the enemy faction id is unknown/none in the live union.
+const FALLBACK_BOSS = {
+  id:'_highcommand', ic:'☠', name:'the Enemy High Command', faction:'',
+  title:'Final Line of the Hostile Front',
+  line:'Whoever commands this line means to bury you here — the last wall between your core and the campaign.',
+  stance:{ balanced:'command', rusher:'assault', economist:'siege' },
+  sigil:'☠', accent:'#FF7A1A',
+};
+
+function bossById(id){ return BOSS_DEFS[id] || (id==='_highcommand'? FALLBACK_BOSS : null); }
+function bossList(){ return Object.keys(BOSS_DEFS).map(id=>BOSS_DEFS[id]); }
+
+// ---- resolve the boss leading a finale. Pure: given the enemy faction id + the route-archetype that
+//      fronts this battle (the nemesis behavior layer), return the boss object. Unknown enemy => the
+//      fallback High Command crowd boss; unknown/absent arche family => balanced stance flavor. Never
+//      throws; returns a plain object the caller may freely surface (never mutates the roster). ----
+function bossForFinale(enemyFactionId, arche){
+  const b = bossById(enemyFactionId) || FALLBACK_BOSS;
+  const a = (arche==='rusher'||arche==='economist'||arche==='balanced')? arche : 'balanced';
+  const stance = (b.stance&&b.stance[a]) ? b.stance[a] : a;
+  const out = { id:b.id, ic:b.ic, name:b.name, faction:b.faction, title:b.title, line:b.line,
+                sigil:b.sigil, accent:b.accent, arche:a, stance:stance, codexKey:'boss:'+b.id };
+  return out;
+}
+
+// ---- DURABLE BOSS CODEX — bank which named warlords this player has ENCOUNTERED at a finale into the
+//      SAME cross-run meta store the perks use (persist.mjs + save.mjs). A boss marker is a durable
+//      `unlocks['boss:<id>']` flag (metaNormalize preserves the unlocks map across every save/load, so
+//      this is the trusted durable codex; seenBosses-style side state is NOT used because the normalizer
+//      strips unknown fields). The first time you face a warlord the flag banks + survives reloads; the
+//      codex read is simply the set of banked flags. Guarded so a headless / no-store context degrades
+//      safely (no throw).
+function _liveBossMeta(){ try{ return metaNormalize(persistMeta()||null); }catch(e){ return metaNormalize(null); } }
+function _saveBossMeta(m){ try{ persistSaveMeta(m); }catch(e){} }
+// Durable codex has-mark: is this boss banked in the current meta store?
+function bossEncodedCodex(id){ const m=_liveBossMeta(); return !!(m.unlocks && m.unlocks['boss:'+id]===true); }
+// Record that a named warlord faced the player at a finale. Returns 1 when NEWLY banked, 0 when it was
+// already in the codex (idempotent) or the id is unknown/meta unreachable.
+function bossSeen(id){
+  const b=bossById(id); if(!b) return 0;
+  if(bossEncodedCodex(id)) return 0;                     // already faced — never re-bank
+  const m=_liveBossMeta();
+  try{ m.unlocks = m.unlocks || {}; m.unlocks['boss:'+id]=true; _saveBossMeta(m); return 1; }catch(e){ return 0; }
+}
+// Convenience read: which named warlords have faced the player (derived from the durable flags).
+function bossCodexList(){
+  try{ const m=_liveBossMeta(); const pre=BOSS_CODEX_PREFIX;
+    return bossList().filter(b=> !!(m.unlocks && m.unlocks[pre+b.id]===true) ).map(b=>b.id);
+  }catch(e){ return []; }
+}
+const BOSS_CODEX_PREFIX='boss:';
+
 // ui.js — browser glue + rendering + input. Bundled after core/units/game.
+// B-S5 HERO run-model helpers (pure, flattened into scope by build.mjs; win-driven XP + level reads).
 
 const $=id=>document.getElementById(id);
 const cv=$('cv');
@@ -2612,15 +4188,27 @@ cv.width=C.LANE_W; cv.height=C.LANE_H;
 let selFac='rebels', selDiff='standard';
 // Faction identity accent for the ally battlefield wash: [r,g,b] of the picked faction's brand, updated
 // on gate click + run start. Rebels=brass #ffd97a, Aliens=viridian #c3e88d. Enemy half stays ember.
-const FAC_RGB={ rebels:[255,217,122], aliens:[195,232,141] };
+// B-S6 live gate adds the two expansion brands: Robots = cold silver/sand #cfe6f0, Federation = steel/
+// cobalt #bcd8ff so each of the four pickable factions tints its OWN half of the warm field distinctly.
+const FAC_RGB={
+  rebels:[255,217,122], aliens:[195,232,141],
+  robots:[207,230,240],  federation:[188,216,255],
+};
 let allyRGB=FAC_RGB.rebels;               // default until a pick happens
+// The four LIVE gate factions a real campaign can be (rebels default first => rebvs-aliens contract
+// preserved). ALL roster/name reads for a CAMPAIGN faction id must go through the union `facById` so a
+// robots/federation body is resolved from our catalog, not the missing FACTIONS entry.
+const facById = (fid)=> (FACTIONS[fid] || EXPANSION_FACTIONS[fid] || null);
 // Durable faction-accent driver: stamp data-fac/data-enemy on <body> so the run's core bar + ally field
-// wash carry the picked faction's brand. Guarded to the REAL browser body — the DOM-test shims provide a
-// plain {appendChild,removeChild} body with no setAttribute, so bare calls would throw under headless.
-// Cosmetic only; never touches the sim or test-pinned DOM ids.
-function tickFacAttrs(fid){ try{ if(typeof document!=='undefined' && document.body && typeof document.body.setAttribute==='function'){
+// wash carry the picked faction's brand. data-enemy = the run's OPPOSING faction (round-robin through
+// the LIVE set), so the enemy half + enemy chrome can read which foe you're fighting. Guarded to the
+// REAL browser body — the DOM-test shims provide a plain {appendChild,removeChild} body with no
+// setAttribute, so bare calls would throw under headless. Cosmetic only; never touches the sim or
+// test-pinned DOM ids.
+function tickFacAttrs(fid, enemyFid){ try{ if(typeof document!=='undefined' && document.body && typeof document.body.setAttribute==='function'){
   document.body.setAttribute('data-fac', fid);
-  document.body.setAttribute('data-enemy', fid==='aliens'?'rebels':'aliens');
+  const e = enemyFid || opponentOf(fid, LIVE_FACTION_IDS) || (fid==='aliens'?'rebels':'aliens');
+  document.body.setAttribute('data-enemy', e);
 } }catch(e){} }
 // P2A branch-map mode. 'direct' = the flat 4-battle run (every DOM test's default, byte-identical tree).
 // 'branching' = between-battle StS-style map screen (choose routes / pickups). User picks it in the gate.
@@ -2885,10 +4473,10 @@ const UPGRADES=[
 // how many times each upgrade id has been taken this run
 function upgradeCount(id){ return camp&&camp.upgrades&&camp.upgrades[id]? camp.upgrades[id] : 0; }
 
-// ---- setup: factions ----
+// ---- setup: factions (LIVE four-faction gate) ----
 const fac=$('facGrid');
-for (const fid in FACTIONS){
-  const f=FACTIONS[fid];
+for (const fid of LIVE_FACTION_IDS){
+  const f=facById(fid); if(!f) continue;
   const b=document.createElement('button'); b.className='fbtn'+(fid===selFac?' sel':'');  b.innerHTML=`<div class="nm">${f.name}</div><div class="ds">${f.desc}</div>`;
   b.onclick=()=>{ selFac=fid; [...fac.children].forEach(x=>x.classList.remove('sel')); b.classList.add('sel');
     allyRGB = FAC_RGB[selFac] || FAC_RGB.rebels; tickFacAttrs(selFac); };
@@ -2905,19 +4493,30 @@ for (const d of ['easy','casual','standard','brutal']){
 // modeRow is left as an empty hidden slot in the gate so no dangling id refs appear.
 
 function startRun(){
-  // OBJ-7: ▶ begins a CAMPAIGN run (picker flow → battle 1). The AI fields the OTHER faction to the pick.
-  const enemyId = (selFac==='aliens') ? 'rebels' : 'aliens';
-  allyRGB = FAC_RGB[selFac] || FAC_RGB.rebels; tickFacAttrs(selFac);   // your faction tint threads the whole run
+  // OBJ-7: ▶ begins a CAMPAIGN run (picker flow → battle 1). The AI fields a DIFFERENT LIVE faction to
+  // the pick — round-robin through the four-faction gate (rebels→aliens preserved so existing tests +
+  // the real default experience is unchanged; robots→federation, aliens→robots, federation→rebels).
+  const enemyId = opponentOf(selFac, LIVE_FACTION_IDS);
+  const pf = facById(selFac); if(!pf) return;
+  allyRGB = FAC_RGB[selFac] || FAC_RGB.rebels; tickFacAttrs(selFac, enemyId);   // your faction tint threads the whole run
   camp = { factionId:selFac, enemyId, difficulty:selDiff, battle:0, wins:0, upgrades:{}, mode:'branching' };
   // P2-A.next: the run also owns a persistent unit DECK (card upgrades) + RELICS, seeded via the run
   // model. emitPhase2() feeds these into every battle's newState (engine consumes st.pDeck/st.relics).
-  const rmodel = newRun({ factionId:selFac, enemyId, difficulty:selDiff, roster: FACTIONS[selFac].roster });
+  const rmodel = newRun({ factionId:selFac, enemyId, difficulty:selDiff, roster: pf.roster });
   camp.run = rmodel;                 // the full run-model object (deck/pool/relics/upgrades/__wind)
+  // B-S5 HERO: the run's campaign champion rides your faction's standard. There's exactly ONE champion
+  // per faction ("champion/side" — the scope-§4 rule) and a branching run always fields its OWN faction,
+  // so choosing your faction on the gate IS the hero pick: auto-field that faction's champion at level 1
+  // here (pickHero is idempotent + additive; a no-champion run stays byte-identical). Wins then feed the
+  // champion XP (below in campsWin) so it LEVELS ACROSS the run — the exact slice-2 live loop this closes.
+  try{ pickHero(camp.run, camp.factionId); }catch(e){/* pure helper; a hostile run is a no-champion run */}
   camp.deck = rmodel.deck;
   camp.relicPool = rmodel.pool;      // unit-card pool for drafting (reagents for upgrade choices)
   camp.relics = rmodel.relics;       // held relic ids
-  nextBattle(true);
-  log('CAMPAIGN START — '+selDiff.toUpperCase()+' · you: '+(FACTIONS[selFac].name)+' vs '+(FACTIONS[enemyId].name)+' · 4 escalating battles.');
+  persistClearCamp();                                    // B-S7 live: a brand-new campaign wipes any stale autosave
+  metaSeedBoon(camp);                                     // B-S7 meta-perk: an armed durable start boon seeds the fresh run before its first battle
+  nextBattle(true);   // (the universal nextBattle checkpoint below writes the battle-1 save)
+  log('CAMPAIGN START — '+selDiff.toUpperCase()+' · you: '+(pf.name)+' vs '+(facById(enemyId)?facById(enemyId).name:'?')+' · 4 escalating battles.');
   log('Win a battle → choose a persistent upgrade. Lose → retry the same battle (upgrades kept).');
 }
 
@@ -3004,7 +4603,30 @@ function nextBattle(first, advance){
   give(st, false, 'melee', pMelee);
   give(st, true , 'melee', 2 + camp.battle);                          // escalating starter wave (3,4,5,6 bodies) = difficulty (not economy)
   const tDef=grant('tank'); if(camp.battle>=4 && tDef) grantUnit(st,tDef,true); // OBJ-8 balance: the free enemy tank is the run's final 'boss' threat — it joins at battle 4 (the finale), NOT battle 3. Measured headlessly (test/campaignbal.mjs) that a free tank at battle 3 cliffed the mid-run: b3 win dropped to ~0% for a competent buyer even on Casual because the instant 5-melee+tank opener pushed before the player could respond. Moving it to the final battle both restores a fair mid-run (b2-b3 winnable) AND gives battle 4 its intended signature escalation. Economy ramp (eInc/eStart/aiA) is untouched — obj7engine still passes.
+  // B-S5 HERO live field: the run's champion rides INTO this battle as a free, run-persistent body on
+  // the player's side, at the level the run has reached (win-fed XP raises it across battles). Armed from
+  // the pure ledger via emitHero so a no-champion run fields nothing (byte-identical). Champion scales at
+  // army size (grantHero renders a ~1/9 leader body, never poster-scale) and breaks nothing the suite
+  // counts — it is a single additive free ally, counted into st.stats.heroF for the headless gate.
+  try{ const eh = (camp && camp.run)? emitHero(camp.run) : null;
+    if(eh && eh.factionId && camp && camp.enemyId){ grantHero(st, eh.factionId, eh.level, false); }
+  }catch(e){ /* hostile run: no player hero -> unchanged sim */ }
+  // B-S8 balance (finale boss-body): field the ENEMY side's own champion at the FINALE (battle 4)
+  // so the named warlord you fight (S-7 boss event) actually LEADS on the field, symmetric with how
+  // the player champion rides every battle. Mirror the player run-champion LEVEL (reach the finale and
+  // you are at least Lv2, typically Lv4 by a clean run) so the enemy boss reads as YOUR equal rival,
+  // never strictly stronger — equal-level + the player's late-run economy snowball keeps the finale
+  // beatable (OBJ-8 crowd-out lesson: only the FINALE fields a free boss body; the calm-mid b1-b3 arc
+  // is untouched so no free enemy body ever cliffs a mid-run fight). grantHero(en=true) free-fields it
+  // as an army-scale ~1/9 leader body (never poster-scale). No hero on the enemy roster (shouldn't
+  // happen — all live factions have a hero) or unknown enemy => unchanged sim, byte-identical.
+  try{ if(camp && camp.enemyId && camp.battle>=4 && isBranch()){
+    const _elv = (camp && camp.run)? heroLevel(camp.run) : 1;   // mirror the player run-champion level
+    grantHero(st, camp.enemyId, Math.max(1, Math.min(4, (_elv|0)||1)), true);
+  } }catch(e){ /* hostile run / no final enemy: unchanged sim */ }
   showBattle(first);
+  armFieldOps(); renderFieldOps();      // B-S4: arm run carry kit/builds into the per-battle console
+  persistCheckpointSave();              // B-S7 live: universal checkpoint — autosave this battle boundary
 }
 function showBattle(first){
   $('battlePanel').style.display='block';
@@ -3013,20 +4635,37 @@ function showBattle(first){
   $('endOv').style.display='none';
   $('gate').style.display='none';
   const _eo0=$('endOv'); if(_eo0 && _eo0.removeAttribute) _eo0.removeAttribute('data-out');  // A7: clear stale result-frame theme at battle start
-  const extra = camp? (' · Battle '+camp.battle+'/'+CAMP_BATTLES+' vs '+(camp?FACTIONS[camp.enemyId].name:'?')):'';
+  const extra = camp? (' · Battle '+camp.battle+'/'+CAMP_BATTLES+' vs '+(camp?(facById(camp.enemyId)||{}).name:'?')):'';
   $('bidCap').textContent=(st.faction.name+' — build your line')+extra;
   // Branching finale reveal: if this is battle 4 and a nemesis commander is leading (path-influenced boss),
   // announce it loudly so the player sees their history shaped the final fight.
   const NMS={balanced:'STANDARD FRONT',rusher:'RUSH FLANK',economist:'ECONOMY LINE'};
   if(isBranch() && st && st.faction && camp && camp.battle>=CAMP_BATTLES){
     const ne=nemesisArche();
-    $('bidCap').textContent='☠ FINAL BOSS — battle 4/4 vs '+(ne&&NMS[ne]? 'the '+NMS[ne]+' Commander':'the enemy high command')+' ('+(FACTIONS[camp.enemyId].name||'')+') — crack their core to win the campaign!';
+    const _arc=(ne&&NMS[ne])? ne : 'balanced';
+    let _boss=null; try{ _boss = bossForFinale(camp.enemyId, _arc); }catch(e){ _boss=null; }
+    // durable Boss Codex: bank the named war-lord the first time they front a finale (retries don't re-count).
+    try{ if(_boss && _boss.id!=='_highcommand'){ if(!bossEncodedCodex(_boss.id)){ bossSeen(_boss.id); } } }catch(e){}
+    $('bidCap').textContent='☠ FINAL BOSS — battle 4/4 vs '+(ne&&NMS[ne]? 'the '+NMS[ne]+' Commander':'the enemy high command')+' ('+((facById(camp.enemyId)||{}).name||'')+') — crack their core to win the campaign!';
+    // B-S7 BOSS EVENT announce: the finale now reads as a named event, not just an escalation. Cosmetically
+    // appends a tooltip (commander identity + event line + codex) and logs the event so the run log + a
+    // future recap read it — never changes state or the DOM text the contracts count.
+    if(_boss){ try{
+      if(_boss.id!=='_highcommand') log('☠ BOSS EVENT — '+_boss.ic+' '+_boss.name+', '+(_boss.title||'the final line')+', commands the enemy. '+( _boss.line||'' ));
+      else log('☠ BOSS EVENT — the enemy high command throws its full weight at your core.');
+      const _cod=bossCodexList().length;
+      if(typeof $!=='undefined'){ const _bc=$('bidCap'); if(_bc && _bc.setAttribute) _bc.setAttribute('title','☠ BOSS — '+_boss.ic+' '+_boss.name+' ('+(_boss.title||'')+'). Stance: '+_boss.stance+'. Bosses faced this lifetime: '+_cod+' — the final line cracks like any other; hold your build.'); }
+    }catch(e){} }
   }
   $('deployHint').textContent='Buy workers (⛏) to mine faster — the 4th+ walk to the ◈ geyser and unlock your ◈ gas units. Then open a unit to deploy it when you can afford ◆ minerals'+(st.faction.roster.some(d=>d.cost.gas)?' (+ ◈ gas units need a ◈ worker on the geyser)':'')+'.';
   setRunPill();
   renderUnits();
   clearLog();
   log('Battle '+(camp?camp.battle:1)+' deployed'+(camp? ' (win '+camp.wins+'/4)':'')+'. Crack the enemy core — build, hold, push.');
+  // B-S5: announce the champion when one leads this battle (no-champion runs / flat runs stay unchanged).
+  try{ if(camp && camp.run){ const hc=heroChampion(camp.run);
+    if(hc){ log((hc.ic||'🎖')+' '+(hc.name||'Champion')+' leads your line — Lv '+(camp.run? heroLevel(camp.run):1)+'. Clear battles to level '+ (camp.run&&heroLevel(camp.run)>=1 ? (heroLevel(camp.run)+1):2)+'.'); }
+  } }catch(e){}
   if(raf)cancelAnimationFrame(raf);
   last=performance.now(); loop(performance.now());   // pass a ts! bare loop() makes the FIRST dt NaN -> poisons st.t/min/eMin -> '◆ NaN' + frozen game
 }
@@ -3037,6 +4676,10 @@ function setRunPill(){
     const upgN=countUpgs();
     if(upgN>0) core+=' · ✨'+upgN;
     const rel=(camp.relics||[]); if(rel.length) core+=' · 💠'+(rel.map(id=>(RELIC_DEFS[id]?RELIC_DEFS[id].ic:'💠')).join(''));
+    // B-S5 HERO live read: when the run fields a champion, surface its name + current level right on the
+    // persistent battle HUD so the "level-across-a-run" spine reads while it pays off (Voss grows with
+    // every cleared battle). Guarded so a no-champion run renders byte-identically to before.
+    if(camp.run){ try{ const hc=heroChampion(camp.run); if(hc){ core+=' · '+(hc.ic||'🎖')+' '+(hc.name||'Hero')+' Lv'+heroLevel(camp.run); } }catch(e){} }
     const lane=camp&&camp.lanes&&camp.lanes.credit||{}; const lk=Object.keys(lane).filter(a=>lane[a]>0);
     if(lk.length && isBranch()) core+=' · 🏁'+lk.map(a=>(({balanced:'⚖',rusher:'🗡',economist:'🏭'})[a]||a)+'×'+lane[a]).join('');
     // B-S2 A.1b card-economy read (closeout): surface the run's owned-harvest / parked-producer
@@ -3054,9 +4697,111 @@ function setRunPill(){
   } else p.textContent='Standard';
 }
 
+// ---- B-S4 (Pillar §4) FIELD-OPS LIVE CONSOLE + GRANT SOURCE ----
+// Live surface: at each branching-battle start ARMS the run carry kit + builds into a per-battle
+// `_fieldOps` cache and renders an opaque-glass row (#fieldOps) with ONE one-tap action per armed
+// spell / belt consumable / owned building. A tap CASTS (applyPower at the enemy deepest incursion) or
+// PLACES (deployBuilding on your line). A spent SPELL leaves the run bank (useSpell); a used BELT
+// charge spends the run (useCons) => neither re-arms next battle. Placing an owned building consumes
+// only that battle carry. With nothing armed the console NEVER renders => untouched runs byte-identical.
+let _fieldOps = null;
+let _fopsChosen = null;      // per-map-open FIELD-OPS claim guard (at most ONE tool per fork)
+const FIELDOPS_OFFERS = [
+  { kind:'spell', id:'orbital',  ic:'☄️', name:'Orbital Strike', desc:'One-time heavy AoE cast at the enemy front' },
+  { kind:'belt',  id:'rally',    ic:'📣', name:'Rally Cry',      desc:'Consumable: a damage-buff cry (carries a charge into battle)' },
+  { kind:'build', id:'turret',   ic:'🗼', name:'Auto-Turret',    desc:'Own a static auto-fire turret to deploy on your line' },
+];
+function armFieldOps(){
+  _fieldOps = null;
+  if(!isBranch() || !camp || !camp.run || !st) return;      // flat / no-camp runs never arm
+  let kit, bld;
+  try{ kit = emitKit(camp.run); }catch(e){ kit = null; }
+  try{ bld = emitBuilds(camp.run); }catch(e){ bld = null; }
+  if(!kit) kit = { spells:[], belt:{} };
+  if(!bld) bld = {};
+  const spells = (kit.spells||[]).filter(id=>KIT_DEFS && KIT_DEFS[id] && KIT_DEFS[id].kind==='spell');
+  const belt={}, builds={};
+  for(const id in (kit.belt||{})){ const n=(kit.belt[id]|0); if(KIT_DEFS && KIT_DEFS[id] && KIT_DEFS[id].kind==='cons' && n>0) belt[id]=n; }
+  for(const id in bld){ const n=(bld[id]|0); if(BUILD_DEFS && BUILD_DEFS[id] && n>0) builds[id]=n; }
+  if(!spells.length && !Object.keys(belt).length && !Object.keys(builds).length){ _fieldOps=null; return; }
+  _fieldOps = { spells, belt, builds };
+}
+// The enemy deepest current incursion (smallest x toward our core) so AoE lands on the threatening wave.
+function foFrontX(){
+  if(!st) return C.MID;
+  let fx=C.MID, found=false;
+  for(const e of st.eUnits){ if(!e.alive) continue; if(!found || e.x<fx){ fx=e.x; found=true; } }
+  return found? fx : C.MID;
+}
+function foDeployX(){ return C.PBAR_X + 36; }   // static defensive line just ahead of the player barrier
+function castSpellAt(id){
+  if(!st || st.over || !_fieldOps || !_fieldOps.spells.includes(id)) return;
+  const def = KIT_DEFS[id]; if(!def || def.kind!=='spell') return;
+  const res = applyPower(st, id, foFrontX());                 // engine does the real field effect
+  if(!res) return;
+  if(camp && camp.run){ try{ useSpell(camp.run, id); }catch(e){} }   // spent => never re-armed next battle
+  _fieldOps.spells = _fieldOps.spells.filter(s=>s!==id);
+  const k = res.killed? (' killed '+res.killed+' enemy'+(res.killed===1?'':'s')) : (res.healed? (' healed '+res.healed+' soldier'+(res.healed===1?'':'s')) : '');
+  log((def.ic||'spell')+' '+def.name+' fired'+k);
+  renderFieldOps();
+}
+function useBelt(id){
+  if(!st || st.over || !_fieldOps || !(_fieldOps.belt[id]|0)) return;
+  const def = KIT_DEFS[id]; if(!def || def.kind!=='cons') return;
+  let spent=-1; if(camp && camp.run){ try{ spent=useCons(camp.run, id); }catch(e){ spent=-1; } }
+  if(spent<0) return;                                        // run holds no charge => refuse
+  applyPower(st, id, foFrontX());
+  let rem = (_fieldOps.belt[id]|0)-1; if(rem<=0) delete _fieldOps.belt[id]; else _fieldOps.belt[id]=rem;
+  log((def.ic||'use')+' '+def.name+' used'+(rem>0? (' - '+rem+' charge'+(rem===1?'':'s')+' left') : ''));
+  renderFieldOps();
+}
+function placeBuild(id){
+  if(!st || st.over || !_fieldOps || !(_fieldOps.builds[id]|0)) return;
+  const def = BUILD_DEFS[id]; if(!def) return;
+  const body = deployBuilding(st, id, foDeployX());           // engine spawns + structures() runs it
+  if(!body) return;
+  _fieldOps.builds[id] = (_fieldOps.builds[id]|0)-1; if(_fieldOps.builds[id]<=0) delete _fieldOps.builds[id];
+  const n = (st.stats&&st.stats.kitBuilds)||0;
+  log((def.ic||'deploy')+' '+def.name+' deployed on your line'+(n>1?(' ('+n+' total)'):''));
+  renderFieldOps();
+}
+
+// tag a DOM button with data-* using setAttribute when the host DOM supports it (real browser), else a
+// plain expando so the headless test stub (no dataset) does not throw while reading stays possible.
+function markFO(el,id,kind){ try{ if(el&&typeof el.setAttribute==='function'){ el.setAttribute('data-id',id); el.setAttribute('data-kind',kind); return; } }catch(e){} try{ if(el){ el.foId=id; el.foKind=kind; } }catch(e){} }
+function renderFieldOps(){
+  const hudEl = typeof document!=='undefined' ? document.getElementById('battleHud') : null; if(!hudEl) return;
+  let barEl = typeof document!=='undefined' ? document.getElementById('fieldOps') : null;
+  if(!_fieldOps || (!_fieldOps.spells.length && !Object.keys(_fieldOps.belt).length && !Object.keys(_fieldOps.builds).length)){
+    if(barEl && barEl.parentNode) barEl.parentNode.removeChild(barEl);
+    return;
+  }
+  if(!barEl) barEl=document.createElement('div');
+  if(!barEl.parentNode) hudEl.appendChild(barEl);   // mount once onto the HUD (id-less/orphan safe, headless too)
+  barEl.textContent='';
+  const cap=document.createElement('div'); cap.className='fopCap';
+  cap.textContent='\u2692 FIELD OPS: spells/consumables fire at the enemy front \u00b7 buildings deploy on your line';
+  barEl.appendChild(cap);
+  for(const id of _fieldOps.spells){ const def=KIT_DEFS[id]; if(!def) continue;
+    let b=document.createElement('button'); b.type='button'; b.className='fop fopSpell'; markFO(b,id,'spell');
+    b.innerHTML='<span class="fi">'+(def.ic||'\u2604')+'</span><span class="fn"><b>'+def.name+'</b><em>cast</em></span>';
+    b.title=def.desc; b.onclick=()=>castSpellAt(id); barEl.appendChild(b);
+  }
+  for(const id in _fieldOps.belt){ const def=KIT_DEFS[id]; if(!def) continue;
+    const stock=_fieldOps.belt[id];
+    let b=document.createElement('button'); b.type='button'; b.className='fop fopBelt'; markFO(b,id,'belt');
+    b.innerHTML='<span class="fi">'+(def.ic||'\ud83d\udce3')+'</span><span class="fn"><b>'+def.name+' \u00d7'+stock+'</b><em>spend a charge</em></span>';
+    b.title=def.desc; b.onclick=()=>useBelt(id); barEl.appendChild(b);
+  }
+  for(const id in _fieldOps.builds){ const def=BUILD_DEFS[id]; if(!def) continue;
+    let b=document.createElement('button'); b.type='button'; b.className='fop fopBuild'; markFO(b,id,'build');
+    b.innerHTML='<span class="fi">'+(def.ic||'\ud83d\uddfc')+'</span><span class="fn"><b>'+def.name+'</b><em>place</em></span>';
+    b.title=def.desc; b.onclick=()=>placeBuild(id); barEl.appendChild(b);
+  }
+}
 // side-correct roster lookup for grants (enemy = opposing faction). Not exported.
 function sideFac(stMut,en){ return en? (stMut.aifac||stMut.faction) : stMut.faction; }
-function grant(tag){ return FACTIONS[selFac].roster.find(d=>d.tag===tag); }
+function grant(tag){ return (facById(selFac)||{}).roster ? facById(selFac).roster.find(d=>d.tag===tag) : null; }
 
 function clearLog(){ const b=$('logbox'); if(b) b.textContent=''; }
 function log(m){
@@ -3086,6 +4831,7 @@ const TAGLBL={worker:'⛏ economy',melee:'⚔ melee',swarm:'swarm',ranged:'🎯 
 const ROLE_ACC = { worker:'#ffcf6e', melee:'#ffe06a', swarm:'#ff8a3c', ranged:'#ffd324',
   burst:'#7ee7ff', tank:'#8fd6e0', splash:'#ff9b3d', healer:'#7cfc9c', special:'#d79bff' };
 let _btnDef={};   // def.key -> {btn, badge, qty, last} for live affordability + alive-count refresh
+let _btnExtras=[];   // B-S6 widened-class extra deploy buttons (aliens/rebels class variants)
 
 function liveAlive(st,def){ let n=0; for(const u of st.pUnits) if(u.alive && u.def===def) n++; return n; }
 function badgeText(def,bq){ return def.qty>1? `x${Math.ceil(bq/def.qty)}` : (bq>0?`×${bq}`:''); }
@@ -3095,9 +4841,14 @@ function refreshAfford(){
   //    stale → whole roster sits grey even with plenty of minerals (167◆ & everything disabled bug).
   // 2) ×N badge reflects CURRENT alive units, so refresh it live as units die (only when it changed).
   if(!st) return;
-  const f=FACTIONS[selFac];
+  const f=facById(selFac);
+  if(!f) return;
   for (const key in _btnDef){
-    const rec=_btnDef[key], def=f? f.roster.find(d=>d.key===key):null;
+    const rec=_btnDef[key];
+    // B-S6 widening: an extra (class-variant) deploy button isn't in the base roster — resolve it
+    // across the widened live list too so afford/badge refresh applies to it like any shop row.
+    let def=f? f.roster.find(d=>d.key===key):null;
+    if(!def && f && _btnExtras.length){ def = _btnExtras.find(d=>d.key===key)||null; }
     if(!rec||!def) continue;
     const owned=st.owned[key]||0;
     const c=(def.tag==='worker')? workerCostOf(def, owned) : costOfUnit(def,owned);   // scavenger: expo + cap
@@ -3112,12 +4863,19 @@ function refreshAfford(){
 const WORKER_UI_CAP=8;
 
 function renderUnits(keepSel){
-  const box=$('units'), f=FACTIONS[selFac];
+  const box=$('units'), f=facById(selFac);
+  if(!box||!f) return;
   // CLEAR first — renderUnits is called on every deploy AND every buy; without this each call appends
   // the whole roster again → duplicate buy buttons + stale counts (x2/x3/x4) accumulating in the GUI.
   box.innerHTML='';
   _btnDef={};
-  for (const def of f.roster){
+  // B-S6 REWARD-TREE WIDENING: append the faction's extraRoster class variants (aliens Brood-Behemoth /
+  // rebels Guerrilla-Sniper) to the PLAYER shop rows so the widened pool is genuinely deployable live.
+  // These live only in the UI list (extraRoster returns a copy); the ENGINE/AI/base rosters never see
+  // them, so the enemy AI and every headless/base sim stay byte-identical (enemy + economy untouched).
+  _btnExtras = (f && (f.id === "aliens" || f.id === "rebels")) ? extraRoster(f.id) : [];
+  const __rosterDefs = f.roster.concat(_btnExtras);
+  for (const def of __rosterDefs){
     const isWorker=def.tag==='worker';
     const aliveN=liveAlive(st,def);            // CURRENT alive on field; ×N drops as units die
     const ownN=st.owned[def.key]||0;
@@ -3163,7 +4921,7 @@ function renderUnits(keepSel){
     b.title=(def.desc||'')+(isWorker?' · Buying an extra worker grows income; the 4th+ mine the ◈ geyser (unlocks ◈ units).':'');
     b.onclick=()=>{ const ok=buyUnit(st,def,false); if(ok){ log(`Deploy ${def.emoji} ${def.name} (◆${c.min}${def.cost.gas?' ◈'+c.gas:''}). ${isWorker?'More harvesters = more mining; an extra one mines the ◈ geyser.':(def.tag==='special'?'Gas unit online.':'')}`); renderUnits(); refreshAfford(); } else { log('Can\'t afford '+def.name+'.'); glowMinerals(); } };
     _btnDef[def.key]={btn:b, badge:badge, qty:def.qty||1, last:aliveN};
-    drawUnitIcon(icCanvas, def, (FACTIONS[selFac].id==='aliens'));  // paint the real unit sprite into the card
+    drawUnitIcon(icCanvas, def, (facById(selFac)&&facById(selFac).id==='aliens'));  // paint the real unit sprite into the card
     box.appendChild(b);
   }
   refreshAfford();
@@ -3385,6 +5143,21 @@ function drawFx(){
         ctx.globalAlpha=1; ctx.shadowBlur=0;
         break;
       }
+      case 'aoe': {   // B-S4 one-time kit: hot orbital/frag burst — ember ring falling on the blast point (G3 ember, not full-bleed)
+        ctx.shadowColor='#ff7a4a'; ctx.shadowBlur=18; ctx.strokeStyle='#ff9a5e'; ctx.globalAlpha=fade*.9; ctx.lineWidth=2.4;
+        ctx.beginPath(); ctx.arc(x,y, 12+age*40,0,Math.PI*2); ctx.stroke();
+        ctx.fillStyle='#ffd9a6'; ctx.globalAlpha=fade*.5;
+        for(let i=0;i<7;i++){ const a2=i/7*Math.PI*2 - 0.3; ctx.fillRect(x+Math.cos(a2)*(8+age*28)-1, y-14+Math.sin(a2)*(8+age*24)-1, 3,3); }
+        ctx.globalAlpha=1; ctx.shadowBlur=0;
+        break;
+      }
+      case 'rally': { // B-S4 one-time kit: teal battle-cry flare at mid (player side reads cool, not gold)
+        ctx.strokeStyle='#35e0e0'; ctx.shadowColor='#1cc7c7'; ctx.shadowBlur=16; ctx.globalAlpha=fade*.85; ctx.lineWidth=2.6;
+        ctx.beginPath(); ctx.moveTo(x-26,y-20); ctx.lineTo(x,y-40); ctx.lineTo(x+26,y-20); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x,y-16, 10+age*22,0,Math.PI*2); ctx.stroke();
+        ctx.globalAlpha=1; ctx.shadowBlur=0;
+        break;
+      }
       default: { // 'shot' impact + damage number
         ctx.fillStyle='#fff'; ctx.strokeStyle='#ffe28a'; ctx.shadowColor='#fff7';
         ctx.shadowBlur=10; ctx.globalAlpha=fade;
@@ -3559,7 +5332,7 @@ function drawUnit(u,en){
     // carried ◆ so a worker reads clearly distinct from the combat line.
     const wy=C.GROUND - 0;
     const bob = Math.sin(u.id*1.7 + st.t*3)*2;
-    const organic = (u.isEnemy? (st&&(st.aifac||st.faction)) : ((st&&st.faction)||FACTIONS[selFac])).id==='aliens';
+    const organic = (u.isEnemy? (st&&(st.aifac||st.faction)) : ((st&&st.faction)||facById(selFac))).id==='aliens';
     const spr = sprFor(u, organic);   // node sprite for the owning side
     // Miner carry-state (Brick 16:07): hands stay EMPTY heading out & while digging; the carried ◆ only
     // shows on the RETURN trip (wStage==='to-base'), i.e. when it holds loot moving back to base. Read-only
@@ -3606,7 +5379,7 @@ function drawUnit(u,en){
 // Constraint: only translate/scale (no rotate/setTransform/quadraticCurveTo) so the DOM-shim gates boot.
 function drawSprite(u, footY, teamCol){
   const tag=u.def.tag, en=!!u.isEnemy;
-  const organic = (u.isEnemy? (st&&(st.aifac||st.faction)) : (st&&st.faction) || FACTIONS[selFac]).id==='aliens';   // each side wears ITS OWN faction palette (obj 7: AI fields the other)
+  const organic = (u.isEnemy? (st&&(st.aifac||st.faction)) : (st&&st.faction) || facById(selFac)).id==='aliens';   // each side wears ITS OWN faction palette (obj 7: AI fields the other)
   // Try the real generated sprite for this unit's faction+slot. If its art is ready we render that
   // (feet-anchored, mirror follows the existing scale), else we fall back to the vector figure so the
   // shim/headless tests and any pre-decode frame never draw nothing or throw.
@@ -3812,8 +5585,8 @@ function drawFigure(tag, h, organic, B, rim, ACC, facId){
       // card/icons (facId given) resolve via the faction id directly; battlefield (no facId) keeps old
       // per-side logic so each side draws its OWN unique with team-correct shape even when u/st absent.
       const uni = facId
-        ? ((FACTIONS[facId]||{}).unique || 'saboteur')
-        : (((u&&u.isEnemy)? (st&&(st.aifac||st.faction)) : (st&&st.faction) || FACTIONS[selFac]).unique || 'saboteur');
+        ? ((facById(facId)||{}).unique || 'saboteur')
+        : (((u&&u.isEnemy)? (st&&(st.aifac||st.faction)) : (st&&st.faction) || facById(selFac)).unique || 'saboteur');
       if(uni==='hive'){
         leg(-wA*1.1, h*0.96); leg(wA*1.2, h*0.94);
         ctx.fillStyle=B.B; ctx.shadowBlur=10;
@@ -3922,7 +5695,7 @@ function endOfMatch(){
   $('endTxt').textContent='💀 DEFEAT';
   $('endTxt').style.color='#ff7a8a';
   $('endSub').textContent = camp
-    ? ('Your core fell in '+C.fmtT(st.t)+'. Retry battle '+camp.battle+'/'+CAMP_BATTLES+' (upgrades persist).')
+    ? ('Your core fell in '+C.fmtT(st.t)+'. Retry battle '+camp.battle+'/'+CAMP_BATTLES+' (upgrades persist).'+ ((camp.battle>=CAMP_BATTLES)? (function(){ try{ const _lb=bossForFinale(camp.enemyId, nemesisArche()||'balanced'); return (_lb&&_lb.id!=='_highcommand')? (' '+_lb.ic+' '+_lb.name+' holds the line — take them down to win the campaign.') : ' The enemy high command still holds the line.'; }catch(e){ return ''; } })() : ''))
     : ('Your core fell in '+C.fmtT(st.t)+'. Try another build.');
   recap();
   $('againBtn').textContent= camp? ('🔁 Retry Battle '+(camp.battle||0)+'/'+CAMP_BATTLES+' (upgrades kept)') : '▶ Battle again';
@@ -3934,6 +5707,12 @@ function endOfMatch(){
 // campaign won this battle: last battle = RUN victory; otherwise offer 1-of-2 persistent upgrades.
 function campsWin(){
   camp.wins += 1;
+  // B-S5 HERO win-driven XP: a cleared battle feeds the run champion XP, which LEVELS it across the
+  // run (one win = one level on the tentative pre-S-8 curve). The raised level is what the NEXT battle's
+  // grantHero fields, so the champion you carry into the finale is stronger from your earlier wins — the
+  // "level across run" spine. No champion fielded => grantHeroXp returns -1 and nothing shifts.
+  let lvGrown=-1; try{ if(camp && camp.run){ lvGrown=grantHeroXp(camp.run, HERO_XP_WIN); } }catch(e){ lvGrown=-1; }
+  if(lvGrown>0 && camp&&camp.run){ const hc=(camp.run?(heroChampion(camp.run)):null)||{}; log('\u{1F396}\u{FE0F} '+(hc.name||'Your champion')+' leveled up to Lv '+(camp.run? heroLevel(camp.run):1)+' (battle cleared).'); }
   // Branch-mode lane accounting: if THIS battle was routed to an enemy archetype and you won it, credit
   // that lane's boon for the rest of the run (and feed the nemesis finale pick). Applied only when the
   // run is branching AND battle had a routed archetype.
@@ -3947,8 +5726,10 @@ function campsWin(){
   // win/reward/end family is gold/white/teal). Color now flows from the data-out CSS (#endOv[data-out=
   // 'victory'] h2 -> warm gold on the end card; #endOv.endScreen h2 -> white reward header below).
   if(over){
-    $('endSub').textContent= 'You cleared all '+CAMP_BATTLES+' escalating battles in '+C.fmtT(st.t)+' with '+countUpgs()+' upgrade'+(countUpgs()===1?'':'s')+' carried.';
+    { let _vw=''; try{ const _nb=bossForFinale(camp.enemyId, nemesisArche()||'balanced'); if(_nb && _nb.id!=='_highcommand') _vw=' — you broke '+( _nb.ic+' '+_nb.name )+', '+(_nb.title||'the final warlord')+' of the enemy line.'; }catch(e){ _vw=''; }
+      $('endSub').textContent= 'You cleared all '+CAMP_BATTLES+' escalating battles in '+C.fmtT(st.t)+' with '+countUpgs()+' upgrade'+(countUpgs()===1?'':'s')+' carried.'+_vw; }
     recap(); setRunPill();
+    persistBankRunMeta(true); persistClearCamp();   // B-S7 meta: a completed run banks a credit (roguelite) + clears its autosave
     $('againBtn').textContent='▶ New Campaign'; $('againBtn').style.display='';
     $('againBtn').onclick=startRun; $('copyLog').style.display='';
   } else {
@@ -4034,11 +5815,15 @@ function defaultTrackFor(tag){
 function campDeck(){ if(camp&&!camp.deck) camp.deck={ factionId:camp.factionId, cards:{} }; return camp.deck; }
 function showCardPicker(){
   clearCardPicker();
-  const f = FACTIONS[camp.factionId]; if(!f) return;
+  const f = facById(camp.factionId); if(!f) return;
   const row = $('cardRow') || (function(){ const d=document.createElement('div'); d.id='cardRow'; return d; })();
   row.textContent='';
   const ov=$('endOv'); if(ov && !row.parentNode){ try{ ov.appendChild(row); }catch(e){} }
-  const cardDefs = (f.roster||[]).filter(d=>d.tag!=='worker');   // level a combat unit, not the miner
+  // B-S6 REWARD-TREE WIDENING: offer each faction's class-variant cards (aliens Brood-Behemoth / rebels
+  // Guerrilla-Sniper) as REAL #cardRow level-up picks alongside the base combat cards. extraRoster
+  // returns a copy, so the base/engine pools stay untouched (enemy + sims byte-identical).
+  let cardDefs = (f.roster||[]).filter(d=>d.tag!=='worker');   // level a combat unit, not the miner
+  if(f && (f.id==='aliens' || f.id==='rebels')){ const _xv=extraRoster(f.id).filter(d=>d.tag!=='worker'); if(_xv.length) cardDefs = cardDefs.concat(_xv); }
   const r = document.createElement('div'); r.style.cssText='margin:6px 0 2px;font-weight:bold'; r.textContent='⚔ Level up a unit card (persists the rest of the run):';
   row.appendChild(r);
   for(const def of cardDefs){
@@ -4196,6 +5981,7 @@ function claimAdvance(){
 }
 function openRouteMap(){
   const ov=$('mapOv'); if(!ov || !camp) return nextBattle(false,true);
+  _fopsChosen = {};                          // B-S4: fresh FIELD-OPS grant guard each map open
   const bn = camp.battle+1;                       // battle we route toward (2..4; claimer only maps < finale)
   ov.textContent=''; ov.style.display='flex';
   const again=$('againBtn'); if(again){ again.style.display='none'; }
@@ -4291,6 +6077,56 @@ function openRouteMap(){
     eco.title='Drag a harvest card onto ◆ mineral / ◈ gas to produce (card-backed producer past your free miner), or pull it off to hold it.';
     eco.onclick=()=>openEcoPanel();
     body.appendChild(eco);
+  }
+  // B-S4 FIELD-OPS GRANT: non-`.node` offer card under the fork lets a run claim ONE carry-forward
+  // (spell / belt charge / owned building) per map open via the pure model helpers, so the cast/place
+  // console is reachable on later battles. Never touches the 3-route `.node` fork contract.
+  if(camp && camp.run && isBranch() && camp.mode==='branching'){
+    const run=camp.run;
+    let spellsN=0, beltN=0, bldN=0, beltStock=0;
+    try{ spellsN=(run.kit&&run.kit.spells||[]).length; }catch(e){}
+    try{ beltStock=Object.keys((run.kit&&run.kit.belt)||{}).reduce((sum,id)=>sum+((run.kit.belt[id])|0),0); }catch(e){}
+    try{ bldN=Object.keys((run.builds)||{}).length; }catch(e){}
+    const ownedText=[];
+    if(spellsN>0) ownedText.push(spellsN+' spell'+(spellsN===1?'':'s'));
+    if(beltStock>0) ownedText.push(beltStock+' belt charge'+(beltStock===1?'':'s'));
+    if(bldN>0) ownedText.push(bldN+' owned deployable'+(bldN===1?'':'s'));
+    const fo=document.createElement('div'); fo.className='fopCard'; fo.id='fopsOffer';
+    fo.innerHTML='<div class="ecIc">\u2692</div>'
+      +'<div class="rsTx"><b>FIELD OPS - CLAIM A CARRY-FORWARD</b><span>Bank one field tool to ride into the next battle FIELD-OPS console: a one-shot spell, a belt consumable, or an owned static deployable. Pick ONE (claiming re-offers next fork).'+(ownedText.length?(' Carried now: '+ownedText.join(' / ')+'.'):'')+'</span></div>';
+    const goWrap=document.createElement('div'); goWrap.className='fopGo';
+    let chosen=0;
+    for(const off of FIELDOPS_OFFERS){
+      let owned=false;
+      if(off.kind==='build'){ try{ owned=!!(run.builds&&run.builds[off.id]); }catch(e){} }
+      else if(off.kind==='spell'){ try{ owned=(run.kit&&run.kit.spells||[]).includes(off.id); }catch(e){} }
+      else { try{ owned=((run.kit&&run.kit.belt||{})[off.id]|0)>=3; }catch(e){} }
+      const chip=document.createElement('button'); chip.type='button';
+      chip.className='fopClaim '+(off.kind==='build'?'b':'s')+' '+(owned?'lim':'');
+      markFO(chip,off.id,off.kind);
+      chip.innerHTML='<b>'+(off.ic||'*')+' '+off.name+'</b><em>'+(owned? (off.kind==='build'?'owned':(off.kind==='spell'?'held':'maxed')) : 'claim')+'</em>';
+      chip.title=off.desc;
+      chip.disabled = owned || chosen>0;
+      chip.onclick=(function(id2,kind2,owned2){
+        return function(){
+          if(chosen>0 || owned2) return;
+          let ok=false; try{
+            if(kind2==='spell') ok = addSpell(run, id2)>0;
+            else if(kind2==='belt') ok = stockCons(run, id2, 1)>0;
+            else if(kind2==='build') ok = addBuilding(run, id2)>0;
+          }catch(e){ ok=false; }
+          if(ok){ chosen=1;
+            log('Field Ops claimed: '+ (kind2==='spell'?'a spell':(kind2==='belt'?'a belt charge':'a '+id2))+' - armed into the next battle.'); setRunPill();
+            const row=chip.parentNode; if(row){ for(const c of ([] .slice.call(row.children||[]))){ c.disabled=true; } }
+            chip.disabled=false; chip.classList.add('claimed'); chip.innerHTML='<b>ok '+ ((FIELDOPS_OFFERS.find(o=>o.id===id2))||{}).name +' claimed</b><em>next battle</em>';
+          } else { log('Could not claim that field tool right now.'); }
+        };
+      })(off.id, off.kind, owned);
+      goWrap.appendChild(chip);
+    }
+    fo.appendChild(goWrap);
+    fo.title='Claim one carry-forward field tool (once per map open) - spend it on your line next battle.';
+    body.appendChild(fo);
   }
   ov.appendChild(body);
   const bt=document.createElement('div'); bt.className='mapBottom';
@@ -4585,7 +6421,7 @@ function resolveRoute(r, bn){
   // A route pick from the map (which was reached AFTER the VICTORY-confirm + reward): start the routed battle.
   _winAdvance='';
   const again=$('againBtn'); if(again) again.style.display='none';
-  nextBattle(false,true);   // fight the routed Battle bn now
+  nextBattle(false,true);   // fight the routed Battle bn now   // (universal checkpoint fires inside nextBattle)
 }
 
 // clear any pending upgrade-choice buttons so a fresh overlay rebuilds cleanly (removes DOM children,
@@ -4618,10 +6454,10 @@ function _setA(el,k,v){ try{ if(el&&typeof el.setAttribute==='function'){ el.set
 function slotAvailNow(){
   const a={ upgrade:true, card:true, relic:false, harvest:false };
   try{
-    if(camp){ a.card=!!(camp.factionId && FACTIONS && FACTIONS[camp.factionId]); }
+    if(camp){ a.card=!!(camp.factionId && facById(camp.factionId)); }
     if(camp){ const rel=(camp.relics&&camp.relics.length)? relicChoices(camp.relics):[]; a.relic=!!(rel&&rel.length); }
     // harvest offer only when the living faction fields a worker (the reward mounts a ⛏ Train pick).
-    const f=camp&&camp.factionId&&FACTIONS?FACTIONS[camp.factionId]:null;
+    const f=camp&&camp.factionId?facById(camp.factionId):null;
     if(f&&f.roster&&f.roster.some(d=>d.tag==='worker')) a.harvest=true;
   }catch(e){}
   return a;
@@ -4749,6 +6585,8 @@ function recap(){
   const w=st.win;
   log('\n──────  MATCH RECAP  ──────');
   log('🎚 '+(st.difficulty||'?')+' · '+(st.faction?st.faction.name:'?')+' vs '+(st.aifac?st.aifac.name:'?')+'  —  Over at '+C.fmtT(st.t)+' — '+ (w?'VICTORY':'DEFEAT'));
+  // B-S7 BOSS EVENT recap: when the finale was a named warlord event, call it out in the run log.
+  try{ if(camp && camp.battle>=CAMP_BATTLES){ const _rb=bossForFinale(camp.enemyId, nemesisArche()||'balanced'); if(_rb){ log('☠ BOSS EVENT — '+( _rb.id==='_highcommand' ? 'the enemy high command' : (_rb.ic+' '+_rb.name+', '+(_rb.title||'the final warlord')) )+' led the final line'+(w? ', and it fell.':' — push back and retry.')+'.'); } } }catch(e){}
   log('Battle '+(camp?camp.battle:'?')+'/'+CAMP_BATTLES+(camp&&camp.upgrades&&countUpgs()>0? ' · upgrades '+Object.keys(camp.upgrades).map(k=>k+':'+camp.upgrades[k]).join(','):''));
   // P2: surface the run's deck (card levels) + relics at the recap so the player can read their build
   if(camp && camp.deck){
@@ -4818,7 +6656,8 @@ if(typeof window!=='undefined'){
   Object.defineProperty(window.__ds,'selDiff',{get:()=>selDiff});
   Object.defineProperty(window.__ds,'selMode',{get:()=>selMode});
   window.__ds.map = { journeyFor, takeNode };  // P2A: drive the branch/journey model headlessly
-  window.__ds.FACTIONS=FACTIONS;
+  window.__ds.FACTIONS=Object.assign({}, FACTIONS, EXPANSION_FACTIONS); // the LIVE four-faction union read (core + expansion) so headless/soak enemies anywhere resolve.
+  window.__ds.FACTIONS_CORE=FACTIONS;   // the untouched core pair, for callers that still want rebels+aliens only.
   // P2-D: expose the pure run helpers to the test bridge (drive a per-battle AI archetype headlessly)
   window.__ds.archetypes = { set:setArchetype, get:archetypeFor };
   // B-S2d: expose the A.1b economy surface (park/unpark + producers) so a headless gate can drive the
@@ -4830,6 +6669,51 @@ if(typeof window!=='undefined'){
   // B-S3 (Pillar C): expose the slot-reward availability + landing read so a headless gate can assert a
   // reel pull never lands on a family with no real reward (the rows stay the one-strong-reward source).
   window.__ds.slot = { avail:slotAvailNow, land:slotLand };
+  window.__ds.fo = {
+    arm:armFieldOps, render:renderFieldOps, cast:castSpellAt, useBelt, place:placeBuild,
+    arming:()=>_fieldOps,
+    kit:{ emit:emitKit, useSpell, useCons, addSpell, stockCons },
+    builds:{ emit:emitBuilds, add:addBuilding },
+  };
+  // B-S5 HERO bridge: expose the live run-champion reads a headless gate drives (champion presence,
+  // its current level / XP, win-fed grantHeroXp, and the emit a battle opener reads). Reads default to
+  // null/0 on a no-champion run so existing headless bridges stay shape-stable.
+  window.__ds.hero = {
+    pick:(fid)=>{ try{ return pickHero(camp&&camp.run, fid); }catch(e){ return null; } },
+    champ:()=>{ try{ return (camp&&camp.run)? heroChampion(camp.run):null; }catch(e){ return null; } },
+    level:()=>{ try{ return (camp&&camp.run)? heroLevel(camp.run):1; }catch(e){ return 1; } },
+    xp:()=>{ try{ return (camp&&camp.run)? heroXp(camp.run):0; }catch(e){ return 0; } },
+    grantXp:(xp)=>{ try{ return (camp&&camp.run)? grantHeroXp(camp.run, xp):-1; }catch(e){ return -1; } },
+    emit:()=>{ try{ return (camp&&camp.run)? emitHero(camp.run):null; }catch(e){ return null; } },
+    fielded:()=>{ try{ return !!(st && st.stats && st.stats.heroF) && (st.stats.heroF||0); }catch(e){ return 0; } },
+    // B-S8 (finale boss-body): count ENEMY-side champion bodies actually on the field (hero:true).
+    // Side-precise (scans eUnits directly) so a headless gate can assert the finale FIELDS the enemy
+    // warlord body while the calm-mid battles stay clear of any free enemy hero. Reads the live
+    // engine array, never st.stats (which counts both sides through grantHero). 0 when no battle.
+    enemyFielded:()=>{ try{ return (st && st.eUnits) ? st.eUnits.filter(u=>u.alive&&u.def&&u.def.hero===true).length : 0; }catch(e){ return 0; } },
+    grantHero,
+  };
+  // B-S7 PURE SAVE MODEL bridge: expose the snapshot encoder/decoder + the cross-run meta bank so a
+  // headless gate can prove a run round-trips through a JSON snapshot byte-exactly and meta progress
+  // banks/unlocks cross runs. Pure reads (no localStorage here — a later live slice wires this onto the
+  // storage adapter + navLoad CONTINUE + the select UI). Safe no-op reads when no campaign is live.
+  window.__ds.save = {
+    encode:()=>{ try{ return camp? encodeCampState(camp):null; }catch(e){ return null; } },
+    decode:(snap)=>{ try{ return decodeCampState(snap); }catch(e){ return null; } },
+    resume:(decoded)=>{ try{ return resumeDecodedCamp(decoded, null); }catch(e){ return null; } },
+    metaReset, metaNormalize, metaBankRun, metaBankCredit, metaUnlock, metaUnlocked,
+    metaUnlockList, metaSpendCredits,
+    // pure run-mutator/read subset a headless gate (and the later resume/ui slice) uses to arm/inspect
+    // mid-run state through the live run model. Same top-level lexical scope as ui.js so it can see the
+    // run/deck/relics/kit/build helpers + def maps directly (single flattened <script>).
+    lib:{
+      upgradeCard, takeRelic, collectCard, trimCard, assignCard, unassignCard, cardOwned,
+      addSpell, addBuilding, stockCons,
+      relicIds:()=>{ try{ return Object.keys(RELIC_DEFS||{}); }catch(e){ return []; } },
+      kitIds:()=>{ try{ return Object.keys(KIT_DEFS||{}); }catch(e){ return []; } },
+      buildIds:()=>{ try{ return Object.keys(BUILD_DEFS||{}); }catch(e){ return []; } },
+    },
+  };
 }
 // ---- Phase-2a BRANCH MAP (between-battle next-leg preview + opt-in re-route). ----
 // §2.5 wants a "next-choice preview" so a run feels like a journey rather than isolated fights, AND a
@@ -4870,6 +6754,48 @@ function renderNextLegs(){
 
 // ---- end Phase-2a branch-map helpers ----
 
+// ---- B-S7 LIVE PERSISTENCE bridge + save-point bindings (injected via persist.mjs). ----
+// Expose the live storage/resume/meta adapters so a headless gate can drive the FULL save -> clear ->
+// continue loop without a browser localStorage (persist.mjs degrades to an in-memory store in shims and
+// lets a gate inject a mock store via setStore). Reads are safe no-op nulls when no run is live.
+if(typeof window!=='undefined'){
+  if(!window.__ds) window.__ds={};
+  window.__ds.persist = {
+    save: persistCheckpointSave, clear: persistClearCamp, hasSave: persistHasSave,
+    load: persistLoadCamp, resume: persistResume, present: persistPresentLoad, bind: bindLiveContinue,
+    meta: persistMeta, metaSave: persistSaveMeta, bankRun: persistBankRunMeta,
+    spend: persistSpendMetaCredits, unlock: persistUnlockMeta, unlocked: persistUnlockedMeta,
+    setStore: function(st){ try{ _storeOverride = st || null; }catch(e){} },
+  };
+}
+// B-S7 META-PERK SELECT bridge (metaperk.mjs): the boot-screen starting-boon selector logic a headless
+// gate drives (list/credits/unlocked/unlock-with-spend/arm/seed). Reuses the SAME injected store as the
+// persist block above (unlock spends a banked credit through the adapter + persists the durable flag).
+if(typeof window!=="undefined"){
+  if(!window.__ds) window.__ds={};
+  window.__ds.metaperk = {
+    list: perkList, byId: perkById, cost: META_PERK_COST, lockKey: META_PERK_LOCKKEY,
+    credits: metaPerkCredits, unlocked: perkUnlocked, unlock: perkUnlock,
+    arm: setArmedPerk, armed: armedPerk, clearArm: clearArmedPerk, seed: metaSeedBoon,
+    render: renderMetaPerks,
+  };
+// B-S7 BOSS EVENT SET bridge (bosses.mjs): expose the finale warlord roster + durable Boss Codex so a
+// headless gate can assert the finale names a per-faction commander, banks a codex marker on first
+// face, and never changes sim/balance. Reads are safe no-op nulls when no host context is reachable.
+if(typeof window!=="undefined"){
+  if(!window.__ds) window.__ds={};
+  window.__ds.bosses = {
+    defs: bossList, byId: bossById, resolve:(fid,arche)=>{ try{ return bossForFinale(fid, arche); }catch(e){ return null; } },
+    defaultResolve:()=>{ try{ return camp && camp.enemyId ? bossForFinale(camp.enemyId, nemesisArche()||'balanced') : null; }catch(e){ return null; } },
+    roster:()=>{ try{ return bossList(); }catch(e){ return []; } },
+    codex: bossCodexList, codexHas: bossEncodedCodex, seen: bossSeen,
+    prefix: BOSS_CODEX_PREFIX,
+    // pure resolve read (no DOM, no store) chiefly for the headless gate
+    pure:(fid,arche)=>bossForFinale(fid, arche),
+  };
+}
+}
+// Bind the LOAD/CONTINUE nav button
 </script>
 </body>
 </html>
