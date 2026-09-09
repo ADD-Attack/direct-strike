@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIRECT STRIKE — Style Concept Boards</title>
+<style>
+  :root{ --bg:#0B0B2E; --card:#23234F; --txt:#FFFFFF; --sub:#A0EFFF; --gold:#FFD324; --teal:#1CC7C7; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:radial-gradient(ellipse at top,#1b1b4d 0%,var(--bg) 60%);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:28px 20px 60px;}
+  header{max-width:1200px;margin:0 auto 8px;}
+  h1{font-size:1.6rem;letter-spacing:.5px;}
+  h1 em{color:var(--gold);font-style:normal;}
+  .sub{color:var(--sub);font-size:.92rem;margin-top:4px;max-width:80ch;line-height:1.4;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(460px,1fr));gap:22px;
+    max-width:1500px;margin:26px auto 0;}
+  .card{background:var(--card);border:1px solid rgba(28,199,199,.45);border-radius:12px;overflow:hidden;
+    box-shadow:0 8px 30px rgba(0,0,0,.45);}
+  .card .imgwrap{background:#000;display:flex;align-items:center;justify-content:center;}
+  .card img{width:100%;height:auto;display:block;}
+  .card .cap{padding:12px 14px 14px;}
+  .card .name{font-weight:600;font-size:1.05rem;display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+  .card .status{font-size:.72rem;color:#05051A;background:var(--teal);border-radius:20px;padding:2px 8px;
+    font-weight:700;white-space:nowrap;}
+  .card .status.pend{background:var(--gold);}
+  .card .desc{color:#C7C7E0;font-size:.86rem;margin-top:6px;line-height:1.4;}
+  a.raw{color:var(--sub);font-size:.78rem;text-decoration:none;border-bottom:1px dotted rgba(160,239,255,.5);}
+  a.raw:hover{color:#fff;}
+</style>
+</head>
+<body>
+  <header>
+    <h1>DIRECT STRIKE — <em>Style concept boards</em></h1>
+    <div class="sub">All locked/under-review art direction for the game look. Click any to open the full-res image in a new tab.
+      Status labels: <span style="color:var(--teal)">LOCKED</span> = Brick-signed into STYLE-BIBLE; <span style="color:var(--gold)">REVIEW</span> = awaiting Brick verdict.</div>
+  </header>
+  <div class="grid">
+    <div class="card"><div class="imgwrap"><img src="shop-concept.jpg" alt="Shop / unit-card - locked GOOD UI"></div>
+      <div class="cap"><div class="name">Shop / Unit-card panel<span class="status">LOCKED · GOOD UI</span></div>
+        <div class="desc">Canonical card &amp; panel frame — color guide surfaces dark→light→dark.</div>
+        <a class="raw" href="shop-concept.jpg" target="_blank" rel="noopener">open full-res ↗</a></div></div>
+
+    <div class="card"><div class="imgwrap"><img src="map-route-ftl.jpg" alt="Map / route-select FTL"></div>
+      <div class="cap"><div class="name">Map / Route-select (FTL)<span class="status">LOCKED · anti-clutter</span></div>
+        <div class="desc">Mesh tree + creeping fog + varied events. Live build must be sparser than board.</div>
+        <a class="raw" href="map-route-ftl.jpg" target="_blank" rel="noopener">open full-res ↗</a></div></div>
+
+    <div class="card"><div class="imgwrap"><img src="deck-board.jpg" alt="Deck / relic collection"></div>
+      <div class="cap"><div class="name">Deck / Relic collection<span class="status">LOCKED</span></div>
+        <div class="desc">Rooster grid + owned relics (real names), '?'-locked pool slot.</div>
+        <a class="raw" href="deck-board.jpg" target="_blank" rel="noopener">open full-res ↗</a></div></div>
+
+    <div class="card"><div class="imgwrap"><img src="reward-board-v2.jpg" alt="Reward / pick a reward"></div>
+      <div class="cap"><div class="name">Reward — Pick a Reward<span class="status pend">REVIEW</span></div>
+        <div class="desc">Shop-skeleton clone: single panel, header+currency pill, row of role-diff cards.</div>
+        <a class="raw" href="reward-board-v2.jpg" target="_blank" rel="noopener">open full-res ↗</a></div></div>
+
+    <div class="card"><div class="imgwrap"><img src="menu-board.jpg" alt="Start / main menu"></div>
+      <div class="cap"><div class="name">Start / Main menu<span class="status pend">REVIEW</span></div>
+        <div class="desc">DIRECT STRIKE lockup, clash-splash banner, START/DEPLOY primary + difficulty chips.</div>
+        <a class="raw" href="menu-board.jpg" target="_blank" rel="noopener">open full-res ↗</a></div></div>
+
+    <div class="card"><div class="imgwrap"><img src="end-board.jpg" alt="End / victory + defeat"></div>
+      <div class="cap"><div class="name">End — Victory + Defeat<span class="status pend">REVIEW</span></div>
+        <div class="desc">Gold victory vs ember defeat split, retry/next actions.</div>
+        <a class="raw" href="end-board.jpg" target="_blank" rel="noopener">open full-res ↗</a></div></div>
+
+    <div class="card"><div class="imgwrap"><img src="field-warmcomic.jpg" alt="Battlefield Warm Comic"></div>
+      <div class="cap"><div class="name">Battlefield — Warm Comic<span class="status pend">REVIEW · the BIG OPEN</span></div>
+        <div class="desc">Field style contender: warm comic light/dirt, teal(left) vs ember(right), 85/15 HUD.</div>
+        <a class="raw" href="field-warmcomic.jpg" target="_blank" rel="noopener">open full-res ↗</a></div></div>
+  </div>
+</body>
+</html>
