@@ -179,6 +179,13 @@
   #relicRow button.relicp{border-color:#b06bd0;background:#180f2e}
   #relicRow button.relicp:hover{border-color:#d99bff;background:#241241;transform:translateY(-1px)}
   #cardRow .hint,#relicRow .hint{color:#a8b7dc;font-size:11px;font-weight:400;margin-top:2px;display:block}
+  /* B-S2d A.1b: the harvest-economy draft pick reads as a teal/ice 'train a harvester' choice on the
+     same card anatomy — teal border (allied identity, not a currency) over deep card fill #23234F, so it
+     is distinguishable from the ember/combat cardp rows but lives in the locked reward row family. */
+  #cardRow button.cardp.harvTrain{border-color:#1CC7C7;background:linear-gradient(180deg,#16363e,#0d2230)}
+  #cardRow button.cardp.harvTrain b{color:#c7fff2}
+  #cardRow .harvEconRow{min-width:100%}
+  @media(max-width:560px){ #cardRow button.cardp.harvTrain{width:100%} }
   .hint{font-size:11px;color:#8fa3cc;margin-top:6px}
   /* --- reward overlay declutter (mobile, ≤440px). MUST come AFTER the base styles for #upgRow/
      #cardRow/#relicRow above: equal-specificity later rules win the cascade, so placing the mobile
@@ -291,6 +298,21 @@
   #mapOv .rescueCard .rsTx{flex:1;display:flex;flex-direction:column;gap:3px;font-size:12px;color:#c7bce0;line-height:1.35}
   #mapOv .rescueCard .rsTx b{font-size:12px;letter-spacing:.5px;color:#f2ecff}
   #mapOv .rescueCard .rsGo{font-size:10.5px;white-space:nowrap;background:rgba(255,122,26,.16);border:1px solid rgba(255,122,26,.5);color:#FFB37A;border-radius:9px;padding:6px 10px;font-weight:800;letter-spacing:.3px}
+  /* B-S2d A.1b ECONOMY offer: the same map-body side-card grammar as the rescue offer but styled for
+     the ICE/TEAL economy (currency ◆ #A0EFFF mineral patch / ◈ #FF7A1A gas) so it reads as a DIFFERENT
+     map side-hook (finance), not a distress. Distinct class `ecoCard`; reuses .rsIc/.rsTx/.rsGo slots
+     so its text/action anatomy matches the locked map side-card look. Non-`.node` (route fork stays 3). */
+  #mapOv .ecoCard{display:flex;align-items:center;gap:12px;width:100%;max-width:560px;margin:8px auto 2px;padding:10px 12px;cursor:pointer;text-align:left;
+    border:1px solid #2f7f96;border-radius:14px;color:#def3ff;
+    background:linear-gradient(180deg,#14324a 0%,#0f2336 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 14px rgba(60,199,199,.12),0 6px 16px rgba(5,5,20,.4);
+    transition:border-color .1s,transform .06s,box-shadow .1s}
+  #mapOv .ecoCard:hover{border-color:#8EFFFF;transform:translateY(-2px);box-shadow:0 0 18px rgba(142,255,255,.20)}
+  #mapOv .ecoCard .ecIc{font-size:26px;filter:drop-shadow(0 0 6px rgba(160,239,255,.5))}
+  #mapOv .ecoCard .rsTx{flex:1;display:flex;flex-direction:column;gap:3px;font-size:12px;color:#bfd6e0;line-height:1.35}
+  #mapOv .ecoCard .rsTx b{font-size:12px;letter-spacing:.5px;color:#eff7ff}
+  #mapOv .ecoCard .rsGo{font-size:10.5px;white-space:nowrap;background:rgba(28,199,199,.16);border:1px solid rgba(28,199,199,.55);color:#8effe0;border-radius:9px;padding:6px 10px;font-weight:800;letter-spacing:.3px}
+  #mapOv .rescardOverpass{display:none}
   /* RESCUE OVERLAY — a fixed opaque modal that CUTS THROUGH the map (Design Law #1). Lists owned
      cards, per-card pass contribution, a running total vs the distress threshold, and the SEND call
      (attemptRescue = the copies leave the bag whether they clear). Indigo glass, teal/ember/rare
@@ -329,6 +351,53 @@
   #rescueOv .resResult.pass{border-color:rgba(60,240,178,.6);color:#b8ffe6;background:rgba(14,60,58,.5)}
   #rescueOv .resResult.fail{border-color:rgba(255,90,90,.6);color:#ffc9c9;background:rgba(70,18,18,.5)}
   #rescueOv .resResult b{display:block;font-size:14px;margin-bottom:2px}
+  /* B-S2d A.1b ECONOMY overlay — a fixed opaque glass modal (Design Law #1) that CUTS THROUGH the map.
+     Drives the drag-assign producer layer through the pure run.mjs assign state: owned worker (harvest
+     'node') copies are EITHER parked on a resource producing (◆ mineral patch / ◈ geyser slot) OR held
+     for the run. Click-to-select then click a slot to park (drag-off = cancel); a parked card shows a
+     lanyard link to its node + contributes +1 extra starting harvester to the NEXT battle (card-out-of-
+     the-push trade on the locked palette ladder: panel #0B0B2E-> card #23234F; ice-blue ◆ / ember ◈ /
+     teal actions, gold luxury accent on the producer total). */
+  #ecoOv{position:fixed;inset:0;z-index:27;display:flex;align-items:center;justify-content:center;padding:16px;color:#e6ecfa;
+    background:radial-gradient(900px 520px at 50% -10%,rgba(24,76,104,.6),rgba(5,8,26,.94) 74%)}
+  #ecoOv .ecoModal{width:min(600px,94vw);max-height:88vh;overflow:auto;display:flex;flex-direction:column;gap:10px;position:relative;
+    border:1px solid #2f7f96;border-radius:16px;padding:18px;color:#e6ecfa;
+    background:linear-gradient(180deg,#14243d 0%,#0c1530 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 34px rgba(60,199,199,.14),0 18px 50px rgba(3,5,15,.7)}
+  #ecoOv .ecoModal::before{content:'';position:absolute;left:0;right:0;top:0;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,#1CC7C7 22%,#A0EFFF 60%,#FFD324 86%,transparent)}
+  #ecoOv .ecoHead{font-size:19px;font-weight:900;color:#fff;letter-spacing:.6px;text-align:center}
+  #ecoOv .ecoSub{font-size:12px;color:#a9c7d8;text-align:center;line-height:1.45}
+  #ecoOv .ecoProd{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:2px auto;
+    padding:6px 14px;font-size:12px;color:#ffe9b8;background:rgba(255,211,36,.10);border:1px solid rgba(255,211,36,.4);border-radius:10px}
+  #ecoOv .ecoProd b{color:#FFD324;font-size:14px}
+  #ecoOv .ecoBoard{display:flex;flex-direction:column;gap:12px;margin-top:2px}
+  #ecoOv .ecoHeld{font-size:11px;font-weight:800;letter-spacing:.5px;color:#9fb4c7;text-transform:uppercase;margin:2px 2px 4px}
+  #ecoOv .ecoSlots{display:flex;flex-direction:column;gap:8px}
+  #ecoOv .ecoSlot{display:flex;align-items:center;gap:10px;border:1px dashed rgba(160,239,255,.35);border-radius:11px;padding:9px 11px;
+    background:rgba(5,8,26,.32);transition:border-color .1s,background .1s,transform .05s}
+  #ecoOv .ecoSlot.dragOver{border-color:#8EFFFF;background:rgba(28,199,199,.12);transform:translateY(-1px);box-shadow:0 0 12px rgba(142,255,255,.25)}
+  #ecoOv .ecoSlot.used{border-style:solid;border-color:#3a8aa6;background:rgba(14,44,58,.5)}
+  #ecoOv .ecoSlotIcon{font-size:20px;width:30px;text-align:center;filter:drop-shadow(0 0 5px rgba(160,239,255,.4))}
+  #ecoOv .ecoSlotMeta{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+  #ecoOv .ecoSlotMeta b{font-size:12px;color:#eef6ff;letter-spacing:.3px}
+  #ecoOv .ecoSlotMeta span{font-size:10.5px;color:#9fb4c7}
+  #ecoOv .ecoParked{font-size:12px;color:#A0EFFF;font-weight:800;white-space:nowrap;letter-spacing:.2px}
+  #ecoOv .ecoReserve{font-size:12px;color:#9fb4c7;white-space:nowrap}
+  #ecoOv .ecoRows{display:flex;flex-direction:column;gap:6px}
+  #ecoOv .ecoCardSep{display:flex;align-items:center;gap:10px;border:1px solid #3a5287;border-radius:11px;padding:8px 10px;
+    background:linear-gradient(180deg,#23234F 0%,#181838 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+  #ecoOv .ecoCardSep .rcEm{font-size:20px}
+  #ecoOv .ecoCardSep .rcNm{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+  #ecoOv .ecoCardSep .rcNm b{font-size:12.5px;color:#eef4ff}
+  #ecoOv .ecoCardSep .rcNm span{font-size:10.5px;color:#9fb4c7}
+  #ecoOv .dragHint,.ecoHint{font-size:10.5px;color:#7c8bb0;text-align:center}
+  #ecoOv .ecoBtnRow{display:flex;justify-content:center;gap:10px;margin-top:2px}
+  #ecoOv .ecoClose{border:1px solid #3a5287;background:#10102f;color:#9fb4d6;border-radius:11px;padding:10px 16px;cursor:pointer}
+  #ecoOv .ecoTrain{border:1px solid rgba(28,199,199,.6);background:linear-gradient(180deg,#0e4a4a,#0a3434);color:#b8fff2;border-radius:11px;
+    padding:10px 18px;font-weight:800;cursor:pointer;letter-spacing:.3px}
+  #ecoOv .ecoTrain:disabled{opacity:.4;cursor:default}
+  #ecoOv .ecoMsg{margin-top:2px;padding:9px 12px;border-radius:11px;text-align:center;font-size:12px;line-height:1.4;border:1px solid rgba(60,240,178,.5);color:#b8ffe6;background:rgba(14,60,58,.45)}
   /* A7 victory-celebration refresh: #vicOv was themed off-bible dark-green (green is reserved for XP/
      scout lens only in the locked palette). Re-costumed to the locked END/reward victory family — deep-
      indigo glass backdrop feeding the reward modal that follows it, warm-gold #FFD324 victory header,
@@ -723,6 +792,7 @@
     </div>
     <div id="mapOv" class="mapOv" style="display:none"></div>
     <div id="rescueOv" style="display:none"></div>
+    <div id="ecoOv" style="display:none"></div>
     <div id="vicOv" style="display:none"></div>
   </div>
   <div id="logbox" class="card"></div>
@@ -2809,11 +2879,12 @@ function nextBattle(first, advance){
   // engine state: player faction = the pick; enemy = the opposing roster (obj 7 'AI gets the other')
   st = newState(camp.factionId, camp.difficulty, camp.enemyId, o);
   // opening: workers + starter squad per side, each from ITS OWN faction roster; escalation adds more
-  // enemy bodies + Colony-Surge adds extra player harvesters.
-  // opening: workers + starter squad per side, each from ITS OWN faction roster; escalation adds enemy
-  // bodies but workers START SYMMETRIC (1 each) with identical growth mechanics (2026-09-07: “one worker
-  // to start for both; mechanics same in all aspects”). Colony-Surge is the player’s earned run perk only.
-  const pWorkers = 1 + upgradeCount('workers')*2;
+  // enemy bodies + Colony-Surge adds extra player harvesters. B-S2d A.1b: any harvest cards the player
+  // PARKED on the economy in #ecoOv are CARD-BACKED extra producers — they join this battle as real
+  // extra starting harvesters (sim truth: more workers = faster mining past the free miner). Capped at
+  // the 4 player resource slots so no opener explodes; 0 when the run parks nothing (default).
+  let ecPark = 0; try{ if(camp && camp.run && isBranch()) ecPark = Math.min(ECO_SLOTS.length, parkedProducers(camp.run)); }catch(e){}
+  const pWorkers = 1 + upgradeCount('workers')*2 + ecPark;
   give(st, false, 'worker', pWorkers);
   give(st, true , 'worker', 1);                               // enemy fields the SAME 1-worker opener
   // DEV SANDBOX: on Easy/dev give the player 2 extra workers (income snowball) so any test builds fast.
@@ -3859,6 +3930,34 @@ function showCardPicker(){
     u.onclick=()=>applyCardUpgrade(def, track);
     row.appendChild(u);
   }
+  // B-S2d A.1b economy acquisition: alongside leveling a combat card, the reward may instead TRAIN an
+  // owned HARVEST (worker 'node') producer copy — the first producer you own to park on a resource in
+  // the #ecoOv economy panel (card-backed producers past your free miner). One distinct '⛏' pick so it
+  // reads as an economy choice, not a deck-level; claiming it collects the copy + advances like a card
+  // pick. It never disturbs the melee-level row lookup the suite drives (different label/class).
+  const wDef=(f.roster||[]).find(d=>d.tag==='worker');
+  if(wDef && camp && camp.run){
+    const econ=document.createElement('div'); econ.className='harvEconRow';
+    econ.style.cssText='margin:4px 0 2px;display:flex;flex-wrap:wrap;gap:8px;align-items:center';
+    const lab=document.createElement('div'); lab.style.cssText='font-size:12px;font-weight:800;letter-spacing:.4px'; lab.textContent='⛏ ECONOMY — own a harvester card to park & mine extra:'; econ.appendChild(lab);
+    const hb=document.createElement('button'); hb.className='cardp harvTrain';
+    hb.type='button';
+    hb.innerHTML='<b>+(1) '+(wDef.emoji||wDef.icon||'⛏')+' '+wDef.name+'</b><br><span class="hint">Own one harvest card (park it on ◆/◈ to produce past your free miner)</span>';
+    hb.onclick=()=>applyHarvTrain(wDef);
+    econ.appendChild(hb); row.appendChild(econ);
+  }
+}
+function applyHarvTrain(def){
+  // collect ONE owned producer copy into the run bag (the card you then park). Sparse additive.
+  let got=-1; try{ got=collectCard(camp&&camp.run, 'node'); }catch(e){}
+  if(!camp || !camp.run || got<=0){
+    log('⛏ Could not train a harvester card right now.');
+    // still advance (reject repeat) so the reward node never soft-locks
+    clearCardPicker(); claimAdvance(); return;
+  }
+  log('⛏ Trained a harvest card: you now own '+(def?def.name:'a harvester')+' ×'+got+' — open the ⛏ Economy option on the path map to park it and mine an extra harvester next battle.');
+  clearCardPicker();
+  claimAdvance();
 }
 function clearCardPicker(){ const row=$('cardRow'); if(!row) return; while(row.firstChild) row.removeChild(row.firstChild); row.textContent=''; }
 function applyCardUpgrade(def, track){
@@ -4035,6 +4134,16 @@ function openRouteMap(){
   // but never blocks advancing. Shown once per map open; the player may ignore it and just pick a road.
   if(camp && camp.run && !camp.run.rescueDone){
     let rtot=0; try{ rtot=rescueReserves(camp.run).total||0; }catch(e){}
+    // Only owned COMBAT (sendable) copies raise the distress offer — an owned harvest producer can't be
+    // sent (rescue is a combat gamble), so a worker-only bag must not show a hollow distress card.
+    try{
+      if(rtot>0 && camp && camp.run){
+        const byKey={}; for(const c of (camp.run.pool||[])) byKey[c.key]=c;
+        let sendable=0; for(const k in ((camp.run.bag)||{})){ if((camp.run.bag[k]||0)>0 && byKey[k] && byKey[k].tag!=='worker') sendable+=camp.run.bag[k]; }
+        if(sendable<=0) rtot=0;
+        else rtot=sendable;
+      }
+    }catch(e){}
     if(rtot>0){
       const tier=(camp.run.rescueTier)||'easy';
       const hypo=rescueNode(tier,{maxCards:2});
@@ -4046,6 +4155,21 @@ function openRouteMap(){
       ro.onclick=()=>openRescuePanel(tier);
       body.appendChild(ro);
     }
+  }
+  // B-S2d A.1b ECONOMY hook (the drag-assign producer surface). Whenever the run holds an OWNED
+  // worker (harvest 'node') producer copy — acquired via a card-draft 'train a harvester' pick — show
+  // a finance side-card below the fork so the player can open the #ecoOv panel and PARK that copy on a
+  // resource (drag-to-assign) to mine extra, or hold it unreleased. Non-`.node`, non-`.rescueCard`
+  // (a distinct `ecoCard` class) so the 3-route `.node` + the distress test contracts stay intact.
+  if(camp && camp.run && producerCopies(camp.run)>0){
+    const parked=assignedNodes(camp.run).length;
+    const eco=document.createElement('div'); eco.className='ecoCard'; eco.id='ecoOffer';
+    eco.innerHTML='<div class="ecIc">⛏</div>'
+      +'<div class="rsTx"><b>MANAGE YOUR HARVEST</b><span>You hold '+producerCopies(camp.run)+' owned harvest card'+(producerCopies(camp.run)===1?'':'s')+'. Park one on a resource slot to mine an EXTRA harvester next battle — every parked card is a card out of your sendable reserve. '+(parked>0?('Currently producing on '+parked+' slot'+(parked===1?'':'s')+'.'):'')+'</span></div>'
+      +'<div class="rsGo">⛏ ASSIGN / PARK</div>';
+    eco.title='Drag a harvest card onto ◆ mineral / ◈ gas to produce (card-backed producer past your free miner), or pull it off to hold it.';
+    eco.onclick=()=>openEcoPanel();
+    body.appendChild(eco);
   }
   ov.appendChild(body);
   const bt=document.createElement('div'); bt.className='mapBottom';
@@ -4169,6 +4293,170 @@ function openRescuePanel(tier){
   log('✉ Distress call read — risk owned cards to aid the flotilla.');
 }
 function closeRescuePanel(){ const o=$('rescueOv'); if(o) o.style.display='none'; const om=$('resModal'); if(om&&om.parentNode) om.parentNode.removeChild(om); }
+
+// ============================================================
+// B-S2d — A.1b ECONOMY-ASSIGN (drag-to-park) surface
+// ============================================================
+// Drives the pure run.mjs assign state (assignCard/unassignCard/assignedNodes/producerTotal) through a
+// real finance panel: your OWNED worker (harvest 'node') copies are EITHER parked on a resource slot
+// producing (adds an extra starting harvester to the next battle — sim truth via the opener) OR held
+// (available to the war / safe from nothing). The map offer + this panel always keep the run bag as the
+// single source; parked cards cannot be trimmed/rescued (model-enforced), so holding is the only way to
+// keep a producer as a war asset. This is the live face of "the FIRST miner is free, every producer after
+// that costs a CARD parked on the economy" (A.1b).
+//
+// Interaction is a grab->aim->drop affordance: each owned harvest copy reads as a "held" card chip you
+// pick up (draggable=true so a real browser can drag it), each resource slot a drop target with a
+// drag-over highlight; dropping/clicking a slot parks one held copy (assignCard), and a USED slot parks
+// off (unassignCard). Release off-target / no held copy = nothing. All ids/classes stable + the DOM-shim
+// drives it through the same onclick handlers a real browser would fire, so it is fully headless-testable.
+
+// The player's worker producer card key (harvest copy) is 'node' for both factions (see roster).
+const ECO_WORKER_KEY = 'node';
+// The player-side resource slots a card-backed producer may sit on — mirrors the real engine C.NODES
+// team:'p' set (player: 3 mineral patches + the ◈ geyser). Each label holds ONE parked producer copy;
+// the engine harvester sim (source of truth) turns parked copies into extra OPENING harvesters.
+const ECO_SLOTS = [
+  { label:'min1', kind:'min', ic:'◆', name:'Mineral patch' },
+  { label:'min2', kind:'min', ic:'◆', name:'Mineral patch' },
+  { label:'min3', kind:'min', ic:'◆', name:'Mineral patch' },
+  { label:'gas1', kind:'gas', ic:'◈', name:'Vespene geyser' },
+];
+
+// Owned producer copies this run holds (the harvest card stack).
+function producerCopies(run){
+  try{ if(!run) return 0; return cardCount(run, ECO_WORKER_KEY); }catch(e){ return 0; }
+}
+// The worker producer def (for name/emoji display), from the run faction roster.
+function producerDef(run){
+  try{ return (run && run.pool) ? (run.pool.find(c=>c.tag==='worker')||null) : null; }catch(e){ return null; }
+}
+
+// Park one held harvest copy on `label` (assignCard) / pull it off. Returns true on success.
+function ecoPark(run, label){
+  if(!run) return false;
+  try{
+    // already producing here -> pull it off (unassign)
+    const a = econAssign(run);
+    if(label in a){ return unassignCard(run, label); }
+    // already farming elsewhere with every owned copy? can't park (no free copy) — but allow re-park by
+    // first pulling a slot only if the player explicitly releases; otherwise just try assign
+    return assignCard(run, ECO_WORKER_KEY, label);
+  }catch(e){ return false; }
+}
+
+// Number of parked producers currently on the economy (assigned nodes).
+function parkedProducers(run){ try{ return run ? assignedNodes(run).length : 0; }catch(e){ return 0; } }
+
+function openEcoPanel(){
+  const ov=$('ecoOv'); if(!ov||!camp||!camp.run) return;
+  ov.textContent=''; ov.style.display='flex';
+  const run=camp.run;
+  const owned=producerCopies(run);
+  const parked=parkedProducers(run);
+  const held=Math.max(0, owned-parked);
+  const def=producerDef(run);
+  const ic=(def&&(def.emoji||def.icon))||'⛏';
+  const nm=(def&&def.name)||'Harvester';
+  const box=document.createElement('div'); box.className='ecoModal';
+  // header
+  const head=document.createElement('div'); head.className='ecoHead'; head.textContent='⛏ CARD ECONOMY — ASSIGN YOUR HARVEST';
+  box.appendChild(head);
+  const sub=document.createElement('div'); sub.className='ecoSub';
+  sub.textContent='Beyond your ONE free mining droid, every harvester costs a CARD parked on a resource. Park a harvest copy to mine an EXTRA harvester next battle; pull it off to keep it in your war reserve. Pick up a held card and drop it on a ◆ / ◈ slot (or click a slot).';
+  box.appendChild(sub);
+  const totals=document.createElement('div'); totals.className='ecoProd';
+  const tA=document.createElement('span'); tA.textContent='Free miner '; const tAa=document.createElement('b'); tAa.textContent='1'; tA.appendChild(tAa); totals.appendChild(tA);
+  const tB=document.createElement('span'); tB.textContent='· parked '; const tBb=document.createElement('b'); tBb.id='ecoParkedN'; tBb.textContent=String(parked); tB.appendChild(tBb); totals.appendChild(tB);
+  const tC=document.createElement('span'); tC.textContent='· held '; const tCc=document.createElement('b'); tCc.id='ecoHeldN'; tCc.textContent=String(held); tC.appendChild(tCc); totals.appendChild(tC);
+  box.appendChild(totals);
+  // board: resource slots (drop targets) first
+  const board=document.createElement('div'); board.className='ecoBoard';
+  const heldLab=document.createElement('div'); heldLab.className='ecoHeld'; heldLab.textContent='⛏ Held harvest cards (+1 producer each when parked):';
+  board.appendChild(heldLab);
+  const heldWrap=document.createElement('div'); heldWrap.id='ecoHeldWrap';
+  // held copy chips (draggable cards) + a hint line when none held
+  function paintHeld(){
+    heldWrap.textContent='';
+    const h=Math.max(0, producerCopies(run)-parkedProducers(run));
+    const hn=$('ecoHeldN'); if(hn) hn.textContent=String(h);
+    const pn=$('ecoParkedN'); if(pn) pn.textContent=String(parkedProducers(run));
+    for(let i=0;i<h;i++){
+      const c=document.createElement('div'); c.className='ecoCardSep'; c.draggable=true;
+      c.setAttribute && c.setAttribute('data-key','node');
+      const em=document.createElement('div'); em.className='rcEm'; em.textContent=ic;
+      const nwm=document.createElement('div'); nwm.className='rcNm';
+      const nb=document.createElement('b'); nb.textContent=nm+' copy '+(i+1);
+      const ns=document.createElement('span'); ns.textContent='held — drag onto a ◆/◈ slot below to produce';
+      nwm.appendChild(nb); nwm.appendChild(ns);
+      const hint=document.createElement('div'); hint.className='ecoHint'; hint.textContent='draggable';
+      c.appendChild(em); c.appendChild(nwm); c.appendChild(hint);
+      // dragstart: set the transfer so a real drop parks one copy (shim has no DataTransfer -> no-op)
+      c.addEventListener && c.addEventListener('dragstart',(ev)=>{ try{ if(ev&&ev.dataTransfer){ ev.dataTransfer.setData('text/plain','node'); (c.classList)&&c.classList.add('dragging'); } }catch(e){} });
+      c.addEventListener && c.addEventListener('dragend',()=>{ if(c.classList) c.classList.remove('dragging'); });
+      heldWrap.appendChild(c);
+    }
+    if(h===0){ const none=document.createElement('div'); none.className='ecoHint'; none.textContent="You have no held harvest cards to park — take the '⛏ Train a Harvester' reward after a battle win to own a producer copy."; heldWrap.appendChild(none); }
+  }
+  paintHeld();
+  board.appendChild(heldWrap);
+  // slot rows
+  const slotsLab=document.createElement('div'); slotsLab.className='ecoHeld'; slotsLab.textContent='◆ / ◈ Resource slots you can farm:';
+  board.appendChild(slotsLab);
+  const slotsWrap=document.createElement('div'); slotsWrap.className='ecoSlots';
+  function paintSlots(){
+    slotsWrap.textContent='';
+    try{
+      const a=econAssign(run)||{};           // label -> 'node'
+      for(const s of ECO_SLOTS){
+        const used = !!(a[s.label]);
+        const row=document.createElement('div'); row.className='ecoSlot'+(used?' used':''); row.datasetLabel=s.label;
+        const sl=document.createElement('div'); sl.className='ecoSlotIcon'; sl.textContent=s.ic;
+        const meta=document.createElement('div'); meta.className='ecoSlotMeta';
+        const nmb=document.createElement('b'); nmb.textContent=(s.kind==='min'?'◆ Mineral patch':'◈ Vespene geyser')+(used?'  → PRODUCING':'');
+        const nms=document.createElement('span'); nms.textContent= used ? ('parked by your '+nm+' — extra harvester next battle') : (s.kind==='min'?'Drop a held card here to mine ◆ minerals':"Drop here to mine the ◈ gas geyser (unlocks gas units)");
+        meta.appendChild(nmb); meta.appendChild(nms);
+        row.appendChild(sl); row.appendChild(meta);
+        // dragover/leave/drop on the slot (drop => park a copy / drop release)
+        row.addEventListener && row.addEventListener('dragover',(ev)=>{ try{ if(ev&&ev.preventDefault){ ev.preventDefault(); row.classList.add('dragOver'); } }catch(e){} });
+        row.addEventListener && row.addEventListener('dragleave',()=>row.classList.remove('dragOver'));
+        row.addEventListener && row.addEventListener('drop',(ev)=>{ row.classList.remove('dragOver'); try{ if(ev&&ev.dataTransfer){ const k=ev.dataTransfer.getData('text/plain')||'node'; if(k==='node'){ ecoPark(run, s.label); paintHeld(); paintSlots(); } } }catch(e){} });
+        // click-to-park toggle (works headless + touch) — a slot parks ONE held copy, or releases if filled
+        const actBtn=document.createElement('button');
+        if(used){ actBtn.className='ecoReserve'; actBtn.textContent='⏏ UNPARK off the node'; }
+        else { actBtn.className='ecoTrain'; actBtn.textContent='⛏ PARK a held copy here'; actBtn.dataset.park=s.label; }
+        actBtn.type='button';
+        actBtn.onclick=()=>{
+          const ok = used ? ecoPark(run, s.label) /* -> unpark */ : ecoPark(run, s.label) /* -> park next */;
+          // ecoPark toggles: if the slot was used it unparks; else it parks the next free copy
+          paintHeld(); paintSlots();
+          if(typeof log==='function'){ try{ log(ok? (used?('⛏ Harvest off '+s.label+' — droid returns to your reserve.'):('⛏ Harvest card parked on '+s.label+' — +1 extra miner next battle.')):'⛏ Could not move that card (own a copy & hold it first).'); }catch(e){} }
+        };
+        // the row itself is not a button (avoid double) — we append the action button
+        row.appendChild(actBtn);
+        slotsWrap.appendChild(row);
+      }
+    }catch(e){}
+  }
+  board.appendChild(slotsWrap);
+  paintSlots();
+  box.appendChild(board);
+  // footer
+  const foot=document.createElement('div'); foot.className='ecoSub'; foot.style.cssText='border-top:1px dashed rgba(160,239,255,.25);padding-top:8px';
+  foot.textContent='Parked harvest cards each add ONE extra starting harvester to your next battle (past your free miner); parked copies are held out of the war and can’t be trimmed or rescue-sent until you pull them off.';
+  box.appendChild(foot);
+  const btnRow=document.createElement('div'); btnRow.className='ecoBtnRow';
+  const close=document.createElement('button'); close.className='ecoClose'; close.type='button'; close.textContent='Done — back to the fork';
+  close.id='ecoClose';
+  close.onclick=()=>closeEcoPanel();
+  btnRow.appendChild(close);
+  box.appendChild(btnRow);
+  // expose paint fns for the shim/tests to refresh after a model poke
+  box.__ecoPaint={ paintHeld, paintSlots };
+  ov.appendChild(box);
+  log('⛏ Economy panel open — park harvest cards to mine an extra harvester, or hold them.');
+}
+function closeEcoPanel(){ const o=$('ecoOv'); if(o) o.style.display='none'; const om=(function(){try{return (document.querySelector&&document.querySelector('#ecoOv .ecoModal'))||null;}catch(e){return null;}})(); if(om&&om.parentNode) om.parentNode.removeChild(om); }
 function resolveRoute(r, bn){
   const ov=$('mapOv'); if(ov) ov.style.display='none';
   if(camp && camp.run && r && r.arche){ try{ setArchetype(camp.run, bn, r.arche); }catch(e){} }
@@ -4266,6 +4554,12 @@ if(typeof window!=='undefined'){
   window.__ds.FACTIONS=FACTIONS;
   // P2-D: expose the pure run helpers to the test bridge (drive a per-battle AI archetype headlessly)
   window.__ds.archetypes = { set:setArchetype, get:archetypeFor };
+  // B-S2d: expose the A.1b economy surface (park/unpark + producers) so a headless gate can drive the
+  // drag-assign panel and verify the next-battle extra-harvester carry.
+  window.__ds.eco = {
+    park:ecoPark, producerCopies, parkedProducers, workerKey:ECO_WORKER_KEY, slots:ECO_SLOTS.map(s=>s.label),
+    openPanel:openEcoPanel, closePanel:closeEcoPanel,
+  };
 }
 // ---- Phase-2a BRANCH MAP (between-battle next-leg preview + opt-in re-route). ----
 // §2.5 wants a "next-choice preview" so a run feels like a journey rather than isolated fights, AND a
