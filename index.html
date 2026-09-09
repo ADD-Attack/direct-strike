@@ -868,6 +868,72 @@
     #gate.bootGate p.bootSub{font-size:11.8px}
     #gate.bootGate .metaPerkChips{grid-template-columns:1fr}
   }
+
+  /* ============================================================================
+     PASS 3 — menu style-bible closer (density / hierarchy / consistency). Built on the
+     A6 + v2 reskin. Goals (from Brick's locked ds-menu-board diff):
+       (1) tighten the central hub so it reads as a CLEAN pillar (less wall-of-text), while
+           keeping EVERY functional control (factions/difficulty/boon/nav) reachable;
+       (2) consistent identity ring (#1CC7C7 teal) on any faction/tile chosen-state,
+           and a single consistent difficulty-chip glyph treatment;
+       (3) secondary nav icons scaled up to balance their buttons;
+       (4) keep the whole composed board fitting a clean desktop frame (no clip) AND a
+           clean single-column phone (no horizontal overflow). Pure presentation; all ids,
+           element counts and hide-on-start wiring are untouched so the suite stays green.
+     ============================================================================ */
+  /* tighter board layout so flanks + hero art get room to read beside a leaner pillar */
+  #gate.bootGate .bootLex{min-height:0;gap:2px;padding:6px 8px}
+  #gate.bootGate .bootMenu{width:min(560px,100%);padding:10px 16px 8px;margin-top:0}
+  #gate.bootGate .bootMenu::before{width:64%;margin-bottom:3px}
+  #gate.bootGate p.bootSub{max-width:520px;margin:0 auto 5px;font-size:11.7px;line-height:1.38}
+  #gate.bootGate .bootTag{margin-bottom:3px}
+  #gate.bootGate .bootMenuTitle{font-size:13px;letter-spacing:2px}
+  /* section captions tighter + secondary */
+  #gate.bootGate .bootCap{font-size:10px;letter-spacing:1.4px;color:#9db1da;margin-top:5px;padding-top:5px}
+  #gate.bootGate .bootCap:first-of-type{margin-top:2px;padding-top:2px}
+  /* faction tiles: uniform height, small consistent hairline, model line shorter */
+  #gate.bootGate .factions{gap:7px;margin-top:2px}
+  #gate.bootGate .fbtn{padding:7px 9px;border-radius:11px}
+  #gate.bootGate .fbtn .nm{font-size:14px}
+  #gate.bootGate .fbtn .ds{font-size:10.7px;line-height:1.3;color:#a9bae2;margin-top:2px}
+  #gate.bootGate .diffs{margin:1px 0 1px;gap:6px}
+  #gate.bootGate .diffs button{font-size:12px;padding:6px 2px;letter-spacing:.2px}
+  #gate.bootGate .diffs+.hint,#gate.bootGate .mapHint{padding-top:5px;margin-top:3px;font-size:10.6px;line-height:1.4}
+  #gate.bootGate #startBtn{margin:8px auto 0;padding:11px 12px;font-size:16px}
+  #gate.bootGate #startBtn .bootPlayTri{font-size:13px}
+  #gate.bootGate .bootNavRow{margin-top:7px;padding-top:7px;gap:7px}
+  /* meta boon well tightened but kept readable */
+  #gate.bootGate .metaPerkZone{padding:7px 8px;margin-top:5px;border-radius:12px}
+  #gate.bootGate .metaPerkChips{gap:6px;margin-top:3px}
+  #gate.bootGate .metaPerkZone button.metaPerk{padding:6px 8px !important}
+  #gate.bootGate .metaPerkZone .metaCap{font-size:10.4px}
+  #gate.bootGate .metaPerkZone .metaNote{font-size:10.6px;line-height:1.36;margin-top:1px}
+  /* nav clusters + footer harmonious under the pillar */
+  #gate.bootGate .bootFoot{font-size:10.5px;margin-top:4px}
+  .bootFoot .bootSigil{font-size:14px}
+  /* ---- consistency: single teal identity ring on all chosen/armed/active tile states ---- */
+  #gate.bootGate .fbtn.sel,
+  #gate.bootGate .diffs button.chosen,
+  #gate.bootGate .metaPerkZone button.metaPerk.armed
+    { border-color:#1CC7C7 !important; box-shadow:0 0 0 1px rgba(28,199,199,.5), 0 0 16px rgba(28,199,199,.25) !important; }
+  #gate.bootGate .diffs button.chosen,#gate.bootGate .metaPerkZone button.metaPerk.armed{ border-radius:20px }
+  #gate.bootGate .fbtn .nm::before{content:'✦' !important;color:#1CC7C7 !important;font-size:11px}
+  #gate.bootGate .fbtn.sel .nm::before{content:'★' !important;color:#7CF5F0 !important}
+  /* ---- render all difficulty chips with a matching glyph treatment (single unified style) ----
+        .diffs button label glyphs are cleaned up in the JS builder so no chip carries a lone icon */
+  /* ---- secondary nav icons scaled up to balance their (small) buttons ---- */
+  #gate.bootGate .bootNavBtn .bnIc{font-size:21px;margin-bottom:1px}
+  #gate.bootGate .bootNavBtn{font-size:11.5px;letter-spacing:.5px;gap:4px;padding:9px 4px 7px}
+  /* shorter flex-height laptops: cap content so a whole clean board fits one frame */
+  @media (max-height:820px){
+    #gate.bootGate .bootMenu{width:min(540px,100%)}
+    #gate.bootGate .bootLogo{font-size:clamp(26px,4.6vw,40px)}
+    #gate.bootGate p.bootSub{font-size:11px;margin-bottom:3px;line-height:1.3}
+    #gate.bootGate p.bootSub b,#gate.bootGate .bootCap,#gate.bootGate .fbtn .ds{
+      /* compact but keep legible */ }
+    #gate.bootGate .metaPerkZone .metaNote{display:none}   /* boon well reads without the essay on short frames */
+    #gate.bootGate .bootFoot{margin-top:2px}
+  }
 </style>
 </head>
 <body>
@@ -910,16 +976,14 @@
             <span class="bootMenuTitle">FIELD YOUR RUN</span>
             <span class="bootFacIcon alien">◈</span>
           </div>
-          <p class="sub bootSub">A <b>roguelike run</b> of 4 escalating battles — pick your side, win each battle to bank a persistent
-            upgrade, and if you fall you <b>retry that battle</b> (no full wipe). Workers auto-mine
-            <b style="color:var(--min)">◆ minerals</b> &amp; <b style="color:var(--gas)">◈ gas</b> to field your line — crack their core first.</p>
-          <div class="fcaption bootCap">Faction — field your side (AI takes the other)</div>
+          <p class="sub bootSub">A <b>4-battle roguelike run</b> — win each to keep a persistent upgrade; fall and you <b>retry that battle</b>.</p>
+          <div class="fcaption bootCap">Faction</div>
           <div class="factions" id="facGrid"></div>
           <div class="fcaption bootCap">Difficulty</div>
           <div class="diffs" id="diffRow"></div>
-          <div class="hint bootHint"><b>Easy (dev)</b> = weak enemy to roll a fast run; Casual / Standard / Brutal = rising enemy economy &amp; aggression.</div>
+          <div class="hint bootHint"><b>Easy (dev)</b> = fast test run · Casual→Brutal = rising enemy economy.</div>
           <button id="startBtn"><span class="bootPlayTri">▶</span> DEPLOY</button>
-          <div class="hint bootHint mapHint">Each win opens an FTL-style fork — STANDARD / RUSH FLANK / ECONOMY LINE commanders each bank a run-wide boon. Beat 4 escalating battles to finish.</div>
+          <div class="hint bootHint mapHint">Each win → an FTL-style fork: pick a commander &amp; bank its run-wide boon. Crack the final core on battle 4.</div>
           <!-- A6 nav shell: LOAD/CONTINUE + TRAINING + OPTIONS secondary glass buttons (locked
                ds-menu-board). Each opens an opaque doc-stub / info / boot-ck panel; the gated
                features (save-resume, persistence) land in Beta B-S7/S-4+. ids stable, DEPLOY
@@ -4385,73 +4449,134 @@ function decodeFor(fid, slot){
   return { el:s.img, w:s.w||s.img.naturalWidth||s.img.width||30, h:s.h||s.img.naturalHeight||s.img.height||30 };
 }
 let _bootArtDone=false;
+// ===========================================================================
+// PASS 3 — HERO-SCALE FLANK ART (menu style-bible closer). The LOCKED ds-menu-board's dominant
+// element is LARGE illustrated units (teal human squad + mech LEFT, ember/alien swarm RIGHT)
+// flanking a central pillar. The prior pass drew our real roster sprites only ~small, so flanks
+// read faint. This pass recomposes the SAME locked sprites as big dramatic TEAM-TINTED
+// SILHOUETTES converging on the central crash line — the hero-hub scale of the board — with no
+// new commissioned art. Pure presentation: full-bleed canvas behind the opaque glass menu;
+// ids + hide-on-start untouched; painter no-ops headless (no real canvas/Image) so DOM-shim
+// tests see the identical coloured-wash fallback and stay green.
+// ===========================================================================
+let _silCache={};
+function bootSil(fid,slot){
+  // trimmed silhouette of a decoded sprite -> {cv,w,h}; cv holds the inked shape (mask over a colour).
+  const key=fid+'_'+slot;
+  if(key in _silCache) return _silCache[key];
+  _silCache[key]=null;
+  try{
+    const s=SPR[key]; if(!s || !s.ok || !s.img) return null;
+    const el=s.img, iw=el.naturalWidth||el.width||30, ih=el.naturalHeight||el.height||30;
+    const c=document.createElement('canvas'); c.width=iw; c.height=ih;
+    const c2=c.getContext('2d'); if(!c2) return null;
+    c2.imageSmoothingEnabled=false; c2.clearRect(0,0,iw,ih); c2.drawImage(el,0,0,iw,ih);
+    const d=c2.getImageData(0,0,iw,ih); if(!d) return null;
+    const px=d.data; let x0=iw,y0=ih,x1=0,y1=0;
+    for(let y=0;y<ih;y++)for(let x=0;x<iw;x++){ const a=px[(y*iw+x)*4+3]; if(a>20){ if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y; } }
+    if(x1<=x0||y1<=y0) return null;
+    const bw=x1-x0+1, bh=y1-y0+1;
+    const out=document.createElement('canvas'); out.width=bw; out.height=bh;
+    const o=out.getContext('2d'); if(!o) return null;
+    o.clearRect(0,0,bw,bh); o.drawImage(c,x0,y0,bw,bh,0,0,bw,bh);
+    _silCache[key]={ cv:out, w:bw, h:bh };
+    return _silCache[key];
+  }catch(e){ return null; }
+}
 function drawMenuKeyArt(){
   const host=bootArtHost();
   if(!host) return;
-  // bail if already painted a good frame or the board left the screen
-  if(_bootArtDone){ return; }
-  // gate hidden? (run started) → nothing to paint
+  if(_bootArtDone) return;                            // idempotent per boot
   const gate=host.closest && host.closest('#gate');
   if(!gate) return;
-  // only paint once the specific sprites we need are decoded (real Image onload).
-  const need=['rebels_g','rebels_r','rebels_t',
-              'aliens_g','aliens_r','aliens_t'];
+  const need=['rebels_g','rebels_r','rebels_t','aliens_g','aliens_r','aliens_t'];
   for(const k of need){ const s=SPR[k]; if(!s || !s.ok || !s.img) return; }
   const dpr = (typeof window!=='undefined' && window.devicePixelRatio) ? Math.min(3, window.devicePixelRatio||1) : 1;
   const rw = host.clientWidth || 1280, rh = host.clientHeight || 800;
-  if(rw<200 || rh<200) return;                    // no layout yet
-  host.width  = Math.round(rw*dpr); host.height = Math.round(rh*dpr);
+  if(rw<240 || rh<240) return;
+  const W=Math.round(rw*dpr), H=Math.round(rh*dpr);
+  host.width=W; host.height=H;
   const g2d=host.getContext('2d'); if(!g2d || typeof g2d.drawImage!=='function') return;
   g2d.save();
-  // full-bleed: clear transparent, keep CSS washes visible beneath the drawn art
-  const W = host.width, H = host.height;
   g2d.setTransform(1,0,0,1,0,0); g2d.clearRect(0,0,W,H);
-  // hero baseline sits in the lower-middle of the emptiest flank zone (just under the emblem medallions
-  // vertical centre, so the frame's title/menu still read above and the heroes peek in the margins).
-  const floorY = H*0.58;                              // mid-flank: clear of footer + panel bottom
-  const size = Math.max(42, Math.min(96, rh*0.10));   // modest 'skirmish-line' scale (crisper than huge)
-  const centre = W/2;
-  const drawLine=(slots,fid,isL)=>{
-    const n = slots.length;
-    // squad marches from the outer edge toward the centre but STOPS well clear of the wide glass panel:
-    // the broad tank sits outermost where there is wall room; smaller fighters advance toward the clash.
-    const span = rw*0.17*dpr;
-    const o = rw*0.035*dpr;
-    slots.forEach((slot,i)=>{
-      const d=decodeFor(fid,slot); if(!d) return;
-      const sc = size / d.h;
-      const w = d.w*sc, h = size;
-      const depthOff = (i%2==1? -0.05: 0)*rh*dpr;          // ragged advancing line (not a picket fence)
-      const fy = floorY + depthOff;
-      const frac = n===1? 0.5 : i/(n-1);
-      const x  = isL ? (o + span*frac) : (W - o - span*frac);
-      g2d.save();
-      g2d.globalAlpha = .30; g2d.fillStyle='rgba(0,0,0,.55)';
-      g2d.beginPath(); g2d.ellipse(x, fy+1.5*dpr, w*0.5, 5*dpr, 0, 0, Math.PI*2); g2d.fill();
-      g2d.globalAlpha = isL? .22 : .26;
-      g2d.fillStyle = isL? 'rgba(28,199,199,.5)' : 'rgba(255,122,58,.55)';
-      g2d.beginPath(); g2d.ellipse(x, fy, w*0.55, 6*dpr, 0, 0, Math.PI*2); g2d.fill();
-      g2d.globalAlpha=1;
-      const mirror = !isL;
-      g2d.translate(x, fy - h);
-      if(mirror){ g2d.translate(w/2,0); g2d.scale(-1,1); g2d.translate(-w/2,0); }
-      g2d.drawImage(d.el, -w/2, 0, w, h);
-      g2d.restore();
-    });
-  };
-  drawLine(BOOT_SIDE.left, 'rebels', true);
-  drawLine(BOOT_SIDE.right,'aliens', false);
-  // centre clash glint sits exactly at the existing centre divider (translucent, low)
-  g2d.globalAlpha=.42;
-  const cs = Math.min(W,H)*0.16;
-  const glow=g2d.createRadialGradient(W/2, floorY, 2*dpr, W/2, floorY, cs);
-  glow.addColorStop(0,'rgba(255,211,36,.5)'); glow.addColorStop(.45,'rgba(255,211,36,.12)');
-  glow.addColorStop(1,'rgba(255,211,36,0)');
-  g2d.fillStyle=glow; g2d.fillRect(W/2-cs, floorY-cs, cs*2, cs*2);
-  g2d.globalAlpha=1;
+  g2d.imageSmoothingEnabled=false;                    // crisp hero edges from the pixel figures
+
+  const menuCssW = Math.min(600, rw*0.97);            // width of the centred glass menu (css)
+  const insetCss = 15;                                // board frame inset
+  const innerL   = (rw - menuCssW)/2;                 // central band's left edge (css)
+  const bandW    = (innerL - insetCss);               // free flank width per side (css); <=0 => no room
+
+  const teams=[
+    { isL:true,  fid:'rebels', big:'t', lead:'g', scout:'r',
+      body:'rgb(52,206,226)', lowGlow:'rgba(28,199,199,.9)', glowRGB:[74,235,255] },
+    { isL:false, fid:'aliens', big:'t', lead:'g', scout:'g',
+      body:'rgb(255,142,66)', lowGlow:'rgba(255,120,56,.95)', glowRGB:[255,150,80] }
+  ];
+  // draw one figure by TARGET HEIGHT (css). Feet rest on the passed ground line (cssG css from top).
+  // The sprite is mirrored so each flank faces the centre, and drawn crisp team-tinted with a soft halo.
+  function drawSil(tm, so, hCss, cssXC, glyphA){
+    if(!so || hCss<=6) return;
+    const s=hCss/so.h; const w=so.w*s; const h=hCss;
+    const x=cssXC*dpr, y=(rh*0.98)*dpr-h;
+    if(x-w/2 < -w || x+w/2 > W+w) return;           // safely off-board
+    const floorY=(rh*0.99)*dpr;
+    // grounded team glow + shadow under the figure
+    const shR=Math.max(w*0.5, h*0.10), shA=Math.max(7*dpr, h*0.045);
+    g2d.save();
+    g2d.globalAlpha=.3; g2d.fillStyle='rgba(0,0,0,.6)';
+    g2d.beginPath(); g2d.ellipse(x, floorY+2*dpr, shR, shA, 0,0,Math.PI*2); g2d.fill();
+    const grd=g2d.createRadialGradient(x, floorY, 2*dpr, x, floorY, shR);
+    grd.addColorStop(0, tm.lowGlow); grd.addColorStop(1,'rgba('+tm.glowRGB.join(',')+',0)');
+    g2d.globalAlpha=.42; g2d.fillStyle=grd;
+    g2d.beginPath(); g2d.ellipse(x, floorY, shR, shA*1.1, 0,0,Math.PI*2); g2d.fill();
+    g2d.restore();
+    // tint inked shape to the team body colour (source-in recolours preserving alpha)
+    const tint=document.createElement('canvas'); tint.width=so.w; tint.height=so.h;
+    const tg=tint.getContext('2d'); tg.clearRect(0,0,so.w,so.h); tg.drawImage(so.cv,0,0);
+    tg.save(); tg.globalCompositeOperation='source-in'; tg.fillStyle=tm.body; tg.fillRect(0,0,so.w,so.h); tg.restore();
+    g2d.save();
+    g2d.translate(x,y);
+    const mirror=!tm.isL;                             // right force faces back toward centre
+    if(mirror){ g2d.translate(w/2,0); g2d.scale(-1,1); g2d.translate(-w/2,0); }
+    // team halo just behind the crisp body
+    g2d.save(); g2d.globalAlpha=(glyphA||1)*.2;
+    g2d.filter='blur('+Math.max(2*dpr, Math.round(h*0.015))+'px)';
+    g2d.drawImage(tint, -w*0.9, -h*0.15, w*1.8, h*1.3);
+    g2d.restore();
+    g2d.globalAlpha=(glyphA||1)*.98; g2d.drawImage(tint, -w/2, 0, w, h);
+    g2d.restore(); g2d.globalAlpha=1;
+  }
+  if(bandW>=40){
+    for(const tm of teams){
+      // ONE dominant GIANT per flank so they read hero-scale; the squads' heavy (mech / carapace)
+      // stands as the tall centrepiece and an armed lead overlaps the base seam for motion.
+      const hero=bootSil(tm.fid, tm.big);
+      const lead=bootSil(tm.fid, tm.lead);
+      if(!hero || !lead) continue;
+      const isL=tm.isL;
+      // height target: a wall that reaches most of the pillar height, snug to but not hiding the controls
+      const heroH = Math.min(rh*0.56, bandW*4.5 + 60);
+      const heroW = heroH*(hero.w/hero.h);
+      // outer hero edge ~ frame inset; its side peeks slightly under the opaque menu inner edge for depth
+      const heroX = isL ? (heroW/2 + 6) : (W/dpr - heroW/2 - 6);
+      // lead rides the crash seam near the menu floor, smaller + further under the edge
+      const leadH = heroH*0.42;
+      const lxC = isL ? (innerL - leadH*0.16) : (innerL + menuCssW + leadH*0.16);
+      drawSil(tm, hero, heroH, heroX, 1.0);
+      drawSil(tm, lead, leadH, lxC, .8);
+    }
+  }
+  // centre crash-line glow under DEPLOY: the hot seam both forces converge onto
+  g2d.save();
+  const cy=Math.min(H*0.86, H-40*dpr), cr=Math.min(W,H)*0.20;
+  const gl=g2d.createRadialGradient(W/2, cy, 2*dpr, W/2, cy, cr);
+  gl.addColorStop(0,'rgba(255,211,36,.28)'); gl.addColorStop(.5,'rgba(255,211,36,.09)'); gl.addColorStop(1,'rgba(255,211,36,0)');
+  g2d.fillStyle=gl; g2d.fillRect(W/2-cr, cy-cr, cr*2, cr*2);
+  g2d.restore();
   g2d.restore(); g2d.setTransform(1,0,0,1,0,0);
   _bootArtDone=true;
 }
+
 // schedule: repaint a few times while the boot board is live so late-decoding sprite images still land;
 // stops itself as soon as Start hides the gate (cheap, idempotent).
 function bootKeyArtLoop(){
@@ -4599,7 +4724,7 @@ for (const fid of LIVE_FACTION_IDS){
 }
 const diffRow=$('diffRow');
 for (const d of ['easy','casual','standard','brutal']){
-  const b=document.createElement('button'); b.textContent={easy:'⚪ Easy (dev)',casual:'Casual',standard:'Standard',brutal:'Brutal'}[d];
+  const b=document.createElement('button'); b.textContent={easy:'Easy (dev)',casual:'Casual',standard:'Standard',brutal:'Brutal'}[d]||d;
   if(d===selDiff)b.classList.add('chosen');
   b.onclick=()=>{ selDiff=d; [...diffRow.children].forEach(x=>x.classList.remove('chosen')); b.classList.add('chosen'); $('difpill').textContent=b.textContent+''; };
   diffRow.appendChild(b);
