@@ -438,6 +438,65 @@
   .bootSigil{font-size:16px;filter:drop-shadow(0 0 6px rgba(160,239,255,.5))}
   .bootSigilA{color:#8EFFFF}.bootSigilE{color:#ffb27a;filter:drop-shadow(0 0 6px rgba(255,122,60,.5))}
   @media (max-height:680px){#gate.bootGate{padding:8px 10px}.bootLogo{font-size:clamp(28px,6vw,44px)}.bootArt .bootEmblem{width:52px;height:52px;font-size:20px}}
+
+  /* ============================================================================
+     A6 (final) MAIN-MENU NAV SHELL: the LOCKED ds-menu-board shows, under the DEPLOY
+     primary, a LOAD/CONTINUE + TRAINING + OPTIONS secondary row inside the glass menu.
+     These are glass nav buttons that open opaque doc-stub / info / boot-ck panels
+     (read-ok content; the real features they gate — save-resume, offline settings,
+     a full tutorial — land in Beta B-S7/S-4+). Purely additive presentation inside
+     #gate.bootGate; ids + hide-on-start + DEPLOY wiring untouched, so the suite stays
+     green. Panels are fixed overlays that sit ABOVE the gate (z70 > gate 60) and hide
+     again whenever the gate hides on Start.
+     ============================================================================ */
+  .bootNavRow{display:flex;gap:8px;margin-top:10px;border-top:1px dashed rgba(45,45,127,.7);padding-top:10px}
+  #gate.bootGate .bootNavBtn{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;
+    padding:8px 4px 6px;border-radius:14px;cursor:pointer;color:#cfe0ff;font-weight:700;font-size:12px;letter-spacing:.6px;
+    border:1px solid rgba(45,45,127,.9);background:linear-gradient(180deg,#17173f,#0d0d2a 85%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05);transition:all .12s;text-transform:uppercase}
+  #gate.bootGate .bootNavBtn .bnIc{font-size:15px;line-height:1;filter:drop-shadow(0 0 6px rgba(160,239,255,.5))}
+  #gate.bootGate .bootNavBtn:hover{border-color:rgba(28,199,199,.65);background:linear-gradient(180deg,#14323c,#0c222b 88%);
+    box-shadow:0 0 14px rgba(28,199,199,.18);transform:translateY(-1px)}
+  #gate.bootGate .bootNavBtn.sig .bnIc{color:#8EFFFF}
+  #gate.bootGate .bootNavBtn.ember .bnIc{color:#ffb27a;filter:drop-shadow(0 0 6px rgba(255,122,60,.5))}
+  #gate.bootGate .bootNavBtn.orchid .bnIc{color:#C08BFF;filter:drop-shadow(0 0 6px rgba(192,139,255,.5))}
+
+  /* opaque glass modal overlays (G1) that hold the doc-stub / info / boot-ck content */
+  #gate.bootGate .bootModal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+    padding:20px;background:radial-gradient(900px 600px at 50% 20%, rgba(16,18,46,.72), rgba(5,6,16,.88) 70%);}
+  #gate.bootGate .bootModal.show{display:flex}
+  #gate.bootGate .bootModalCard{position:relative;width:min(600px,96%);max-height:84vh;overflow-y:auto;border-radius:20px;
+    background:linear-gradient(180deg,#16164a 0%,#0B0B2E 48%,#080826 100%);border:1px solid #2D2D7F;
+    box-shadow:inset 0 1px 0 rgba(143,255,255,.18), inset 0 -3px 12px rgba(0,0,0,.55), 0 0 0 1px #0B0F2F, 0 24px 60px rgba(0,0,0,.7);
+    padding:20px 18px 16px;color:#dbe6ff}
+  #gate.bootGate .bootModalCard h3{margin:0 0 2px;font-size:15px;font-weight:900;letter-spacing:2px;text-transform:uppercase;
+    color:#f2f6ff;text-shadow:0 0 12px rgba(110,150,255,.35)}
+  #gate.bootGate .bootModalCard .bmSub{color:#9fb2d9;font-size:12px;letter-spacing:.4px;margin-bottom:12px}
+  #gate.bootGate .bootModalCard .bmBody{font-size:13.2px;line-height:1.62;color:#c6d4f0}
+  #gate.bootGate .bootModalCard .bmBody b{color:#fff}
+  #gate.bootGate .bootModalCard .bmBody .rarec{color:var(--gas,#FF7A1A)}
+  #gate.bootGate .bootModalCard .bmBody .tealc{color:var(--min,#A0EFFF)}
+  #gate.bootGate .bootModalCard ul{margin:6px 0 10px;padding-left:18px}
+  #gate.bootGate .bootModalCard .bmRule{border-top:1px dashed rgba(45,45,127,.7);margin:12px 0;padding-top:11px}
+  #gate.bootGate .bootModalCard .bmRow{display:flex;align-items:center;gap:10px;justify-content:space-between;
+    border:1px solid rgba(45,45,127,.7);border-radius:12px;padding:8px 10px;background:#101031;margin:7px 0}
+  #gate.bootGate .bootModalCard .bmRow .bmLb{font-size:12.8px;font-weight:700;color:#e7eeff}
+  #gate.bootGate .bootModalCard .bmRow .bmDs{font-size:11.5px;color:#93a6cc;margin-top:2px}
+  #gate.bootGate .bootToggle{flex:0 0 auto;width:44px;height:23px;border-radius:20px;padding:2px;cursor:pointer;
+    border:1px solid #2D2D7F;background:#1a1a44;transition:all .15s}
+  #gate.bootGate .bootToggle .knob{width:17px;height:17px;border-radius:50%;background:#7c89ad;transition:all .15s}
+  #gate.bootGate .bootToggle.on{border-color:rgba(28,199,199,.7);background:linear-gradient(90deg,#0f5b5b,#177f7f);box-shadow:0 0 12px rgba(28,199,199,.3)}
+  #gate.bootGate .bootToggle.on .knob{background:#d9ffff;transform:translateX(21px)}
+  #gate.bootGate .bootModalClose{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:9px;cursor:pointer;
+    border:1px solid rgba(45,45,127,.9);background:#17173f;color:#cfe0ff;font-weight:900;font-size:15px;line-height:1;
+    transition:all .12s}
+  #gate.bootGate .bootModalClose:hover{border-color:rgba(255,122,60,.6);color:#ffb27a}
+  #gate.bootGate .bootModalFoot{margin-top:14px;display:flex;gap:8px;justify-content:flex-end}
+  #gate.bootGate .bootModalFoot button{padding:8px 16px;border-radius:12px;cursor:pointer;font-weight:800;font-size:12.5px;letter-spacing:1px;
+    border:1px solid rgba(28,199,199,.8);color:#d9fff8;background:linear-gradient(90deg,#105e5e,#177f7f);box-shadow:inset 0 1px 0 rgba(142,255,255,.4)}
+  #gate.bootGate .bootModalFoot button:hover{filter:brightness(1.12)}
+  #gate.bootGate[data-reducefx] .bootArtCv{opacity:.5}
+  #gate.bootGate[data-reducefx] .bootLogoWrap{filter:none}
 </style>
 </head>
 <body>
@@ -490,8 +549,67 @@
           <div class="hint bootHint"><b>Easy (dev)</b> = weak enemy to roll a fast run; Casual / Standard / Brutal = rising enemy economy &amp; aggression.</div>
           <button id="startBtn"><span class="bootPlayTri">▶</span> DEPLOY</button>
           <div class="hint bootHint mapHint">Each win opens an FTL-style fork — STANDARD / RUSH FLANK / ECONOMY LINE commanders each bank a run-wide boon. Beat 4 escalating battles to finish.</div>
+          <!-- A6 nav shell: LOAD/CONTINUE + TRAINING + OPTIONS secondary glass buttons (locked
+               ds-menu-board). Each opens an opaque doc-stub / info / boot-ck panel; the gated
+               features (save-resume, persistence) land in Beta B-S7/S-4+. ids stable, DEPLOY
+               + hide-on-start untouched. -->
+          <div class="bootNavRow">
+            <button type="button" class="bootNavBtn sig" id="navLoad" title="Load or continue a saved run"><span class="bnIc">⟲</span><span>Load / Continue</span></button>
+            <button type="button" class="bootNavBtn teal" id="navTrain" title="How to play — controls &amp; tactics"><span class="bnIc">▥</span><span>Training</span></button>
+            <button type="button" class="bootNavBtn orchid" id="navOpt" title="Presentation &amp; session options"><span class="bnIc">⚙</span><span>Options</span></button>
+          </div>
         </div>
         <div class="bootFoot"><span class="bootSigil bootSigilA">✦</span><b>REBELS VS THE SWARM</b><span class="bootSigil bootSigilE">✦</span></div>
+      </div>
+      <!-- A6 nav-shell modal overlays (LOAD/CONTINUE, TRAINING, OPTIONS). Inside #gate so they hide
+           again on Start; fixed overlays sit above the gate frame. Opaque glass (G1), teal/ember/
+           orchid accents (G3). Read-ok doc-stub / info / boot-ck content. -->
+      <div class="bootModal" id="navLoadOv" role="dialog" aria-modal="true" aria-label="Load or Continue">
+        <div class="bootModalCard">
+          <button type="button" class="bootModalClose" data-close="navLoadOv" aria-label="Close">✕</button>
+          <h3>⟲ Load / Continue</h3>
+          <div class="bmSub">resume a saved run — Boot Check</div>
+          <div class="bmBody">
+            <p><b>No saved run detected.</b> You're at the start screen with no active campaign in storage.</p>
+            <p>Run-save <b>resume / continue</b> persistence is the <span class="tealc">B-S7</span> meta-unlock milestone — once live, you'll return here to pick up a partial run, banked deck <span class="rarec">◆/◈</span> economy and unlocks.</p>
+            <div class="bmRule"></div>
+            <p><b>Start a fresh run now:</b> pick your side above, choose a difficulty, then <b>DEPLOY</b> — today each run plays through to its end (wins let you retry a fallen battle, no full wipe).</p>
+          </div>
+          <div class="bootModalFoot"><button type="button" data-close="navLoadOv">Got it</button></div>
+        </div>
+      </div>
+      <div class="bootModal" id="navTrainOv" role="dialog" aria-modal="true" aria-label="Training">
+        <div class="bootModalCard">
+          <button type="button" class="bootModalClose" data-close="navTrainOv" aria-label="Close">✕</button>
+          <h3>▥ Training — field manual</h3>
+          <div class="bmSub">how to win a DIRECT STRIKE run</div>
+          <div class="bmBody">
+            <p><b>Goal:</b> crack the enemy <b>core</b> before they crack yours. A run is <b>4 escalating battles</b> — win each to bank a persistent upgrade; fall and you <b>retry that same battle</b> (upgrades kept, no full wipe).</p>
+            <p><b>Economy (the heart):</b> your <span class="tealc">workers auto-mine</span> — <b style="color:var(--min)">◆ minerals</b> buy most units, <b style="color:var(--gas)">◈ gas</b> unlocks heavier/tech tiers from a ◈ geyser. Click a <b>unit card</b> in the deploy panel to field it when you have the currency.</p>
+            <ul>
+              <li><b>Harvesters</b> → more income = a snowball.</li>
+              <li><b>Melee line</b> shields your workers &amp; pushes the front.</li>
+              <li><b>Ranged / tanks</b> crack walls and cores; flyers &amp; AA shift the mid-game.</li>
+            </ul>
+            <p><b>Battlefield read:</b> your army fields from the <span class="tealc">left (teal)</span>, the AI from the <span class="rarec">right (ember)</span>. The hot centre is the contested line — hold it and push.</p>
+            <div class="bmRule"></div>
+            <p><b>Between battles:</b> every win opens an FTL-style fork — pick a <b>commander route</b> (rush / economy / balanced) to steer the next enemy and earn a run-wide boon. Difficulty chips (Easy→Brutal) raise the enemy's economy &amp; aggression.</p>
+          </div>
+          <div class="bootModalFoot"><button type="button" data-close="navTrainOv">Ready</button></div>
+        </div>
+      </div>
+      <div class="bootModal" id="navOptOv" role="dialog" aria-modal="true" aria-label="Options">
+        <div class="bootModalCard">
+          <button type="button" class="bootModalClose" data-close="navOptOv" aria-label="Close">✕</button>
+          <h3>⚙ Options — session presentation</h3>
+          <div class="bmSub">cosmetic / QoL prefs (applied on this menu)</div>
+          <div class="bmBody">
+            <div class="bmRow"><div><div class="bmLb">Reduce menu flair</div><div class="bmDs">smooths the key-art glow &amp; title bloom on this screen</div></div>
+              <div class="bootToggle" id="optFx" role="switch" aria-checked="false" tabindex="0"><div class="knob"></div></div></div>
+            <p style="margin-top:12px">Deeper preferences — sound mix, difficulty lock, control rebinding &amp; a full options hub — land with the <span class="tealc">MENU/Options</span> expansion across the Beta milestones (S-4 consumables belt, S-7 meta persistence).</p>
+          </div>
+          <div class="bootModalFoot"><button type="button" data-close="navOptOv">Done</button></div>
+        </div>
       </div>
     </div>
     <div id="battlePanel" class="card" style="display:none">
@@ -1987,6 +2105,233 @@ function journeyFor(run){
     seg.push(options);
   }
   return seg;
+}
+
+// rescue.mjs — B-S2 (Pillar A, A.2) DISTRESS-RESCUE model. The "For the King / FTL" hook on the map:
+// a ship/flotilla in distress needs help NOW before you advance. Sits downstream of the S-2 card ledger
+// (src/run.mjs) — you gamble OWNED CARD COPIES on the rescue.
+//
+//   node = { kind:'rescue', threshold, label? }        a map/event node (pure descriptor)
+//   distress(difficulty,opts)                          build a rescue node from a difficulty tier
+//   canCommit / commitCopies                           deduct owned copies you send (the real cost)
+//   contribution(def, copies?)                         how much one committed card is "worth" toward pass
+//   resolveRescue(run,node,committed[, rewardId])      pass/fail + applies the distress-appropriate reward
+//
+// REWARD SHAPES (A.2 "distress-appropriate" table), resolved through the run model helpers so
+// eligibility/caps/duplicates are one source of truth:
+//   'more'      -> you gain copies of a (sent) card back PLUS extras  (net deck gain)
+//   'upgrade'   -> a committed copy comes BACK and is upgraded in place (net +upgrades, copy recovered)
+//   'destroy'   -> you recover nothing AND must trim one more copy (deck-slim pressure / loss)
+//   'wind'      -> gravy: you lose the sent copy but bank ◆/◈ (mineral/gas windfall stored in run.__wind)
+//   'relic'     -> top-tier rescue gravy: claim a relic (rare roll surface stays a UI concern)
+// Failing / ignoring the distress grants no reward; committed copies are ALREADY gone (the "out of the
+// fight" cost is real either way). Optional negative (debuff / encore threat) is left to the map UI slice
+// so a failed rescue NEVER hard-blocks the run (accessibility rule from Phase 2). PURE + data-driven: no
+// DOM, no engine mutation.
+
+
+// --- rescue NODE descriptor builders -----------------------------------------------
+// Derive a rescue opportunity's pass `threshold` from a difficulty tier ('trivial'|'easy'|'moderate'|
+// 'hard'|'deadly'). Any card committed piles onto the SAME threshold check (1-card rescue = commit 1;
+// multi-card rescue = commit up to node.maxCards, cost climbing per extra commitment).
+// Thresholds are tuned to be reachable with a normal mid-run owned hand (a tank ~59, a melee ~18, a burst
+// striker ~-50) so a 1-3 card send is a real, winnable choice — NOT an impossible wall (Phase-2
+// accessibility: a failed/ignored rescue never hard-blocks the run).
+function distressThreshold(tier='moderate'){
+  switch(tier){
+    case 'trivial':  return 20;
+    case 'easy':     return 45;
+    case 'moderate': return 90;
+    case 'hard':     return 170;
+    case 'deadly':   return 260;
+    default:         return 90;
+  }
+}
+
+// Build a rescue node. `tier` chooses the threshold; `label` is an opaque map node label (mirrors the
+// A.1b node-label convention). `maxCards` bounds how many copies the player may commit to ONE rescue
+// (A.2 "some events accept ONE card, others let you send multiple").
+function rescueNode(tier='moderate', opts={}){
+  const n = { kind:'rescue', threshold: distressThreshold(tier), maxCards: opts.maxCards || 1 };
+  if(opts.label) n.label = opts.label;
+  if(opts.kind)  n.flavor = opts.kind;         // e.g. opts.kind='brute'|'scan'|'swarm' (map the ask)
+  return n;
+}
+
+// --- what committing a card costs/earns ---------------------------------------------
+// Role / body contribution. A card is "worth" its raw body — scaled hp + heavy weight on dmg — so a tank
+// is a sturdy soak and a high-alpha card clears fast (both soak/clear pressures read on the same axis;
+// the map UI may add per-flavor bonuses later). No def => 0 so an unknown key is a hollow card. Returns
+// the points ONE committed copy of `def` adds toward the threshold (times `copies`).
+function cardValue(def, copies=1){
+  if(!def) return 0;
+  const raw = (def.hp||0) + (def.dmg||0) * 4;          // body: tank/high-alpha cards are worth more
+  const base = Math.round(raw * 0.16);                 // scale into the same ballpark as distress thresholds
+  return base * Math.max(1, (copies|0));
+}
+
+// Whole-run read the rescue game uses: total owned copies (deployable) + how many the player holds of a
+// given key, read straight off the run bag.
+function rescueReserves(run){
+  const out = { owned: {}, total: 0 };
+  if(!run) return out;
+  for(const k in (run.bag||{})){ if(run.bag[k]>0){ out.owned[k]=run.bag[k]; out.total+=run.bag[k]; } }
+  return out;
+}
+
+// True if the player can honestly commit `n` copies of `key` to a rescue (owns that many, and none are
+// currently parked producing on a A.1b node — a card mid-economy can't be spared).
+function canCommit(run, spends){
+  if(!run || !spends) return false;
+  for(const k in spends){
+    const want = spends[k]|0; if(want<=0) continue;
+    const have = cardCount(run, k);
+    if(want>have) return false;                      // can't spend more copies than you own
+  }
+  return true;
+}
+
+// Actually COMMIT copies for a rescue ("sent out of the fight"). Deducts from the bag (the cost is real
+// whether you pass or not). Returns the number of copies removed across all keys, or 0 if unaffordable.
+// Commits are keyed how the caller chooses; isCardProducing guards live-economy cards via trimCard's rule
+// (a producing copy refuses to be spent — pull it off first). Returns 0 when any spend is blocked.
+function commitCopies(run, spends){
+  if(!run || !spends) return 0;
+  if(!canCommit(run, spends)) return 0;
+  let sent=0;
+  for(const k in spends){
+    let want=spends[k]|0;
+    while(want-->0){
+      const had = trimCard(run, k);
+      if(had < 0) return 0;                          // blocked mid-commit (producing / ran out) -> bail, no-op
+      sent+=1;
+    }
+  }
+  return sent;
+}
+
+// --- picking a reward row from the distress table -----------------------------------
+// A focused reward catalogue; `resolveRescue` uses these to translate a passed rescue to concrete run
+// mutations. Each entry { id, apply(run, ctx) } is pure-of-DOM and returns a summary line or null.
+const RESCUES = {
+  // your sent card comes back stronger (+1 on its default track) — shared identity: one card buffs everywhere
+  upgrade: {
+    name:'Recover + upgrade', asksCard:true,
+    apply(run, ctx){
+      const key=ctx.sentKey; const def=(run.pool||[]).find(c=>c.key===key);
+      if(!def) return null;
+      collectCard(run,key);                                  // the copy comes back
+      const track = ctx.track || defaultTrack(def);
+      if(!upgradeCard(run,key,track)) return null;           // cap hit = refunded but not leveled (still fine)
+      return (ctx.defName||key)+' recovery +'+track;
+    },
+  },
+  // you gain MORE copies of a sent card (net deck gain)
+  more: {
+    name:'More cards', asksCard:true, gain:3,
+    apply(run, ctx){
+      const key=ctx.sentKey;
+      if(!(run.pool||[]).some(c=>c.key===key)) return null;
+      const bonus=(ctx.gain||3)-1;                            // back the 1 you sent + `gain-1` extra
+      let n=0; for(let i=0;i<(ctx.gain||3);i++){ n=collectCard(run,key); }
+      return '+'+bonus+' '+(ctx.defName||key);
+    },
+  },
+  // destroy/trim pressure: you don't recover your sent copy AND you trim one MORE (deck slim is a tactic)
+  destroy: {
+    name:'Destroy', asksCard:true,
+    apply(run, ctx){
+      const k=ctx.sentKey;
+      if(!(run.pool||[]).some(c=>c.key===k)) return null;     // nothing else to take — just loss of the sent copy
+      const res=trimCard(run,k); if(res<0) return null;
+      return 'trimmed a '+(ctx.defName||k);
+    },
+  },
+  // gravy: a mineral/gas windfall stashed for the next battle (the sent copy is gone, you banked loot)
+  wind: {
+    name:'Loot run', gainMin:60, gainGas:6,
+    apply(run){
+      const w=run.__wind=run.__wind||{};
+      w.min=(w.min||0)+60; w.gas=(w.gas||0)+6;
+      return 'windfall +60◆ +6◈';
+    },
+  },
+  // top-tier gravy: claim one relic (the rarest distress reward)
+  relic: {
+    name:'Relic cache',
+    apply(run){
+      if(!run.relics) return null;
+      const held=(run.relics||[]);
+      const choices=Object.keys(RELIC_DEFS).filter(id=>!held.includes(id));
+      if(!choices.length) return null;
+      const id=choices[0];                                  // UI decides WHICH later; model takes first free
+      run.relics.push(id);
+      return 'relic '+id;
+    },
+  },
+};
+const RESCUE_REWARDS = Object.keys(RESCUES);
+
+// --- the actual dice roll: did the sent rescue clear, and what do you earn? ----------
+// `sentKey` = the single card-key you committed (multi-copy/node handled via node.maxCards above; the
+// pass check already summed contribution at commit time by the caller). `resolveRescue` RECOMPUTES and
+// applies the reward (per the node's chosen flavor). Returns { pass, rewardId?, note }.
+// The player passes iff their committed contribution sums >= node.threshold. On a pass we hand back one
+// of the sentKey-distress rewards; on a fail/ignore there is NO reward (the copies already left with
+// commitCopies). rewardId may be forced by the caller (tests / explicit player choice over gravy).
+function contributionTotal(run, spends){
+  let sum=0;
+  for(const k in (spends||{})){
+    const def=(run.pool||[]).find(c=>c.key===k);
+    sum+=cardValue(def, spends[k]);
+  }
+  return sum;
+}
+function rescuePasses(node, sum){
+  return !!node && sum >= (node.threshold||0);
+}
+
+// Apply a passed rescue's reward. Always spends on a `sentKey`; returns {note, rewardId} or fails soft.
+function applyRescue(run, node, ctx={}){
+  const rewardId = ctx.rewardId || pickReward(node);
+  const rec = RESCUES[rewardId];
+  if(!rec) return { rewardId:null, note:null };
+  const note = rec.apply(run, Object.assign({}, ctx, { sentKey: ctx.sentKey, defName: ctx.defName }));
+  return { rewardId, note };
+}
+
+// Which distress-appropriate reward a NODE offers by default (weighted; the UI/deck-fantasy layer later
+// surfaces choices). Kept deterministic-friendly for tests (pure; caller may force via rewardId).
+function pickReward(node){
+  // 'upgrade'/'more' weight higher for passing rescues; 'destroy'/'wind'/'relic' are spicier/rarer.
+  const w = [ ['upgrade',4], ['more',4], ['destroy',2], ['wind',3], ['relic',1] ];
+  let roll = Math.random();
+  let acc=0; const total=w.reduce((s,x)=>s+x[1],0);
+  for(const [id,wt] of w){ acc+=wt/total; if(roll<=acc) return id; }
+  return 'upgrade';
+}
+
+// High-level one-call: check affordability, COMMIT the copies (the real cost — sent out of the fight),
+// then decide pass on the committed cards' contribution, and if passing apply the node's reward against
+// the first spent key. Single entry the map/UI layer and tests drive; keeps commit cost + recover in one
+// place so nobody can "rescue for free". Result = { committed, pass, blocked?, rewardId?, note }.
+function attemptRescue(run, node, opts={}){
+  const spends = opts.spends
+    || (opts.sentKey ? (opts.sentKey==null?{}:{ [opts.sentKey]:1 }) : {});
+  if(!canCommit(run, spends)) return { committed:0, pass:false, blocked:true, note:'nothing to send' };
+  // pass is decided on the PRE-commit contribution (measured off the def pool, not the bag)
+  const sum=contributionTotal(run, spends);
+  const pass=rescuePasses(node, sum);
+  const sent=commitCopies(run, spends);                     // copies leave the bag either way
+  const result={ committed:sent, sum, threshold:node&&node.threshold, pass };
+  if(pass){
+    const def=(run.pool||[]).find(c=>c.key===opts.sentKey);
+    const rec=applyRescue(run,node,{ sentKey:opts.sentKey, defName:def&&def.name,
+      track:opts.track, rewardId:opts.rewardId });
+    result.rewardId=rec.rewardId; if(rec.note) result.note=rec.note;
+  }
+  if(!result.note) result.note = pass ? 'ship rescued' : 'distress unanswered — ship lost';
+  return result;
 }
 
 // ui.js — browser glue + rendering + input. Bundled after core/units/game.
@@ -3642,6 +3987,36 @@ function lastB(t,name){ return (t==null)?'never':C.fmtT(t)+' ('+(name||'?')+')';
 // gets bundled) — battle.html's inline startBtn.onclick does NOT make it into Distrike.html, which
 // previously made the Start button dead on click (fix: bind it alongside the other shell buttons).
 $('startBtn').onclick=startRun;
+// ---- A6 nav shell wiring: LOAD/CONTINUE + TRAINING + OPTIONS secondary glass buttons open opaque
+// doc-stub / info / boot-ck panels (read-ok content). Pure presentation inside #gate.bootGate;
+// DEPLOY + ids + hide-on-start untouched. Panels hide again whenever the gate hides on Start.
+(function bootNavShell(){
+  const openM = function(id){ const m=$(id); if(m){ try{ m.classList.add('show'); }catch(e){} } };
+  const closeM = function(id){ const m=$(id); if(m){ try{ m.classList.remove('show'); }catch(e){} } };
+  const dock = function(btnId, ovId){ const b=$(btnId); if(b) b.onclick=()=>openM(ovId); };
+  dock('navLoad','navLoadOv'); dock('navTrain','navTrainOv'); dock('navOpt','navOptOv');
+  // any element marked data-close="<modal>" closes it (✕ buttons + footer "Got it/Ready/Done")
+  try{
+    const all = document.querySelectorAll ? document.querySelectorAll('[data-close]') : [];
+    for(const el of all) el.onclick=()=>closeM(el.getAttribute('data-close'));
+  }catch(e){}
+  // backdrop click closes the modal it sits in
+  try{
+    const overlays = $( 'navLoadOv' ) ? ['navLoadOv','navTrainOv','navOptOv'] : [];
+    for(const id of overlays){ const o=$(id); if(o) o.onclick=(ev)=>{ if(ev && ev.target===o) closeM(id); }; }
+  }catch(e){}
+  // Options "reduce menu flair" cosmetic toggle: flips a [data-reducefx] attr on #gate bootGate
+  // (CSS dims key-art glow + title bloom). Purely presentational, session-only.
+  const fx=$( 'optFx' );
+  if(fx){
+    const gate=$('gate');
+    if(gate && gate.setAttribute && typeof gate.setAttribute==='function'){
+      const reflect=()=>{ const on=gate.hasAttribute('data-reducefx'); try{ if(on){gate.removeAttribute('data-reducefx');} else {gate.setAttribute('data-reducefx','');} }catch(e){} fx.classList.toggle('on',!on); if(fx.setAttribute) fx.setAttribute('aria-checked',String(!on)); };
+      fx.onclick=reflect;
+      if(fx.addEventListener) fx.addEventListener('keydown',(ev)=>{ if(ev && (ev.key===' '||ev.key==='Enter')){ ev.preventDefault(); reflect(); } });
+    }
+  }
+})();
 $('copyLog').onclick=()=>{
   const box=$('logbox');
   const txt='— DIRECT STRIKE MATCH LOG (difficulty '+(selDiff||'?')+', faction '+(st?st.faction.name:'?')+') —\n'+ (box?box.textContent:'');
