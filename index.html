@@ -280,6 +280,34 @@
   #endOv.endScreen #cardRow{display:flex;flex-wrap:wrap;justify-content:center}
   #endOv.endScreen #cardRow button.cardp{flex:1 1 auto;min-width:150px;max-width:230px}
   #endOv.endScreen #relicRow button.relicp{flex:1 1 auto;min-width:150px}
+  /* ---- A5 (art bake) REWARD/DECK screen polish toward the locked reward+deck boards ----
+     The post-win reward rows (global upgrade #upgRow, unit-card draft #cardRow, relic #relicRow) now
+     read as the locked boards' shop-clone reward CARDS: each is a raised #23234F slab over the deep
+     #0B0B2E panel with a thin #0B0F2F recessed lip + bright-indigo edge glow + top-down light, and a
+     per-type left rail — unit-card draft teal #1CC7C7, relic indigo-grey+ice-blue #A0EFFF, global
+     upgrade rare-magenta-violet #C08BFF (kept clear of the ember-gas window). Row section-headers get
+     the FTL/deck top-bar glass look. CSS-only on the FULL-SCREEN reward step (#endOv.endScreen) only;
+     the in-column/Direct + test-pinned #upgRow=2/#cardRow/#relicRow counts & innerHTML are untouched. */
+  #endOv.endScreen #upgRow,#endOv.endScreen #cardRow,#endOv.endScreen #relicRow{display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:12px;margin:14px 0 4px;padding:14px 12px;background:linear-gradient(180deg,#101032,#0a0a26 70%);border:1px solid #2D2D7F;border-radius:14px;box-shadow:inset 0 1px 0 rgba(143,255,255,.10),inset 0 -2px 8px rgba(0,0,0,.5)}
+  #endOv.endScreen #upgRow > div:first-child,#endOv.endScreen #cardRow > div:first-child,#endOv.endScreen #relicRow > div:first-child{width:100%;text-align:center;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:#9FB4C7;font-weight:800;margin-bottom:2px}
+  /* reward-card slab anatomy (raised over the panel well): type-coloured border rail + recessed lip */
+  #endOv.endScreen button.upg,#endOv.endScreen button.cardp,#endOv.endScreen button.relicp{
+    position:relative;text-align:left;color:#eef2ff;cursor:pointer;overflow:hidden;
+    background:linear-gradient(180deg,#2A2A5C 0%,#23234F 42%,#1B1B45 100%);
+    border-radius:12px;
+    box-shadow:inset 0 0 0 1px #0B0F2F, inset 0 1px 0 rgba(143,255,255,.16), inset 0 -3px 8px rgba(0,0,0,.45), 0 4px 14px rgba(5,5,20,.5);
+    transition:transform .07s,border-color .1s,box-shadow .1s,filter .1s}
+  /* per-type glowing border rail + soft outer tint (unit=teal, upgrade=magenta-violet, relic=indigo/ice) */
+  #endOv.endScreen button.cardp{border:1px solid rgba(28,199,199,.9);box-shadow:inset 0 0 0 1px #0B0F2F, inset 0 1px 0 rgba(143,255,255,.16), 0 0 14px rgba(28,199,199,.16), 0 4px 14px rgba(5,5,20,.5)}
+  #endOv.endScreen button.upg{border:1px solid rgba(192,139,255,.85);box-shadow:inset 0 0 0 1px #0B0F2F, inset 0 1px 0 rgba(255,255,255,.08), 0 0 14px rgba(192,139,255,.14), 0 4px 14px rgba(5,5,20,.5)}
+  #endOv.endScreen button.relicp{border:1px solid rgba(159,180,199,.85);box-shadow:inset 0 0 0 1px #0B0F2F, inset 0 1px 0 rgba(255,255,255,.08), 0 0 12px rgba(160,239,255,.12), 0 4px 14px rgba(5,5,20,.5)}
+  #endOv.endScreen button.upg:hover,#endOv.endScreen button.cardp:hover,#endOv.endScreen button.relicp:hover{transform:translateY(-2px);filter:brightness(1.1)}
+  #endOv.endScreen button.cardp:hover{border-color:#8EFFFF;box-shadow:inset 0 0 0 1px #0B0F2F,0 0 16px rgba(142,255,255,.3),0 6px 16px rgba(5,5,20,.5)}
+  #endOv.endScreen button.upg:hover{border-color:#e0c2ff;box-shadow:inset 0 0 0 1px #0B0F2F,0 0 16px rgba(192,139,255,.32),0 6px 16px rgba(5,5,20,.5)}
+  #endOv.endScreen button.relicp:hover{border-color:#cfe8ff;box-shadow:inset 0 0 0 1px #0B0F2F,0 0 16px rgba(160,239,255,.32),0 6px 16px rgba(5,5,20,.5)}
+  #endOv.endScreen button.upg .rowUpg b,#endOv.endScreen button.cardp b,#endOv.endScreen button.relicp b{color:#fff;font-size:13px;letter-spacing:.2px}
+  #endOv.endScreen button.upg .hint,#endOv.endScreen button.cardp .hint,#endOv.endScreen button.relicp .hint{color:#AFC0DE;font-size:11.5px;line-height:1.45;display:block;margin-top:4px;padding-top:5px;border-top:1px dashed rgba(45,45,127,.7)}
+  /* reward-row deck/relic/upgrade cards now read as shop-clone slabs; DOM + in-column look untouched. */
 </style>
 </head>
 <body>
