@@ -1726,6 +1726,8 @@ function poolFromRoster(roster){
     move:def.move, qty:def.qty||1, splash:def.splash||0, heal:def.heal||0, specialKind:def.specialKind,
     special:!!def.specialKind,
     fly:!!def.fly, aa:!!def.aa,                 // B-S1 Pillar B air axis (absent on legacy = false)
+    price:def.price,                            // game:deck-economy — RUN shop price in scrap (authored on
+                                                // the def); absent = run.cardPrice derives a fallback. Additive.
   }));
 }
 
@@ -3488,6 +3490,9 @@ function newRun({ factionId, enemyId, difficulty, deckBudget = 0, roster }){
     pool: poolFromRoster(roster),      // the unit-card pool this faction can draft/upgrade
     budget: deckBudget,                // unspent starting-deck budget
     archetypes: {},                    // battle-number -> 'rusher'|'economist'|'balanced' (P2-D; empty = all balanced)
+    scrap: 0,                          // S-2 run-level PURCHASE currency (game:deck-economy) — earned by
+                                       // wins/rescue/windfall events, spent on deck cards at the shop tile.
+                                       // Distinct from META credits (cross-run) and in-battle ◆/◈ (transient).
   };
   addCardLedger(run);                 // S-2 owned-copy ledger (bag) open on every fresh run
   run.assigned = {};                  // S-2 A.1b nodeLabel -> cardKey (extra producers beyond FREE_MINER)
@@ -3611,6 +3616,7 @@ const FREE_MINER = 1;
 // Add the S-2 owned-copy ledger to a fresh run.
 function addCardLedger(run){
   if(run && !run.bag) run.bag = {};      // cardKey -> owned copies (producers bought/earned, combat added)
+  if(run && typeof run.scrap !== 'number') run.scrap = 0;   // S-2 scrap wallet self-heals on old/resumed runs
   return run;
 }
 
@@ -3723,6 +3729,94 @@ function emitCardEcon(run){
   const a = Object.keys(run.assigned||{});
   if(a.length) out.assigned = Object.assign({}, run.assigned);
   return out;
+}
+
+// ============================================================
+// game:deck-economy — RUN-LEVEL DECK-CARD PURCHASE (scrap wallet)
+// ============================================================
+// Brick's currency ruling (2026-09-11): a NEW per-run `scrap` wallet on `run` is the shop currency.
+// It is DISTINCT from:
+//   • META credits (save.mjs) — banked ACROSS runs, spent on meta perks; unchanged here.
+//   • in-battle ◆/◈ minerals (core.js/game.js buyUnit) — transient per-battle deploy cost; unchanged.
+// Scrap is EARNED from run wins + rescue rewards + windfall/shop-adjacent events (owner: the callers —
+// run.mjs only owns the wallet + the pure buy/sell policy). Buying a card REUSES the existing S-2
+// owned-copy ledger via `collectCard` — no new ownership model is introduced.
+//
+// The pool card's authored `price` ({scrap} number) is the source of truth; `cardPrice` falls back to a
+// small derived price when a def carries none, so an unpriced pool still sells (never blocks a shop).
+
+// The scrap wallet read (self-heals a missing/non-numeric wallet to 0).
+function scrapOf(run){ addCardLedger(run); return run.scrap|0; }
+
+// EARN scrap (win reward / rescue reward / windfall event). Returns the new balance. Non-mutating on no run.
+function scrapAdd(run, n){
+  if(!run) return 0;
+  addCardLedger(run);
+  const amt = Math.max(0, Math.floor(n||0));
+  run.scrap = (run.scrap|0) + amt;
+  return run.scrap;
+}
+
+// SPEND scrap. Returns true only if the wallet covered it (all-or-nothing; never goes negative).
+function scrapSpend(run, n){
+  if(!run) return false;
+  addCardLedger(run);
+  const amt = Math.max(0, Math.floor(n||0));
+  if((run.scrap|0) < amt) return false;
+  run.scrap = (run.scrap|0) - amt;
+  return true;
+}
+
+// Base price of one copy of `key`, in scrap. Authored `def.price` (number, or {scrap}) wins; otherwise
+// derive a small price from the card's in-battle deploy cost so an unpriced pool is still sellable.
+// Returns 0 for a key not in the run pool (callers treat 0/not-found via cardPriceNode).
+function cardPrice(run, key){
+  if(!run || !run.pool) return 0;
+  const def = run.pool.find(c=>c.key===key);
+  if(!def) return 0;
+  if(typeof def.price === 'number') return Math.max(0, Math.floor(def.price));
+  if(def.price && typeof def.price.scrap === 'number') return Math.max(0, Math.floor(def.price.scrap));
+  // derived fallback: a fraction of the in-battle min cost (rounded), floored at 1 so nothing is free.
+  const min = (def.cost && def.cost.min) || (def.baseCost && def.baseCost.min) || 0;
+  return Math.max(1, Math.round(min/4));
+}
+
+// Can the player buy one copy of `key` right now? Pool membership + affordability. (Ownership/duplication
+// is ALLOWED — the bag is a copy count, so buying a second copy is legal by design.)
+function canBuyCard(run, key){
+  if(!run || !run.pool) return false;
+  const def = run.pool.find(c=>c.key===key);
+  if(!def) return false;
+  return scrapOf(run) >= cardPrice(run, key);
+}
+
+// BUY one copy of `key` with scrap. On success: spend the price, COLLECT a copy through the EXISTING
+// owned-copy ledger (`collectCard`), and return a summary. Never partially mutates (price is checked
+// before spend). Returns { ok:false, reason } on rejection.
+function buyCard(run, key){
+  if(!run || !run.pool) return { ok:false, reason:'no-run' };
+  const def = run.pool.find(c=>c.key===key);
+  if(!def) return { ok:false, reason:'not-in-pool' };
+  const price = cardPrice(run, key);
+  if(scrapOf(run) < price) return { ok:false, reason:'insufficient', price, scrap:scrapOf(run) };
+  if(!scrapSpend(run, price)) return { ok:false, reason:'insufficient', price, scrap:scrapOf(run) };
+  const copies = collectCard(run, key);
+  return { ok:true, price, scrap:scrapOf(run), copies, key,
+    summary:'Bought '+def.name+' for '+price+' scrap (now '+copies+' held)' };
+}
+
+// SELL/DESTROY one owned copy back for a scrap refund (deck-slim tactic). Refund = half the price,
+// floored. Reuses `trimCard` (which refuses a copy currently parked on the economy).
+function sellCard(run, key){
+  if(!run || !run.pool) return { ok:false, reason:'no-run' };
+  const def = run.pool.find(c=>c.key===key);
+  if(!def) return { ok:false, reason:'not-in-pool' };
+  const trimmed = trimCard(run, key);
+  if(trimmed < 0) return { ok:false, reason:(trimmed===-2?'producing':'none-owned') };
+  const refund = Math.max(1, Math.floor(cardPrice(run, key)/2));
+  scrapAdd(run, refund);
+  return { ok:true, refund, scrap:scrapOf(run), copies:trimmed, key,
+    summary:'Sold '+def.name+' for '+refund+' scrap' };
 }
 
 // map.mjs — Phase 2 (P2-C) BRANCH MAP model. A light StS-style "journey" layer over the run wrapper.
@@ -4283,7 +4377,7 @@ const CAMP_FIELDS = ['factionId','enemyId','difficulty','mode','battle','wins','
 // ---- which run-model ledgers are durable (all plain JSON — deck/relics/bag/assigned/kit/builds/hero
 //      are values only, and `pool` is a self-contained copy so a snapshot is byte-exact without a roster) ----
 const RUN_FIELDS = ['factionId','enemyId','difficulty','battle','wins','upgrades','deck','relics','seen',
-  'pool','budget','archetypes','bag','assigned','kit','builds','hero','__wind'];
+  'pool','budget','archetypes','bag','assigned','kit','builds','hero','__wind','scrap'];
 
 // ---- encode: turn a live `camp` (as startRun produces: camp.run = the newRun() model, camp.deck/relics/
 //      relicPool aliasing it) into a compact versioned JSON-safe snapshot. Returns null on a bad shape. ----
@@ -4868,10 +4962,12 @@ const BOSS_CODEX_PREFIX='boss:';
 //   PAINT of the journey screen                 src/mapui.mjs  (DOM/canvas)  <- presenter only
 //   headless gates                             test/mapjourney*.mjs
 //
-// The mid-battle unit shop is GONE (Brick 2026-09-09): the shop is a JOURNEY TILE. The model cannot BUY
-// yet (Pillar A deck economy is not landed), so a `shop` node is DISPLAY-ONLY + forward-compatible: this
-// module types it, labels it, and its click intent emits a `{stub:'shop'}` select state while emitting NO
-// model helper call. It never spends currency and never touches the deck/economy model.
+// The mid-battle unit shop is GONE (Brick 2026-09-09): the shop is a JOURNEY TILE. The Pillar-A deck
+// economy HAS landed (run.mjs scrap wallet + buyCard/canAfford/cardPrice over the existing collectCard
+// ledger), so a `shop` node is now a LIVE actor: its click intent surfaces the priced, purchasable pool
+// and routes a buy through run.mjs `buyCard` (spend scrap -> collect a copy via the existing ledger).
+// It still applies NOTHING to the run on a bare SELECT (the purchase is a separate, explicit buy step), so
+// the journey cursor does not advance on selecting a shop tile — matching the rescue "open, then act" read.
 
 
 // ---- journey geometry (logical px; the player sees a "path width" ~ this at desktop 1440) ----
@@ -4881,13 +4977,19 @@ const TOP_PAD   = 118;       // header / start node clearance
 const FOG_LIFT  = 26;        // how far the soft fog leading edge floats above the next band
 const MIN_LANES = 1, MAX_LANES = 3;
 
-// ---- node TYPE vocabulary (glyph + ring accent + label + model handler) ----
+// ---- PLACEHOLDER BALANCE (Brick's call pending) ------------------------------------------------
+// The shop SPENDS scrap; scrap must be EARNABLE or the tile is dead. Rather than invent a tuned
+// economy, this is the MINIMAL structural hook into the EXISTING win/reward path: one flat constant
+// per cleared battle + per passed rescue. These are placeholders (NOT tuned numbers) — Brick owns the
+// real balance call; swap these two constants when he rules.
+const SCRAP_PER_WIN = 12;      // structural placeholder — pending Brick's balance call
+const SCRAP_PER_RESCUE = 8;    // structural placeholder — pending Brick's balance call
 // Ring accents follow the LOCKED map legend (STYLE-BIBLE §MAP): fight/elite ember, reward/relic GOLD
 // (luxury only), ?/unknown cool-grey, friendly teal, SHOP uses the deck/economy ice-blue ◆ (distinct
 // from teal identity so it never reads as another route). No teal-wash, no yellow-sea.
 const NODE_TYPES = {
   battle:   { glyph:'⚔', label:'BATTLE',   ring:'#FF4A4A', sub:'Fight the front',        model:'battle',   emits:true  },
-  shop:     { glyph:'⛿', label:'SHOP',     ring:'#A0EFFF', sub:'Deck cards for sale',    model:'shop',     emits:false, stub:true },
+  shop:     { glyph:'⛿', label:'SHOP',     ring:'#A0EFFF', sub:'Deck cards for sale',    model:'shop',     emits:true  },
   rescue:   { glyph:'✉', label:'RESCUE',   ring:'#E026FF', sub:'A flotilla in distress', model:'rescue',   emits:true  },
   reward:   { glyph:'✦', label:'REWARD',   ring:'#FFD324', sub:'Claim one reward',       model:'cardP',    emits:true  },
   relic:    { glyph:'◆', label:'RELIC',    ring:'#FFD324', sub:'Claim one relic',        model:'relicP',   emits:true  },
@@ -4914,8 +5016,32 @@ function typeMeta(node){ return NODE_TYPES[nodeType(node)] || NODE_TYPES.unknown
 
 // Immutable descriptor builders for the one type the Phase-2 model has no constructor for yet. Mirrors
 // map.mjs's constructor style (plain frozen-ish object; no methods). `takeNode` has no 'shop' case, so
-// a shop node applied through the model is (correctly) a model NO-OP — the UI opens the shop stub.
+// a shop node applied through the model is (correctly) a model NO-OP; the live SHOP surface + buy path
+// live in mapjourney.mjs (`shopStock` / `shopBuy`) which route the purchase through run.mjs `buyCard`.
 const shopNode = (label) => { const n={ kind:'shop' }; if(label) n.label=label; return n; };
+
+// ---- SHOP stock + purchase (LIVE actor; the ONE mutator stays takeNode, buys go via run.buyCard) ----
+// The purchasable stock for a shop tile: the run's own card POOL with a live price + affordability read.
+// This is NOT a new economy — it is a view over run.mjs's landed `cardPrice`/`canBuyCard`. Returns one
+// row per pool card { key, name, tag, price, owned, affordable }. Empty pool -> empty stock (no throw).
+function shopStock(run){
+  const pool=(run&&run.pool)||[];
+  const bag=(run&&run.bag)||{};
+  return pool.map(def=>{
+    const price=cardPrice(run, def.key);
+    return { key:def.key, name:def.name||def.key, tag:def.tag||null, price,
+      owned:(bag[def.key]||0), affordable:canBuyCard(run, def.key) };
+  });
+}
+
+// Buy ONE copy of `key` from the shop tile: the purchase routes through run.mjs `buyCard` (spend scrap ->
+// collect a copy on the EXISTING ledger) — no new node mutator, no parallel economy. Returns the run.mjs
+// buy summary plus a display `stock` read so the presenter can repaint affordability without re-deriving.
+// A refused buy is a hard no-op (buyCard checks the price before spend; nothing mutates on refusal).
+function shopBuy(run, key){
+  const buy=buyCard(run, key);
+  return Object.assign({}, buy, { stock:shopStock(run), scrap:scrapOf(run) });
+}
 
 // Human title for a node (the tile's big label) — rides the display fields only, never mutates the node.
 function nodeTitle(node){
@@ -4952,19 +5078,19 @@ function nodeDetail(node, run){
     case 'global': return 'Run-wide '+node.id+' upgrade';
     case 'wind':   return 'Bank +'+(node.min||0)+'◆'+(node.gas?(' +'+node.gas+'◈'):'')+' for the next battle';
     case 'rescue': return 'Distress ~'+(node.threshold||0)+' — send cards to aid the ship';
-    case 'shop':   return 'Buy deck cards (opens with the deck economy)';
+    case 'shop':   return 'Buy deck cards with scrap';
     default:       return '';
   }
 }
 
 // ---- click INTENTS: what a node does when selected, expressed as the EXISTING model calls ----
-// Every modelled kind applies a REAL model change when clicked (the tiles are a LIVE actor, not a
-// display-only stub):
+// Every modelled kind is a LIVE actor when clicked (the tiles are not a display-only stub):
 //   battle -> the run's real battle lifecycle (enterBattle + markWin) so run.battle/wins/seen move.
 //   cardP/relicP/global/wind -> map.mjs takeNode (the ONE node mutator).
 //   rescue -> rescue.mjs attemptRescueOnce (real commit + odds roll + reward + resolved state).
-// A node with `emits:false` (shop stub / unknown) applies NOTHING to the model — selecting it only sets
-// the screen's `shopStub`/`note` state so the panel can open a "coming with the deck economy" surface.
+//   shop   -> surfaces live purchasable STOCK (pool + cardPrice/canAfford from run.mjs). The bare SELECT
+//             spends nothing (a shop is "open, then buy"), so `applied:false`; the real purchase is the
+//             explicit `shopBuy(run,key)` call (routes through run.mjs buyCard -> the existing ledger).
 // `opts` lets a caller pass a deterministic seed/roll or a forced reward to the rescue roll (tests).
 function nodeIntent(node, run, opts={}){
   const meta=typeMeta(node);
@@ -4976,14 +5102,15 @@ function nodeIntent(node, run, opts={}){
       // PREVIOUS battle won (a player only routes forward from a won battle). No-op without a run.
       if(!run) return Object.assign(base,{ kind:'battle', summary:null });
       const prev = run.battle|0;
-      if(prev>0) markWin(run);                        // the battle you just cleared
+      if(prev>0){ markWin(run); scrapAdd(run, SCRAP_PER_WIN); }   // the battle you just cleared (banks scrap)
       const now = enterBattle(run);                   // advance to the next battle
       return Object.assign(base,{ kind:'battle', applied:true,
         summary:'battle '+(prev>0?prev+' won':'started')+' → battle '+now,
         battle:run.battle, wins:run.wins });
     }
-    case 'shop':   return Object.assign(base,{ kind:'shop', stub:true, emits:false, summary:null,
-      note:'Shop tile — deck-card purchasing opens with the Pillar-A deck economy.' });
+    case 'shop':   return Object.assign(base,{ kind:'shop', stub:false, emits:true, applied:false,
+      shop:true, scrap:run?scrapOf(run):0, stock:run?shopStock(run):[],
+      summary:null, note:'Shop tile — pick a card to buy with scrap.' });
     case 'rescue': {
       // REAL distress: commit the sent copies + roll the odds + bank the reward + record the outcome.
       if(!run) return Object.assign(base,{ kind:'rescue', summary:null });
@@ -4993,6 +5120,7 @@ function nodeIntent(node, run, opts={}){
       const r = attemptRescueOnce(run, node2, Object.assign({}, opts, {
         sentKey:(opts.sentKey || firstRescuableKey(run)),
         rewardId:opts.rewardId }));
+      if(r.pass) scrapAdd(run, SCRAP_PER_RESCUE);     // bank scrap on a passed distress (win/reward path)
       return Object.assign(base,{ kind:'rescue', applied:!r.blocked, blocked:!!r.blocked,
         pass:r.pass, rewardId:r.rewardId||null, committed:r.committed||0,
         summary:r.note||null, note:r.note||null, resolved:isRescueResolved(run),
@@ -5045,10 +5173,10 @@ function buildJourney(run, opts={}){
   const cleared = 0;                        // band 0 is always the current decision in the remaining-rows view
 
   // --- 1. type every node; pick the SHOP-ready display row (a node the run would benefit from) ---
-  // The Phase-2 model has no shop node yet, so we SURFACE exactly ONE display-only shop tile per journey
+  // The Phase-2 model has no shop node yet, so we SURFACE exactly ONE shop tile per journey
   // (B1: shops are OCCASIONAL in FTL), on a mid band that still has a free slot under the air-it-out cap
-  // (never band 0, never the finale). Display-only: its intent emits no model call until the deck
-  // economy lands. `opts.shopEvery:0` disables it (used by the A1 progress gate).
+  // (never band 0, never the finale). The tile is a LIVE actor: its intent surfaces the priced stock and
+  // its buy routes through run.mjs buyCard. `opts.shopEvery:0` disables it (used by the A1 progress gate).
   const shopEvery = (opts.shopEvery===undefined? 1 : opts.shopEvery);
   const typeRows = seg.map((row,i)=> row.map(n=> ({ node:n, type:nodeType(n) })) );
   const shopBand = (shopEvery>0) ? pickShopBand(seg, maxL) : -1;
@@ -5154,9 +5282,10 @@ function hasShopTile(j){
 // deep-indigo glass footer per the LOCKED palette (STYLE-BIBLE §MAP / §COLOR GUIDE).
 //
 // PRESENTER ONLY: this module paints + dispatches clicks. It owns NO game rules — every click bakes down
-// to the EXISTING model helpers via `nodeIntent` (mapjourney) which calls map.mjs `takeNode`. A `shop`
-// tile is DISPLAY-ONLY (forward-compatible): selecting it opens a stub panel and applies NOTHING to the
-// model, because the deck economy is not landed.
+// to the EXISTING model helpers via `nodeIntent` (mapjourney) which calls map.mjs `takeNode` or run.mjs
+// `buyCard`. A `shop` tile is a LIVE actor: selecting it opens a priced stock panel built from the run's
+// own pool via mapjourney `shopStock`, and a BUY routes through mapjourney `shopBuy` -> run.mjs `buyCard`
+// (spend scrap -> collect a copy on the existing ledger). The tile reflects real scrap/affordability state.
 //
 // Portability: the module is passed a DOM + palette, so it runs BOTH flattened in the browser bundle
 // (build.mjs already flattens `.mjs`) and headlessly in a DOM shim (test/mapui.mjs). It never assumes
@@ -5244,15 +5373,25 @@ function mapCss(){
 #mjRoot .mjCur .g{color:${PAL.gas}}
 #mjRoot .mjNote{margin-left:auto;font-size:11px;color:${PAL.sub};max-width:520px;text-align:right;line-height:1.4}
 #mjRoot .mjNote.shop{color:#CDEBFF}
-#mjRoot .mjShopStub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:420px;
+#mjRoot .mjShopStub{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:440px;max-height:78%;overflow:auto;
   background:linear-gradient(180deg,#12124a,#0B0B2E 60%);border:1px solid ${PAL.edge};border-radius:16px;
   padding:18px 18px 16px;box-shadow:0 12px 40px rgba(0,0,0,.6), inset 0 1px 0 rgba(143,255,255,.18)}
 #mjRoot .mjShopStub h3{margin:0 0 6px;font-size:16px;color:#F1F6FF}
 #mjRoot .mjShopStub p{margin:0;font-size:12px;color:${PAL.sub};line-height:1.5}
+#mjRoot .mjShopStub .mjShopWallet{margin-top:8px;font-size:12px;color:${PAL.sub}}
+#mjRoot .mjShopStub .mjShopWallet b{color:${PAL.min}}
+#mjRoot .mjShopStub .mjItemRow{display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 10px;
+  border:1px solid ${PAL.edge};border-radius:11px;background:${PAL.card}}
+#mjRoot .mjShopStub .mjItemRow .nm{flex:1;font-size:12.5px;color:#EAF1FF;font-weight:700}
+#mjRoot .mjShopStub .mjItemRow .pr{font-size:11.5px;color:${PAL.min};font-weight:700;white-space:nowrap}
+#mjRoot .mjShopStub .mjItemRow.no{opacity:.62}
+#mjRoot .mjShopStub .mjItemRow.no .pr{color:${PAL.sub}}
 #mjRoot .mjShopStub .row{margin-top:14px;display:flex;gap:10px}
 #mjRoot .mjShopStub button{background:linear-gradient(180deg,${PAL.card},#1A1A42);color:#DFE7F5;border:1px solid #3A5287;
-  border-radius:11px;padding:9px 16px;font-weight:700;cursor:pointer}
-#mjRoot .mjShopStub button:hover{border-color:${PAL.glow}}
+  border-radius:11px;padding:8px 14px;font-weight:700;cursor:pointer}
+#mjRoot .mjShopStub button.buy{color:#12121F;background:${PAL.min};border-color:${PAL.min}}
+#mjRoot .mjShopStub button:disabled{opacity:.5;cursor:not-allowed}
+#mjRoot .mjShopStub button:hover:not(:disabled){border-color:${PAL.glow}}
 `;
 }
 
@@ -5333,8 +5472,14 @@ function mount(el, run, opts={}){
       t.appendChild(_div(doc,'mjTitle', n.title));
       t.appendChild(_div(doc,'mjDetail', n.detail||n.meta.sub));
       const foot=_div(doc,'mjFoot');
-      // shop stub tiles read as glass/ice-blue instead of a filled gold/ember CTA (display-only)
-      if(n.type==='shop'){ foot.style.color=PAL.min; foot.style.background='rgba(160,239,255,.12)'; foot.style.border='1px solid rgba(160,239,255,.5)'; _mjPaintIcon(foot,'ENTER SHOP ⛿'); }
+      // LIVE shop tile: it reads real affordability from the run's scrap wallet (ice-blue glass), and its
+      // foot flips copy between "ENTER SHOP" and an affordable count so the tile reflects true state.
+      if(n.type==='shop'){
+        foot.style.color=PAL.min; foot.style.background='rgba(160,239,255,.12)'; foot.style.border='1px solid rgba(160,239,255,.5)';
+        const stock=run?shopStock(run):[];
+        const afford=stock.filter(s=>s.affordable).length;
+        _mjPaintIcon(foot, afford>0 ? ('ENTER SHOP ⛿ · '+afford) : 'ENTER SHOP ⛿');
+      }
       else { foot.style.color='#12121F'; foot.style.background=n.meta.ring;
         _mjPaintIcon(foot, n.type==='battle' ? 'FIGHT ▶' : 'TAKE ▶'); }
       t.appendChild(foot);
@@ -5381,7 +5526,7 @@ function mount(el, run, opts={}){
     +' · <span class="g">◈</span> battle '+(Math.min(4,(run&&run.battle||0)+1));
   foot.appendChild(cur2);
   const note=_div(doc,'mjNote');
-  note.textContent = hasShopTile(journey) ? 'SHOP tile is screen-ready — deck-card purchase opens with the Pillar-A deck economy.' : '';
+  note.textContent = hasShopTile(journey) ? 'SHOP tile is live — buy deck cards with the run scrap wallet.' : '';
   if(note.textContent) note.classList.add('shop');
   foot.appendChild(note);
   root.appendChild(foot);
@@ -5396,12 +5541,12 @@ function mount(el, run, opts={}){
     state.note=intent.note||'';
     state.shopStub=!!intent.stub;
     const res={ id:nodeId, type:intent.type, kind:intent.kind, stub:!!intent.stub, emits:!!intent.emits,
-                applied:!!intent.applied, summary:intent.summary };
+                applied:!!intent.applied, summary:intent.summary, stock:intent.stock||null };
     state.results.push(res);
     onEvent(res, intent);
-    if(res.stub) openShopStub(n);
+    if(res.type==='shop') openShop(n);
     // The screen FOLLOWS the model: the cursor advances only when a real model change was applied
-    // (a shop stub / blocked / already-resolved click does NOT move the journey forward).
+    // (a shop open / blocked / already-resolved click does NOT move the journey forward).
     if(intent.applied){
       journey.currentIndex = Math.min(journey.currentIndex+1, journey.bands.length-1);
       journey.currentBand = journey.bands[journey.currentIndex]||journey.currentBand;
@@ -5414,19 +5559,47 @@ function mount(el, run, opts={}){
     return res;
   }
 
-  function openShopStub(node){
+  // LIVE shop: paints the run's own priced stock (mapjourney.shopStock). BUY routes through
+  // mapjourney.shopBuy -> run.mjs buyCard (spend scrap -> collect a copy on the existing ledger); on a
+  // refused buy nothing mutates and the panel simply reports it. Repaints affordability after every buy.
+  function openShop(node){
     const prev=el.querySelector && el.querySelector('.mjShopStub');
     if(prev && prev.remove) prev.remove();
-    const stub=_div(doc,'mjShopStub');
-    stub.appendChild(_el(doc,'h3','', 'SHOP — deck cards'));
-    const p=_el(doc,'p','', 'This tile is the journey SHOP. Buying deck cards opens with the Pillar-A deck economy; '
-      +'no currency is spent and the run model is untouched here yet.');
-    stub.appendChild(p);
+    const panel=_div(doc,'mjShopStub');
+    panel.appendChild(_el(doc,'h3','', 'SHOP — deck cards'));
+    const sub=_el(doc,'p','', 'Buy a copy with scrap. Copies stack on your owned deck.');
+    panel.appendChild(sub);
+    const wallet=_div(doc,'mjShopWallet');
+    panel.appendChild(wallet);
+    const list=_div(doc,'mjShopList');
+    panel.appendChild(list);
+
+    function paint(){
+      const scrap=run?scrapOf(run):0;
+      wallet.innerHTML='<b>◆</b> '+scrap+' scrap';
+      list.innerHTML='';
+      const stock=run?shopStock(run):[];
+      if(!stock.length){ list.appendChild(_el(doc,'p','', 'No cards in this run\u2019s pool.')); return; }
+      for(const s of stock){
+        const row=_div(doc,'mjItemRow'+(s.affordable?'':' no'));
+        row.appendChild(_div(doc,'nm', s.name+(s.owned?(' · owned '+s.owned):'')));
+        row.appendChild(_div(doc,'pr', s.price+'◆'));
+        const b=_el(doc,'button','buy', s.affordable?'BUY':'—');
+        if(b.disabled!==undefined) b.disabled=!s.affordable;
+        if(!s.affordable) b.classList.add('no');
+        b.onclick=()=>{ if(!s.affordable) return; const r=shopBuy(run, s.key); state.lastBuy=r; onEvent({ type:'shop', kind:'buy', applied:!!r.ok, key:s.key, summary:r.summary||null }, r); paint(); };
+        row.appendChild(b);
+        list.appendChild(row);
+      }
+    }
+    paint();
+
     const row=_div(doc,'row');
     const close=_el(doc,'button','', 'Close');
-    close.onclick=()=>{ if(stub.remove) stub.remove(); };
-    row.appendChild(close); stub.appendChild(row);
-    root.appendChild(stub);
+    close.onclick=()=>{ if(panel.remove) panel.remove(); };
+    row.appendChild(close); panel.appendChild(row);
+    root.appendChild(panel);
+    return panel;
   }
 
   return {
@@ -5958,6 +6131,18 @@ let camp=null;
 // P3-MAP CUTOVER (2026-09-10, Michael GO): the branch-map JOURNEY TILES are the live actor when true.
 // One switch reverts to the legacy 3-route `.node` picker (kept intact in the DOM below as the fallback).
 let MAP_TILES_LIVE=true;
+// SHOP MIGRATION (Brick 2026-09-09 19:19): the mid-battle unit shop is GONE; the shop moves to the
+// branch-map as a SHOP TILE. When the journey-shop is the ACTOR, renderUnits() retires the mid-battle
+// BUY row (the buyUnit onclick path) and #units shows ONLY the deploy-of-owned surface — the player
+// fields units they already own; new cards are bought on the branch-map shop tile (run.mjs buyCard).
+// LIVE as of game:shop-migration-ui (2026-09-11): the map shop tile IS the live actor (commit a7f3c94),
+// so the mid-battle BUY row is retired and this shows the deploy-of-owned panel. `setJourneyShop(false)`
+// (window.__ds.shop.live) is the one-switch revert to the legacy buy row. NOTE: Direct (non-branching)
+// mode never shows the map, so Direct mode has NO shop — expected under the Beta decision.
+let JOURNEY_SHOP_LIVE=true;
+// Programmatic switch for the journey layer / GUI-VERIFY: flipping this retires (or restores) the
+// mid-battle BUY row and re-renders the panel in place. Safe + reversible; never touches deploy logic.
+function setJourneyShop(on){ JOURNEY_SHOP_LIVE=!!on; try{ if(typeof renderUnits==='function' && st) renderUnits(); }catch(e){} return JOURNEY_SHOP_LIVE; }
 // Branch-mode win sequencing (game start(diff) -> Branch -> battle -> [VICTORY confirm] -> reward -> MAP
 // -> next battle). `_winAdvance` says what the reward CLAIM should do next: '' = straight to next battle
 // (Direct + finale wins), 'map' = open the branch map (#mapOv) after the reward is claimed (battles 2..3).
@@ -6380,6 +6565,45 @@ function refreshAfford(){
 }
 const WORKER_UI_CAP=8;
 
+// DEPLOY-OF-OWNED surface (SHOP MIGRATION): when the journey shop is the actor, the mid-battle panel no
+// longer SELLS units — it only FIELDS units you already own (st.owned[key] > 0). One compact button per
+// owned card, minted only when armies are actually deployable. No buyUnit path, no price/afford math.
+function renderOwnedDeployRow(box, f){
+  const owned = (st&&st.owned)||{};
+  const ownedKeys = Object.keys(owned).filter(k=>owned[k]>0);
+  if(!ownedKeys.length) return;                       // nothing owned yet — panel reads as a header only
+  const head=document.createElement('div'); head.className='ownedHead';
+  head.textContent='Field an owned unit';
+  box.appendChild(head);
+  const wrap=document.createElement('div'); wrap.className='ownedGrid';
+  const pool=f.roster.concat(_btnExtras);
+  for(const key of ownedKeys){
+    const def=pool.find(d=>d.key===key); if(!def) continue;
+    const b=document.createElement('button');
+    b.className='ubtn owned'+(def.tag==='special'?' special':'')+((def.tag==='worker')?' eco':'');
+    const icCanvas=document.createElement('canvas'); icCanvas.className='ic'; icCanvas.width=46; icCanvas.height=42;
+    const rowE=document.createElement('div'); rowE.className='row';
+    const icWrap=document.createElement('span'); icWrap.className='icw'; icWrap.appendChild(icCanvas);
+    const mid=document.createElement('div');
+    const nm=document.createElement('div'); nm.className='nm2'; nm.textContent=def.name;
+    if(typeof iconize==='function') paintIcon(nm, nm.textContent);
+    const tg=document.createElement('div'); tg.className='tg'; tg.textContent=TAGLBL[def.tag]||def.tag;
+    mid.appendChild(nm); mid.appendChild(tg);
+    const badge=document.createElement('span'); badge.className='own';
+    badge.textContent=badgeText(def, liveAlive(st,def));
+    rowE.appendChild(icWrap); rowE.appendChild(mid); rowE.appendChild(badge);
+    const coE=document.createElement('div'); coE.className='co';
+    const mc=document.createElement('b'); mc.className='mc'; mc.textContent='deploy';
+    coE.appendChild(mc);
+    b.appendChild(rowE); b.appendChild(coE);
+    b.title=(def.desc||'')+' · Field an owned '+def.name+'. New cards are bought at the branch-map shop.';
+    b.onclick=()=>{ const ok=grantUnit(st, def, false); if(ok){ log('Deploy '+def.emoji+' '+def.name+' (owned).'); renderUnits(); refreshAfford(); } };
+    drawUnitIcon(icCanvas, def, (f&&f.id==='aliens'));
+    wrap.appendChild(b);
+  }
+  box.appendChild(wrap);
+}
+
 function renderUnits(keepSel){
   const box=$('units'), f=facById(selFac);
   if(!box||!f) return;
@@ -6387,6 +6611,14 @@ function renderUnits(keepSel){
   // the whole roster again → duplicate buy buttons + stale counts (x2/x3/x4) accumulating in the GUI.
   box.innerHTML='';
   _btnDef={};
+  // SHOP MIGRATION: when the journey shop is the actor, the mid-battle BUY row is RETIRED. We only
+  // surface the deploy-of-owned panel (grants already-owned units). The legacy BUY row below is kept
+  // intact behind the flag so the one-switch revert + the legacy/picker path still work.
+  if(JOURNEY_SHOP_LIVE && camp && camp.run){
+    _btnExtras = (f && (f.id === "aliens" || f.id === "rebels")) ? extraRoster(f.id) : [];
+    renderOwnedDeployRow(box, f);
+    return;
+  }
   // B-S6 REWARD-TREE WIDENING: append the faction's extraRoster class variants (aliens Brood-Behemoth /
   // rebels Guerrilla-Sniper) to the PLAYER shop rows so the widened pool is genuinely deployable live.
   // These live only in the UI list (extraRoster returns a copy); the ENGINE/AI/base rosters never see
@@ -8242,6 +8474,10 @@ if(typeof window!=='undefined'){
   Object.defineProperty(window.__ds,'selDiff',{get:()=>selDiff});
   Object.defineProperty(window.__ds,'selMode',{get:()=>selMode});
   window.__ds.map = { journeyFor, takeNode, open:()=>openRouteMap() };  // P2A: drive the branch/journey model headlessly (+P3-MAP: open the live map screen on the real camp for GUI-VERIFY)
+  // SHOP MIGRATION switch (game:shop-migration-ui): the journey layer / GUI-VERIFY / the map shop tile
+  // flip this when the branch-map shop is the ACTOR. True => mid-battle BUY row retired (deploy-of-owned
+  // only). Read the current state from opts() for the map tile that becomes the actor.
+  window.__ds.shop = { live:setJourneyShop, isLive:()=>JOURNEY_SHOP_LIVE, render:renderUnits };
   window.__ds.FACTIONS=Object.assign({}, FACTIONS, EXPANSION_FACTIONS); // the LIVE four-faction union read (core + expansion) so headless/soak enemies anywhere resolve.
   window.__ds.FACTIONS_CORE=FACTIONS;   // the untouched core pair, for callers that still want rebels+aliens only.
   // P2-D: expose the pure run helpers to the test bridge (drive a per-battle AI archetype headlessly)
