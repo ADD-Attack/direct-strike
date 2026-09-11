@@ -5092,7 +5092,8 @@ function spriteRdr(){
     SPR[fkey]={ img:null, w, h, ok:false };
     if (typeof Image==='undefined') continue;                 // no Image in headless shim
     try{
-      const im = new Image(); im.onload=()=>{ SPR[fkey].ok = true; };
+      const im = new Image();
+      im.onload=()=>{ SPR[fkey].ok = true; repaintUnitIcons(); };   // sprite decoded → swap any card's vector fallback for the real sprite
       im.src = SPRITE_DATA[fkey];
       SPR[fkey].img = im;
       if (im.complete && im.naturalWidth>0) SPR[fkey].ok=true;
@@ -5848,7 +5849,7 @@ function renderUnits(keepSel){
     // reaching your ◈ gas uniques.
     b.title=(def.desc||'')+(isWorker?' · Buying an extra worker grows income; the 4th+ mine the ◈ geyser (unlocks ◈ units).':'');
     b.onclick=()=>{ const ok=buyUnit(st,def,false); if(ok){ log(`Deploy ${def.emoji} ${def.name} (◆${c.min}${def.cost.gas?' ◈'+c.gas:''}). ${isWorker?'More harvesters = more mining; an extra one mines the ◈ geyser.':(def.tag==='special'?'Gas unit online.':'')}`); renderUnits(); refreshAfford(); } else { log('Can\'t afford '+def.name+'.'); glowMinerals(); } };
-    _btnDef[def.key]={btn:b, badge:badge, qty:def.qty||1, last:aliveN};
+    _btnDef[def.key]={btn:b, badge:badge, qty:def.qty||1, last:aliveN, def:def};
     drawUnitIcon(icCanvas, def, (facById(selFac)&&facById(selFac).id==='aliens'));  // paint the real unit sprite into the card
     box.appendChild(b);
   }
@@ -6550,6 +6551,33 @@ function szTankW(h){ return h*0.52; }
 // Reuses drawFigure (the exact battlefield art) by temporarily re-pointing the module `ctx` at the
 // card canvas's 2d context, then restoring it. Faces right, faction-tinted to match what you deploy.
 const TAG_H={ tank:46, melee:34, swarm:30, ranged:36, burst:33, splash:33, healer:34, special:46 };
+// One-shot repaint of the live shop/army cards when a sprite image finishes decoding. renderUnits()
+// paints each card icon once via drawUnitIcon(); on first paint the sprite Image may not have decoded
+// yet, so drawUnitIcon falls back to the beige vector figure and NOTHING repainted it afterwards — the
+// beige fallback stuck. Each spriteRdr onload flips SPR[fkey].ok true and calls this, which redraws only
+// the cards whose icon is still the fallback (cheap, idempotent, no layout change — same canvas, same
+// box). No-op when the shop isn't mounted (boot/headless) so tests + the boot board are untouched.
+let _repaintIconsQueued=false;
+function repaintUnitIcons(){
+  if(_repaintIconsQueued) return; _repaintIconsQueued=true;
+  const run=()=>{ _repaintIconsQueued=false;
+    try{
+      const box = (typeof $==='function') ? $('units') : null;
+      if(!box || !_btnDef || !facById(selFac)) return;
+      const organic = (facById(selFac)&&facById(selFac).id==='aliens');
+      for(const key in _btnDef){
+        const rec=_btnDef[key]; if(!rec||!rec.btn) continue;
+        const cvEl=rec.btn.querySelector&&rec.btn.querySelector('canvas.ic');
+        if(!cvEl) continue;
+        const def=rec.def; if(def) drawUnitIcon(cvEl, def, organic);
+      }
+    }catch(e){ /* cosmetic only */ }
+  };
+  // defer a frame/short tick so a burst of decodes coalesces into one repaint; headless shims where
+  // setTimeout is a no-op just fall through and skip (icons stay vector there, exactly as before).
+  try{ const t=setTimeout(run,0); if(typeof t!=='number'||t===0){ run(); } }catch(e){ run(); }
+}
+
 function drawUnitIcon(cvEl, def, organic){
   if(!cvEl || !cvEl.getContext) return;
   const g2d = cvEl.getContext('2d');   // card's OWN 2d context (distinct canvas object)
