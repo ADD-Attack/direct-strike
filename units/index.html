@@ -1,8 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>DirectStrike — unit sprite sheet (20)</title><style>:root{--bg:#0b0f1a;--panel:#141b2b;--line:#26304a;--ink:#e7ecf7;--dim:#8b97b3;--acc:#ffb454;
---live:#7ee08a;--likely:#7fb2ff;--orph:#ff7b7b}
+<title>DirectStrike — unit art sheet</title><style>:root{--bg:#0b0f1a;--panel:#141b2b;--line:#26304a;--ink:#e7ecf7;--dim:#8b97b3;--acc:#ffb454}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
 font:13px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 header{position:sticky;top:0;z-index:9;background:rgba(11,15,26,.96);backdrop-filter:blur(6px);
@@ -13,141 +12,194 @@ h1{margin:0 0 5px;font-size:16px}h1 .sm{color:var(--dim);font-size:12px;font-wei
 button{font:inherit;background:transparent;color:var(--ink);border:1px solid var(--line);
 border-radius:6px;padding:5px 11px;cursor:pointer}button.on{background:var(--acc);color:#1a1206;
 border-color:var(--acc);font-weight:700}
-main{padding:16px 16px 40px}
-section{margin-bottom:30px}
-h2{font-size:13px;letter-spacing:.05em;margin:0 0 4px;border-bottom:1px solid var(--line);
-padding-bottom:6px}h2 .cnt{color:var(--acc)}
-.blurb{color:var(--dim);font-size:11px;margin:0 0 14px}
+main{padding:16px 16px 40px}section{margin-bottom:30px}
+h2{font-size:13px;letter-spacing:.05em;margin:0 0 4px;border-bottom:1px solid var(--line);padding-bottom:6px}
+h2 .cnt{color:var(--acc)}.blurb{color:var(--dim);font-size:11px;margin:0 0 14px}
 .rack{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
-.unit{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:9px;
-padding:12px;display:flex;flex-direction:column;align-items:center;gap:9px}
-.unit:hover{border-color:var(--acc)}
-.stage{display:flex;align-items:center;justify-content:center;min-height:150px;padding:4px;
+.unit{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px;
+display:flex;flex-direction:column;align-items:center;gap:8px}.unit:hover{border-color:var(--acc)}
+.artwrap{display:flex;align-items:center;justify-content:center;min-height:120px;
 background:linear-gradient(45deg,#2a2a2a 25%,transparent 25%,transparent 75%,#2a2a2a 75%),
 linear-gradient(45deg,#2a2a2a 25%,#1e1e1e 25%,#1e1e1e 75%,#2a2a2a 75%);
 background-size:16px 16px;background-position:0 0,8px 8px;border-radius:6px;width:100%}
-.stage img{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+.artimg{display:block}
+.spr{image-rendering:pixelated;image-rendering:crisp-edges}
+.spritebox{display:flex;align-items:center;gap:8px;justify-content:center}
+.sprlbl{color:var(--dim);font-size:9px;line-height:1.25;text-align:left}
+.noart{color:var(--dim);font-size:10px;padding:20px}
 figcaption{text-align:center;width:100%}
 figcaption b{display:block;font-size:12px}
+.role{display:block;color:var(--dim);font-size:9.5px}
 .dim{display:block;color:var(--acc);font-size:10.5px;font-weight:700}
-.meta{display:block;color:var(--dim);font-size:9.5px}
-.src{display:block;color:#5d6a86;font-size:8.5px;word-break:break-all;margin-top:3px}
-footer{padding:0 16px 40px;color:var(--dim);font-size:11px}
-a{color:var(--acc)}</style></head><body>
-<header><h1>Unit sprite sheet <span class="sm">&mdash; the real things, not thumbnails</span></h1>
-<div class="sub"><b>20</b> live sprites served as <b>the original PNGs</b> &middot;
-enlarged with <code>image-rendering:pixelated</code> so you see true pixels, never a resampled thumb.<br>
-16 units (8 rebels + 8 aliens) + 4 structures &middot; sources: <code>art_probe/parity_v2/</code>, <code>art_probe/generated/</code></div>
-<div class="bar"><button id="zoom" class="on">zoom 1x</button><span id="zt" style="color:var(--dim);font-size:11px"></span></div></header>
-<main><section><h2>Rebels  (left flank) <span class="cnt">8</span></h2>
-<p class="blurb">Fan-made rebel units. Live in-game sprites — base64-embedded in the bundle via src/sprites_data.mjs.</p><div class="rack"><figure class="unit" data-w="96" data-h="125">
-<div class="stage"><img src="sprites/rebels_b_parity.png" width="96" height="125" alt="rebels_b"></div>
+.src{display:block;color:#5d6a86;font-size:8.5px;word-break:break-all}
+footer{padding:0 16px 40px;color:var(--dim);font-size:11px}a{color:var(--acc)}</style></head><body>
+<header><h1>Unit art sheet <span class="sm">&mdash; the real masters, not thumbnails</span></h1>
+<div class="sub"><b>16 illustrated masters</b> (~700&times;660 straight from <code>art_probe/contact_v2/*_full.png</code>)
+&middot; each shown beside its <b>actual in-game sprite</b> at native size.<br>
+Key: <code>human_&lt;slot&gt;</code> is shipped as <code>rebels_&lt;slot&gt;</code>, <code>alien_&lt;slot&gt;</code> as <code>aliens_&lt;slot&gt;</code>.
+Slots: b, g, node (worker/eco), r, s, t, u, w.</div>
+<div class="bar"><button id="zoom" class="on">art zoom 1x</button><span id="zt" style="color:var(--dim);font-size:11px"></span></div></header>
+<main>
+<section><h2>Rebels &mdash; human units <span class="cnt">8</span></h2>
+<p class="blurb">Teal <code>#18B5B5</code> faction, one secondary role-accent each. The <b>node</b> slot is the exception: warm amber-gold, the worker/eco unit (locked by Brick 2026-09-09).</p>
+<div class="rack"><figure class="unit" data-w="700" data-h="662">
+<div class="artwrap"><img class="artimg" src="art/human_b_full.png" width="700" height="662" alt="rebels_b"></div>
+<div class="spritebox"><img class="spr" src="sprites/rebels_b_parity.png" width="96" height="125" alt="">
+<span class="sprlbl">in-game<br>96&times;125</span></div>
 <figcaption><b>rebels_b</b>
-<span class="dim">96&times;125</span>
-<span class="meta">10.2 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/rebels_b_parity.png</span></figcaption></figure><figure class="unit" data-w="96" data-h="126">
-<div class="stage"><img src="sprites/rebels_g_parity.png" width="96" height="126" alt="rebels_g"></div>
+<span class="role">teal caste</span>
+<span class="dim">700&times;662 art</span>
+<span class="src">art_probe/contact_v2/human_b_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/rebels_b_parity.png</span></figcaption></figure><figure class="unit" data-w="475" data-h="612">
+<div class="artwrap"><img class="artimg" src="art/human_g_full.png" width="475" height="612" alt="rebels_g"></div>
+<div class="spritebox"><img class="spr" src="sprites/rebels_g_parity.png" width="96" height="126" alt="">
+<span class="sprlbl">in-game<br>96&times;126</span></div>
 <figcaption><b>rebels_g</b>
-<span class="dim">96&times;126</span>
-<span class="meta">7.2 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/rebels_g_parity.png</span></figcaption></figure><figure class="unit" data-w="98" data-h="96">
-<div class="stage"><img src="sprites/rebels_node_parity.png" width="98" height="96" alt="rebels_node"></div>
+<span class="role">teal caste</span>
+<span class="dim">475&times;612 art</span>
+<span class="src">art_probe/contact_v2/human_g_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/rebels_g_parity.png</span></figcaption></figure><figure class="unit" data-w="947" data-h="925">
+<div class="artwrap"><img class="artimg" src="art/human_node_full.png" width="947" height="925" alt="rebels_node"></div>
+<div class="spritebox"><img class="spr" src="sprites/rebels_node_parity.png" width="98" height="96" alt="">
+<span class="sprlbl">in-game<br>98&times;96</span></div>
 <figcaption><b>rebels_node</b>
-<span class="dim">98&times;96</span>
-<span class="meta">5.5 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/rebels_node_parity.png</span></figcaption></figure><figure class="unit" data-w="96" data-h="125">
-<div class="stage"><img src="sprites/rebels_r_parity.png" width="96" height="125" alt="rebels_r"></div>
+<span class="role">worker / eco</span>
+<span class="dim">947&times;925 art</span>
+<span class="src">art_probe/contact_v2/human_node_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/rebels_node_parity.png</span></figcaption></figure><figure class="unit" data-w="653" data-h="629">
+<div class="artwrap"><img class="artimg" src="art/human_r_full.png" width="653" height="629" alt="rebels_r"></div>
+<div class="spritebox"><img class="spr" src="sprites/rebels_r_parity.png" width="96" height="125" alt="">
+<span class="sprlbl">in-game<br>96&times;125</span></div>
 <figcaption><b>rebels_r</b>
-<span class="dim">96&times;125</span>
-<span class="meta">9.1 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/rebels_r_parity.png</span></figcaption></figure><figure class="unit" data-w="96" data-h="122">
-<div class="stage"><img src="sprites/rebels_s_parity.png" width="96" height="122" alt="rebels_s"></div>
+<span class="role">teal caste</span>
+<span class="dim">653&times;629 art</span>
+<span class="src">art_probe/contact_v2/human_r_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/rebels_r_parity.png</span></figcaption></figure><figure class="unit" data-w="869" data-h="607">
+<div class="artwrap"><img class="artimg" src="art/human_s_full.png" width="869" height="607" alt="rebels_s"></div>
+<div class="spritebox"><img class="spr" src="sprites/rebels_s_parity.png" width="96" height="122" alt="">
+<span class="sprlbl">in-game<br>96&times;122</span></div>
 <figcaption><b>rebels_s</b>
-<span class="dim">96&times;122</span>
-<span class="meta">7.1 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/rebels_s_parity.png</span></figcaption></figure><figure class="unit" data-w="116" data-h="96">
-<div class="stage"><img src="sprites/rebels_t_parity.png" width="116" height="96" alt="rebels_t"></div>
+<span class="role">teal caste</span>
+<span class="dim">869&times;607 art</span>
+<span class="src">art_probe/contact_v2/human_s_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/rebels_s_parity.png</span></figcaption></figure><figure class="unit" data-w="790" data-h="651">
+<div class="artwrap"><img class="artimg" src="art/human_t_full.png" width="790" height="651" alt="rebels_t"></div>
+<div class="spritebox"><img class="spr" src="sprites/rebels_t_parity.png" width="116" height="96" alt="">
+<span class="sprlbl">in-game<br>116&times;96</span></div>
 <figcaption><b>rebels_t</b>
-<span class="dim">116&times;96</span>
-<span class="meta">7.7 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/rebels_t_parity.png</span></figcaption></figure><figure class="unit" data-w="96" data-h="126">
-<div class="stage"><img src="sprites/rebels_u_parity.png" width="96" height="126" alt="rebels_u"></div>
+<span class="role">teal caste</span>
+<span class="dim">790&times;651 art</span>
+<span class="src">art_probe/contact_v2/human_t_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/rebels_t_parity.png</span></figcaption></figure><figure class="unit" data-w="678" data-h="604">
+<div class="artwrap"><img class="artimg" src="art/human_u_full.png" width="678" height="604" alt="rebels_u"></div>
+<div class="spritebox"><img class="spr" src="sprites/rebels_u_parity.png" width="96" height="126" alt="">
+<span class="sprlbl">in-game<br>96&times;126</span></div>
 <figcaption><b>rebels_u</b>
-<span class="dim">96&times;126</span>
-<span class="meta">7.8 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/rebels_u_parity.png</span></figcaption></figure><figure class="unit" data-w="96" data-h="127">
-<div class="stage"><img src="sprites/rebels_w_parity.png" width="96" height="127" alt="rebels_w"></div>
+<span class="role">teal caste</span>
+<span class="dim">678&times;604 art</span>
+<span class="src">art_probe/contact_v2/human_u_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/rebels_u_parity.png</span></figcaption></figure><figure class="unit" data-w="446" data-h="628">
+<div class="artwrap"><img class="artimg" src="art/human_w_full.png" width="446" height="628" alt="rebels_w"></div>
+<div class="spritebox"><img class="spr" src="sprites/rebels_w_parity.png" width="96" height="127" alt="">
+<span class="sprlbl">in-game<br>96&times;127</span></div>
 <figcaption><b>rebels_w</b>
-<span class="dim">96&times;127</span>
-<span class="meta">7.7 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/rebels_w_parity.png</span></figcaption></figure></div></section><section><h2>Aliens  (right / ember flank) <span class="cnt">8</span></h2>
-<p class="blurb">Fan-made alien units. Live in-game sprites — base64-embedded via src/sprites_data.mjs.</p><div class="rack"><figure class="unit" data-w="151" data-h="96">
-<div class="stage"><img src="sprites/aliens_b_parity.png" width="151" height="96" alt="aliens_b"></div>
+<span class="role">teal caste</span>
+<span class="dim">446&times;628 art</span>
+<span class="src">art_probe/contact_v2/human_w_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/rebels_w_parity.png</span></figcaption></figure></div></section>
+<section><h2>Aliens &mdash; ember units <span class="cnt">8</span></h2>
+<p class="blurb">Same caste set, alien styling. Ember-orange <code>#FF7A1A</code> faction family.</p>
+<div class="rack"><figure class="unit" data-w="838" data-h="532">
+<div class="artwrap"><img class="artimg" src="art/alien_b_full.png" width="838" height="532" alt="aliens_b"></div>
+<div class="spritebox"><img class="spr" src="sprites/aliens_b_parity.png" width="151" height="96" alt="">
+<span class="sprlbl">in-game<br>151&times;96</span></div>
 <figcaption><b>aliens_b</b>
-<span class="dim">151&times;96</span>
-<span class="meta">8.0 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/aliens_b_parity.png</span></figcaption></figure><figure class="unit" data-w="100" data-h="96">
-<div class="stage"><img src="sprites/aliens_g_parity.png" width="100" height="96" alt="aliens_g"></div>
+<span class="role">ember caste</span>
+<span class="dim">838&times;532 art</span>
+<span class="src">art_probe/contact_v2/alien_b_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/aliens_b_parity.png</span></figcaption></figure><figure class="unit" data-w="590" data-h="566">
+<div class="artwrap"><img class="artimg" src="art/alien_g_full.png" width="590" height="566" alt="aliens_g"></div>
+<div class="spritebox"><img class="spr" src="sprites/aliens_g_parity.png" width="100" height="96" alt="">
+<span class="sprlbl">in-game<br>100&times;96</span></div>
 <figcaption><b>aliens_g</b>
-<span class="dim">100&times;96</span>
-<span class="meta">6.4 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/aliens_g_parity.png</span></figcaption></figure><figure class="unit" data-w="107" data-h="96">
-<div class="stage"><img src="sprites/aliens_node_parity.png" width="107" height="96" alt="aliens_node"></div>
+<span class="role">ember caste</span>
+<span class="dim">590&times;566 art</span>
+<span class="src">art_probe/contact_v2/alien_g_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/aliens_g_parity.png</span></figcaption></figure><figure class="unit" data-w="690" data-h="618">
+<div class="artwrap"><img class="artimg" src="art/alien_node_full.png" width="690" height="618" alt="aliens_node"></div>
+<div class="spritebox"><img class="spr" src="sprites/aliens_node_parity.png" width="107" height="96" alt="">
+<span class="sprlbl">in-game<br>107&times;96</span></div>
 <figcaption><b>aliens_node</b>
-<span class="dim">107&times;96</span>
-<span class="meta">7.4 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/aliens_node_parity.png</span></figcaption></figure><figure class="unit" data-w="180" data-h="96">
-<div class="stage"><img src="sprites/aliens_r_parity.png" width="180" height="96" alt="aliens_r"></div>
+<span class="role">worker / eco</span>
+<span class="dim">690&times;618 art</span>
+<span class="src">art_probe/contact_v2/alien_node_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/aliens_node_parity.png</span></figcaption></figure><figure class="unit" data-w="1084" data-h="577">
+<div class="artwrap"><img class="artimg" src="art/alien_r_full.png" width="1084" height="577" alt="aliens_r"></div>
+<div class="spritebox"><img class="spr" src="sprites/aliens_r_parity.png" width="180" height="96" alt="">
+<span class="sprlbl">in-game<br>180&times;96</span></div>
 <figcaption><b>aliens_r</b>
-<span class="dim">180&times;96</span>
-<span class="meta">8.0 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/aliens_r_parity.png</span></figcaption></figure><figure class="unit" data-w="100" data-h="96">
-<div class="stage"><img src="sprites/aliens_s_parity.png" width="100" height="96" alt="aliens_s"></div>
+<span class="role">ember caste</span>
+<span class="dim">1084&times;577 art</span>
+<span class="src">art_probe/contact_v2/alien_r_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/aliens_r_parity.png</span></figcaption></figure><figure class="unit" data-w="546" data-h="526">
+<div class="artwrap"><img class="artimg" src="art/alien_s_full.png" width="546" height="526" alt="aliens_s"></div>
+<div class="spritebox"><img class="spr" src="sprites/aliens_s_parity.png" width="100" height="96" alt="">
+<span class="sprlbl">in-game<br>100&times;96</span></div>
 <figcaption><b>aliens_s</b>
-<span class="dim">100&times;96</span>
-<span class="meta">6.3 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/aliens_s_parity.png</span></figcaption></figure><figure class="unit" data-w="148" data-h="96">
-<div class="stage"><img src="sprites/aliens_t_parity.png" width="148" height="96" alt="aliens_t"></div>
+<span class="role">ember caste</span>
+<span class="dim">546&times;526 art</span>
+<span class="src">art_probe/contact_v2/alien_s_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/aliens_s_parity.png</span></figcaption></figure><figure class="unit" data-w="1007" data-h="652">
+<div class="artwrap"><img class="artimg" src="art/alien_t_full.png" width="1007" height="652" alt="aliens_t"></div>
+<div class="spritebox"><img class="spr" src="sprites/aliens_t_parity.png" width="148" height="96" alt="">
+<span class="sprlbl">in-game<br>148&times;96</span></div>
 <figcaption><b>aliens_t</b>
-<span class="dim">148&times;96</span>
-<span class="meta">9.9 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/aliens_t_parity.png</span></figcaption></figure><figure class="unit" data-w="96" data-h="101">
-<div class="stage"><img src="sprites/aliens_u_parity.png" width="96" height="101" alt="aliens_u"></div>
+<span class="role">ember caste</span>
+<span class="dim">1007&times;652 art</span>
+<span class="src">art_probe/contact_v2/alien_t_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/aliens_t_parity.png</span></figcaption></figure><figure class="unit" data-w="726" data-h="761">
+<div class="artwrap"><img class="artimg" src="art/alien_u_full.png" width="726" height="761" alt="aliens_u"></div>
+<div class="spritebox"><img class="spr" src="sprites/aliens_u_parity.png" width="96" height="101" alt="">
+<span class="sprlbl">in-game<br>96&times;101</span></div>
 <figcaption><b>aliens_u</b>
-<span class="dim">96&times;101</span>
-<span class="meta">7.0 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/aliens_u_parity.png</span></figcaption></figure><figure class="unit" data-w="97" data-h="96">
-<div class="stage"><img src="sprites/aliens_w_parity.png" width="97" height="96" alt="aliens_w"></div>
+<span class="role">ember caste</span>
+<span class="dim">726&times;761 art</span>
+<span class="src">art_probe/contact_v2/alien_u_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/aliens_u_parity.png</span></figcaption></figure><figure class="unit" data-w="610" data-h="602">
+<div class="artwrap"><img class="artimg" src="art/alien_w_full.png" width="610" height="602" alt="aliens_w"></div>
+<div class="spritebox"><img class="spr" src="sprites/aliens_w_parity.png" width="97" height="96" alt="">
+<span class="sprlbl">in-game<br>97&times;96</span></div>
 <figcaption><b>aliens_w</b>
-<span class="dim">97&times;96</span>
-<span class="meta">6.3 KB &middot; parity</span>
-<span class="src">art_probe/parity_v2/aliens_w_parity.png</span></figcaption></figure></div></section><section><h2>Structures  (cores + barriers) <span class="cnt">4</span></h2>
-<p class="blurb">Base cores and barriers. Live in-game sprites — base64-embedded via src/structures_data.mjs.</p><div class="rack"><figure class="unit" data-w="92" data-h="44">
-<div class="stage"><img src="sprites/ally_barrier_embed.png" width="92" height="44" alt="ally_barrier"></div>
-<figcaption><b>ally_barrier</b>
-<span class="dim">92&times;44</span>
-<span class="meta">7.7 KB &middot; embed</span>
-<span class="src">art_probe/generated/ally_barrier_embed.png</span></figcaption></figure><figure class="unit" data-w="112" data-h="106">
-<div class="stage"><img src="sprites/ally_core_embed.png" width="112" height="106" alt="ally_core"></div>
-<figcaption><b>ally_core</b>
+<span class="role">ember caste</span>
+<span class="dim">610&times;602 art</span>
+<span class="src">art_probe/contact_v2/alien_w_full.png</span>
+<span class="src">sprite: art_probe/parity_v2/aliens_w_parity.png</span></figcaption></figure></div></section>
+<section><h2>Structures <span class="cnt">4</span></h2>
+<p class="blurb">Base cores and barriers &mdash; shipped from <code>art_probe/generated/*_embed.png</code> via <code>src/structures_data.mjs</code>.</p>
+<div class="rack"><figure class="unit" data-w="112" data-h="106">
+<div class="artwrap"><img class="artimg spr" src="sprites/ally_core_embed.png" width="112" height="106" alt="ally_core"></div>
+<figcaption><b>ally_core</b><span class="role">structure</span>
 <span class="dim">112&times;106</span>
-<span class="meta">13.4 KB &middot; embed</span>
-<span class="src">art_probe/generated/ally_core_embed.png</span></figcaption></figure><figure class="unit" data-w="109" data-h="44">
-<div class="stage"><img src="sprites/enemy_barrier_embed.png" width="109" height="44" alt="enemy_barrier"></div>
-<figcaption><b>enemy_barrier</b>
-<span class="dim">109&times;44</span>
-<span class="meta">9.3 KB &middot; embed</span>
-<span class="src">art_probe/generated/enemy_barrier_embed.png</span></figcaption></figure><figure class="unit" data-w="71" data-h="106">
-<div class="stage"><img src="sprites/enemy_core_embed.png" width="71" height="106" alt="enemy_core"></div>
-<figcaption><b>enemy_core</b>
+<span class="src">art_probe/generated/ally_core_embed.png</span></figcaption></figure><figure class="unit" data-w="92" data-h="44">
+<div class="artwrap"><img class="artimg spr" src="sprites/ally_barrier_embed.png" width="92" height="44" alt="ally_barrier"></div>
+<figcaption><b>ally_barrier</b><span class="role">structure</span>
+<span class="dim">92&times;44</span>
+<span class="src">art_probe/generated/ally_barrier_embed.png</span></figcaption></figure><figure class="unit" data-w="71" data-h="106">
+<div class="artwrap"><img class="artimg spr" src="sprites/enemy_core_embed.png" width="71" height="106" alt="enemy_core"></div>
+<figcaption><b>enemy_core</b><span class="role">structure</span>
 <span class="dim">71&times;106</span>
-<span class="meta">13.5 KB &middot; embed</span>
-<span class="src">art_probe/generated/enemy_core_embed.png</span></figcaption></figure></div></section></main>
-<footer>Part of the asset review tools &middot; <a href="../assets/">housekeeping sheet</a> &middot; <a href="../">the game</a></footer>
+<span class="src">art_probe/generated/enemy_core_embed.png</span></figcaption></figure><figure class="unit" data-w="109" data-h="44">
+<div class="artwrap"><img class="artimg spr" src="sprites/enemy_barrier_embed.png" width="109" height="44" alt="enemy_barrier"></div>
+<figcaption><b>enemy_barrier</b><span class="role">structure</span>
+<span class="dim">109&times;44</span>
+<span class="src">art_probe/generated/enemy_barrier_embed.png</span></figcaption></figure></div></section>
+</main>
+<footer><a href="../assets/">housekeeping sheet</a> &middot; <a href="../">the game</a></footer>
 <script>
-let z=1;const ZS=[1,2,4,8];
-function apply(){document.querySelectorAll('.unit').forEach(u=>{const img=u.querySelector('img');
-  img.style.width=(+u.dataset.w*z)+'px';img.style.height=(+u.dataset.h*z)+'px';});
-  document.getElementById('zt').textContent='zoom '+z+'x';}
+let z=1;const ZS=[1,2,3,4];
+function apply(){document.querySelectorAll('.unit').forEach(u=>{const i=u.querySelector('.artimg');
+  if(!i)return;const w=+u.dataset.w||0,h=+u.dataset.h||0;if(!w)return;
+  i.style.width=(w*z)+'px';i.style.height=(h*z)+'px';});
+  document.getElementById('zt').textContent='art zoom '+z+'x';}
 document.getElementById('zoom').onclick=()=>{z=ZS[(ZS.indexOf(z)+1)%ZS.length];apply();};
 apply();</script></body></html>
