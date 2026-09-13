@@ -2,312 +2,286 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>Sprite Portfolio — review</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>DirectStrike — LIVE sprite roster (20)</title>
 <style>
-  :root { --bg:#0d1117; --panel:#161b22; --line:#30363d; --txt:#e6edf3; --dim:#8b949e; --acc:#58a6ff; --hot:#f78166; }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--txt); font:15px/1.45 -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; padding:18px 16px 96px; }
-  header { max-width:1200px; margin:0 auto 18px; }
-  h1 { font-size:22px; margin:0 0 6px; }
-  .sub { color:var(--dim); font-size:13.5px; }
-  .sub b { color:var(--acc); }
-  h2 { font-size:17px; margin:26px 0 10px; padding-bottom:7px; border-bottom:1px solid var(--line); }
-  h3 { font-size:14px; margin:16px 0 9px; color:var(--dim); text-transform:uppercase; letter-spacing:.06em; }
-  .count { background:var(--line); color:var(--dim); border-radius:999px; padding:1px 8px; font-size:12px; font-weight:600; margin-left:6px; }
-  section { max-width:1200px; margin:0 auto; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:10px; }
-  .card { position:relative; display:flex; flex-direction:column; align-items:center; gap:7px;
-          background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 9px; cursor:pointer; }
-  .card:hover { border-color:var(--acc); }
-  .card:has(.pick:checked) { border-color:var(--hot); box-shadow:0 0 0 1px var(--hot) inset; }
-  .card .pick { position:absolute; top:8px; left:8px; width:18px; height:18px; accent-color:var(--hot); }
-  .thumb { width:96px; height:96px; display:grid; place-items:center; border-radius:8px;
-           background:
-             linear-gradient(45deg,#222 25%,transparent 25%,transparent 75%,#222 75%) 0 0/16px 16px,
-             linear-gradient(45deg,#222 25%,#1a1a1a 25%,#1a1a1a 75%,#222 75%) 8px 8px/16px 16px; }
-  .thumb img { width:90px; height:90px; object-fit:contain; image-rendering:pixelated; }
-  .meta { text-align:center; width:100%; }
-  .fname { display:block; font-size:12.5px; font-weight:600; word-break:break-word; }
-  .path { display:block; font-size:10.5px; color:var(--dim); word-break:break-all; margin-top:3px; }
-  /* sticky action bar */
-  .bar { position:fixed; left:0; right:0; bottom:0; background:#161b22f2; border-top:1px solid var(--line);
-         padding:11px 16px; display:flex; gap:12px; align-items:center; justify-content:center; backdrop-filter:blur(7px); flex-wrap:wrap; }
-  .bar .n { font-weight:700; }
-  .bar button { background:var(--acc); color:#04121f; border:0; border-radius:8px; padding:9px 16px; font-weight:700; cursor:pointer; font-size:14px; }
-  .bar button.ghost { background:transparent; color:var(--dim); border:1px solid var(--line); }
-  .bar textarea { position:fixed; left:-9999px; top:-9999px; }
+  :root{--bg:#0b0f1a;--panel:#141b2b;--line:#26304a;--ink:#e7ecf7;--dim:#8b97b3;--acc:#ffb454;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:14px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  header{position:sticky;top:0;z-index:5;background:rgba(11,15,26,.94);
+          backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:12px 16px}
+  h1{margin:0 0 4px;font-size:16px;letter-spacing:.02em}
+  .sub{color:var(--dim);font-size:12px}
+  .bar{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  button{font:inherit;background:var(--acc);color:#1a1206;border:0;border-radius:6px;
+          padding:7px 14px;font-weight:700;cursor:pointer}
+  button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:400}
+  #count{color:var(--acc);font-weight:700}
+  main{padding:16px}
+  h2.grp{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);
+          margin:22px 0 10px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  h2.grp:first-child{margin-top:4px}
+  .cnt{color:var(--acc)}
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+  .card{position:relative;display:block;background:var(--panel);border:1px solid var(--line);
+         border-radius:8px;padding:10px;cursor:pointer;transition:border-color .12s}
+  .card:hover{border-color:var(--acc)}
+  .card input{position:absolute;top:8px;left:8px;z-index:2;width:16px;height:16px;accent-color:var(--acc)}
+  .card:has(input:checked){border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
+  .thumb{display:block;height:120px;border-radius:6px;
+     background:
+       linear-gradient(45deg,#2a2a2a 25%,transparent 25%,transparent 75%,#2a2a2a 75%),
+       linear-gradient(45deg,#2a2a2a 25%,#1e1e1e 25%,#1e1e1e 75%,#2a2a2a 75%);
+     background-size:16px 16px;background-position:0 0,8px 8px;
+     display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .thumb img{max-width:88%;max-height:88%;image-rendering:pixelated;
+              transform:scale(1.6)}
+  .meta{display:block;margin-top:8px}
+  .name{display:block;font-weight:700;font-size:13px}
+  .path{display:block;color:var(--dim);font-size:10px;word-break:break-all;margin-top:2px}
+  .badge{position:absolute;top:8px;right:8px;font-size:9px;letter-spacing:.06em;
+          color:#0b1a0f;background:#7ee08a;border-radius:4px;padding:2px 5px;font-weight:700}
+  #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+          background:var(--acc);color:#1a1206;padding:8px 16px;border-radius:6px;
+          font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s}
+  #toast.on{opacity:1}
+  textarea{position:absolute;left:-9999px}
 </style>
 </head>
 <body>
 <header>
-  <h1>Sprite Portfolio — review</h1>
-  <p class="sub">Tap the sprites you want <b>gone</b> (or just note ones to <b>edit</b>), then hit <b>Copy paths</b> and paste the list back to Michael. Nothing is deleted from this page — it's a review sheet. 24 sprites total.</p>
+  <h1>DirectStrike — LIVE sprite roster</h1>
+  <div class="sub">20 sprites actually embedded in the shipped bundle &middot; units from
+    <code>art_probe/parity_v2/</code>, structures from <code>art_probe/generated/</code> &middot;
+    the old <code>assets/sprites/</code> set had <b>0 referrers</b> and is retired.</div>
+  <div class="bar">
+    <button id="copy">Copy paths</button>
+    <button class="ghost" id="all">Select all</button>
+    <button class="ghost" id="none">Clear</button>
+    <span><span id="count">0</span> selected</span>
+  </div>
 </header>
-  <section>
-    <h2>rogueds <span class="count">20</span></h2>
-    <div class="folder">
-      <h3>aliens <span class="count">8</span></h3>
-      <div class="grid">
-      <label class="card" data-rel="rogueds/assets/sprites/aliens/alien_b_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/aliens/alien_b_30px.png" alt="alien_b_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_b_30px.png</span>
-          <code class="path">rogueds/assets/sprites/aliens/alien_b_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/aliens/alien_g_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/aliens/alien_g_30px.png" alt="alien_g_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_g_30px.png</span>
-          <code class="path">rogueds/assets/sprites/aliens/alien_g_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/aliens/alien_node_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/aliens/alien_node_30px.png" alt="alien_node_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_node_30px.png</span>
-          <code class="path">rogueds/assets/sprites/aliens/alien_node_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/aliens/alien_r_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/aliens/alien_r_30px.png" alt="alien_r_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_r_30px.png</span>
-          <code class="path">rogueds/assets/sprites/aliens/alien_r_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/aliens/alien_s_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/aliens/alien_s_30px.png" alt="alien_s_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_s_30px.png</span>
-          <code class="path">rogueds/assets/sprites/aliens/alien_s_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/aliens/alien_t_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/aliens/alien_t_30px.png" alt="alien_t_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_t_30px.png</span>
-          <code class="path">rogueds/assets/sprites/aliens/alien_t_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/aliens/alien_u_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/aliens/alien_u_30px.png" alt="alien_u_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_u_30px.png</span>
-          <code class="path">rogueds/assets/sprites/aliens/alien_u_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/aliens/alien_w_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/aliens/alien_w_30px.png" alt="alien_w_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_w_30px.png</span>
-          <code class="path">rogueds/assets/sprites/aliens/alien_w_30px.png</code>
-        </span>
-      </label>
-      </div>
-    </div>
-    <div class="folder">
-      <h3>allies <span class="count">2</span></h3>
-      <div class="grid">
-      <label class="card" data-rel="rogueds/assets/sprites/allies/ally_barrier_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/allies/ally_barrier_30px.png" alt="ally_barrier_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">ally_barrier_30px.png</span>
-          <code class="path">rogueds/assets/sprites/allies/ally_barrier_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/allies/ally_core_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/allies/ally_core_30px.png" alt="ally_core_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">ally_core_30px.png</span>
-          <code class="path">rogueds/assets/sprites/allies/ally_core_30px.png</code>
-        </span>
-      </label>
-      </div>
-    </div>
-    <div class="folder">
-      <h3>enemies <span class="count">2</span></h3>
-      <div class="grid">
-      <label class="card" data-rel="rogueds/assets/sprites/enemies/enemy_barrier_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/enemies/enemy_barrier_30px.png" alt="enemy_barrier_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">enemy_barrier_30px.png</span>
-          <code class="path">rogueds/assets/sprites/enemies/enemy_barrier_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/enemies/enemy_core_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/enemies/enemy_core_30px.png" alt="enemy_core_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">enemy_core_30px.png</span>
-          <code class="path">rogueds/assets/sprites/enemies/enemy_core_30px.png</code>
-        </span>
-      </label>
-      </div>
-    </div>
-    <div class="folder">
-      <h3>rebels <span class="count">8</span></h3>
-      <div class="grid">
-      <label class="card" data-rel="rogueds/assets/sprites/rebels/rebel_b_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/rebels/rebel_b_30px.png" alt="rebel_b_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_b_30px.png</span>
-          <code class="path">rogueds/assets/sprites/rebels/rebel_b_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/rebels/rebel_g_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/rebels/rebel_g_30px.png" alt="rebel_g_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_g_30px.png</span>
-          <code class="path">rogueds/assets/sprites/rebels/rebel_g_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/rebels/rebel_node_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/rebels/rebel_node_30px.png" alt="rebel_node_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_node_30px.png</span>
-          <code class="path">rogueds/assets/sprites/rebels/rebel_node_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/rebels/rebel_r_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/rebels/rebel_r_30px.png" alt="rebel_r_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_r_30px.png</span>
-          <code class="path">rogueds/assets/sprites/rebels/rebel_r_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/rebels/rebel_s_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/rebels/rebel_s_30px.png" alt="rebel_s_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_s_30px.png</span>
-          <code class="path">rogueds/assets/sprites/rebels/rebel_s_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/rebels/rebel_t_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/rebels/rebel_t_30px.png" alt="rebel_t_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_t_30px.png</span>
-          <code class="path">rogueds/assets/sprites/rebels/rebel_t_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/rebels/rebel_u_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/rebels/rebel_u_30px.png" alt="rebel_u_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_u_30px.png</span>
-          <code class="path">rogueds/assets/sprites/rebels/rebel_u_30px.png</code>
-        </span>
-      </label>
-      <label class="card" data-rel="rogueds/assets/sprites/rebels/rebel_w_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/rogueds/rebels/rebel_w_30px.png" alt="rebel_w_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_w_30px.png</span>
-          <code class="path">rogueds/assets/sprites/rebels/rebel_w_30px.png</code>
-        </span>
-      </label>
-      </div>
-    </div>
-  </section>
-  <section>
-    <h2>hermes-godot <span class="count">2</span></h2>
-    <div class="folder">
-      <h3>aliens <span class="count">1</span></h3>
-      <div class="grid">
-      <label class="card" data-rel="hermes-godot/assets/sprites/aliens/alien_b_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/hermes-godot/aliens/alien_b_30px.png" alt="alien_b_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_b_30px.png</span>
-          <code class="path">hermes-godot/assets/sprites/aliens/alien_b_30px.png</code>
-        </span>
-      </label>
-      </div>
-    </div>
-    <div class="folder">
-      <h3>rebels <span class="count">1</span></h3>
-      <div class="grid">
-      <label class="card" data-rel="hermes-godot/assets/sprites/rebels/rebel_g_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/hermes-godot/rebels/rebel_g_30px.png" alt="rebel_g_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_g_30px.png</span>
-          <code class="path">hermes-godot/assets/sprites/rebels/rebel_g_30px.png</code>
-        </span>
-      </label>
-      </div>
-    </div>
-  </section>
-  <section>
-    <h2>hermes-godot-v2 <span class="count">2</span></h2>
-    <div class="folder">
-      <h3>aliens <span class="count">1</span></h3>
-      <div class="grid">
-      <label class="card" data-rel="hermes-godot-v2/assets/sprites/aliens/alien_b_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/hermes-godot-v2/aliens/alien_b_30px.png" alt="alien_b_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">alien_b_30px.png</span>
-          <code class="path">hermes-godot-v2/assets/sprites/aliens/alien_b_30px.png</code>
-        </span>
-      </label>
-      </div>
-    </div>
-    <div class="folder">
-      <h3>rebels <span class="count">1</span></h3>
-      <div class="grid">
-      <label class="card" data-rel="hermes-godot-v2/assets/sprites/rebels/rebel_g_30px.png">
-        <input type="checkbox" class="pick">
-        <span class="thumb"><img src="img/hermes-godot-v2/rebels/rebel_g_30px.png" alt="rebel_g_30px.png" loading="lazy"></span>
-        <span class="meta">
-          <span class="fname">rebel_g_30px.png</span>
-          <code class="path">hermes-godot-v2/assets/sprites/rebels/rebel_g_30px.png</code>
-        </span>
-      </label>
-      </div>
-    </div>
-  </section>
-<div class="bar">
-  <span class="n"><span id="n">0</span> selected</span>
-  <button id="copy">Copy paths</button>
-  <button class="ghost" id="clear">Clear</button>
-  <textarea id="sink"></textarea>
+<main>
+<h2 class="grp">Alien units <span class="cnt">8</span></h2>
+<div class="grid">
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/aliens_b_parity.png">
+    <span class="thumb"><img src="img/aliens_b.png" alt="aliens_b" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">aliens_b</span>
+      <span class="path">rogueds/art_probe/parity_v2/aliens_b_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/aliens_g_parity.png">
+    <span class="thumb"><img src="img/aliens_g.png" alt="aliens_g" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">aliens_g</span>
+      <span class="path">rogueds/art_probe/parity_v2/aliens_g_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/aliens_node_parity.png">
+    <span class="thumb"><img src="img/aliens_node.png" alt="aliens_node" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">aliens_node</span>
+      <span class="path">rogueds/art_probe/parity_v2/aliens_node_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/aliens_r_parity.png">
+    <span class="thumb"><img src="img/aliens_r.png" alt="aliens_r" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">aliens_r</span>
+      <span class="path">rogueds/art_probe/parity_v2/aliens_r_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/aliens_s_parity.png">
+    <span class="thumb"><img src="img/aliens_s.png" alt="aliens_s" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">aliens_s</span>
+      <span class="path">rogueds/art_probe/parity_v2/aliens_s_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/aliens_t_parity.png">
+    <span class="thumb"><img src="img/aliens_t.png" alt="aliens_t" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">aliens_t</span>
+      <span class="path">rogueds/art_probe/parity_v2/aliens_t_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/aliens_u_parity.png">
+    <span class="thumb"><img src="img/aliens_u.png" alt="aliens_u" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">aliens_u</span>
+      <span class="path">rogueds/art_probe/parity_v2/aliens_u_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/aliens_w_parity.png">
+    <span class="thumb"><img src="img/aliens_w.png" alt="aliens_w" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">aliens_w</span>
+      <span class="path">rogueds/art_probe/parity_v2/aliens_w_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
 </div>
+<h2 class="grp">Rebel units <span class="cnt">8</span></h2>
+<div class="grid">
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/rebels_b_parity.png">
+    <span class="thumb"><img src="img/rebels_b.png" alt="rebels_b" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">rebels_b</span>
+      <span class="path">rogueds/art_probe/parity_v2/rebels_b_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/rebels_g_parity.png">
+    <span class="thumb"><img src="img/rebels_g.png" alt="rebels_g" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">rebels_g</span>
+      <span class="path">rogueds/art_probe/parity_v2/rebels_g_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/rebels_node_parity.png">
+    <span class="thumb"><img src="img/rebels_node.png" alt="rebels_node" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">rebels_node</span>
+      <span class="path">rogueds/art_probe/parity_v2/rebels_node_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/rebels_r_parity.png">
+    <span class="thumb"><img src="img/rebels_r.png" alt="rebels_r" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">rebels_r</span>
+      <span class="path">rogueds/art_probe/parity_v2/rebels_r_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/rebels_s_parity.png">
+    <span class="thumb"><img src="img/rebels_s.png" alt="rebels_s" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">rebels_s</span>
+      <span class="path">rogueds/art_probe/parity_v2/rebels_s_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/rebels_t_parity.png">
+    <span class="thumb"><img src="img/rebels_t.png" alt="rebels_t" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">rebels_t</span>
+      <span class="path">rogueds/art_probe/parity_v2/rebels_t_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/rebels_u_parity.png">
+    <span class="thumb"><img src="img/rebels_u.png" alt="rebels_u" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">rebels_u</span>
+      <span class="path">rogueds/art_probe/parity_v2/rebels_u_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/parity_v2/rebels_w_parity.png">
+    <span class="thumb"><img src="img/rebels_w.png" alt="rebels_w" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">rebels_w</span>
+      <span class="path">rogueds/art_probe/parity_v2/rebels_w_parity.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+</div>
+<h2 class="grp">Structures <span class="cnt">4</span></h2>
+<div class="grid">
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/generated/ally_barrier_embed.png">
+    <span class="thumb"><img src="img/ally_barrier.png" alt="ally_barrier" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">ally_barrier</span>
+      <span class="path">rogueds/art_probe/generated/ally_barrier_embed.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/generated/ally_core_embed.png">
+    <span class="thumb"><img src="img/ally_core.png" alt="ally_core" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">ally_core</span>
+      <span class="path">rogueds/art_probe/generated/ally_core_embed.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/generated/enemy_barrier_embed.png">
+    <span class="thumb"><img src="img/enemy_barrier.png" alt="enemy_barrier" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">enemy_barrier</span>
+      <span class="path">rogueds/art_probe/generated/enemy_barrier_embed.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+  <label class="card">
+    <input type="checkbox" class="pick" data-path="rogueds/art_probe/generated/enemy_core_embed.png">
+    <span class="thumb"><img src="img/enemy_core.png" alt="enemy_core" loading="lazy"></span>
+    <span class="meta">
+      <span class="name">enemy_core</span>
+      <span class="path">rogueds/art_probe/generated/enemy_core_embed.png</span>
+    </span>
+    <span class="badge">IN BUNDLE</span>
+  </label>
+</div>
+</main>
+<textarea id="sink" readonly></textarea>
+<div id="toast">Copied</div>
 <script>
-  const cards = [...document.querySelectorAll('.card')];
-  const nEl = document.getElementById('n');
-  function tick() { nEl.textContent = cards.filter(c => c.querySelector('.pick').checked).length; }
-  cards.forEach(c => c.querySelector('.pick').addEventListener('change', tick));
-  document.getElementById('clear').onclick = () => { cards.forEach(c => c.querySelector('.pick').checked = false); tick(); };
-  document.getElementById('copy').onclick = async () => {
-    const picked = cards.filter(c => c.querySelector('.pick').checked).map(c => c.dataset.rel);
-    const text = picked.length ? picked.join('\n') : '(nothing selected)';
-    const sink = document.getElementById('sink'); sink.value = text;
-    try { await navigator.clipboard.writeText(text); } catch (e) { sink.select(); document.execCommand('copy'); }
-    const b = document.getElementById('copy'); const old = b.textContent;
-    b.textContent = picked.length ? 'Copied ' + picked.length : 'Nothing picked';
-    setTimeout(() => b.textContent = old, 1400);
+  const boxes = () => [...document.querySelectorAll('.pick')];
+  const countEl = document.getElementById('count');
+  function refresh(){ countEl.textContent = boxes().filter(b=>b.checked).length; }
+  document.addEventListener('change', refresh);
+  document.getElementById('all').onclick = () => { boxes().forEach(b=>b.checked=true); refresh(); };
+  document.getElementById('none').onclick = () => { boxes().forEach(b=>b.checked=false); refresh(); };
+  document.getElementById('copy').onclick = () => {
+    const paths = boxes().filter(b=>b.checked).map(b=>b.dataset.path);
+    if (!paths.length) return;
+    const text = paths.join('\n');
+    const done = () => {
+      const t = document.getElementById('toast');
+      t.textContent = 'Copied ' + paths.length + ' path' + (paths.length>1?'s':'');
+      t.classList.add('on'); setTimeout(()=>t.classList.remove('on'), 1400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => fallback(text));
+    } else fallback(text);
+    function fallback(txt){
+      const s = document.getElementById('sink');
+      s.value = txt; s.select();
+      try { document.execCommand('copy'); done(); } catch(e){ s.style.left='12px'; s.style.bottom='12px'; }
+    }
   };
-  tick();
+  refresh();
 </script>
 </body>
 </html>
