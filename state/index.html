@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DIRECT STRIKE — State of the Game vs Style Guide</title>
+<style>
+  :root{ --bg:#0B0B2E; --card:#23234F; --txt:#FFFFFF; --sub:#A0EFFF; --gold:#FFD324; --teal:#1CC7C7;
+         --red:#FF6B5E; --green:#4BE38A; --amber:#FFB020;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:radial-gradient(ellipse at top,#1b1b4d 0%,var(--bg) 60%);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:28px 20px 70px;}
+  header{max-width:1500px;margin:0 auto 8px;}
+  h1{font-size:1.75rem;letter-spacing:.5px;}
+  h1 em{color:var(--gold);font-style:normal;}
+  .sub{color:var(--sub);font-size:.93rem;margin-top:6px;max-width:95ch;line-height:1.45;}
+  .stamp{display:inline-block;margin-top:12px;font-size:.75rem;color:#05051A;background:var(--teal);
+    border-radius:20px;padding:3px 10px;font-weight:700;}
+  h2{max-width:1500px;margin:34px auto 4px;font-size:1.15rem;letter-spacing:.4px;color:#fff;}
+  h2 .hint{color:#9a9ac0;font-weight:400;font-size:.82rem;margin-left:8px;}
+  .legend{max-width:1500px;margin:14px auto 0;display:flex;gap:10px;flex-wrap:wrap;font-size:.8rem;}
+  .legend span{padding:3px 10px;border-radius:20px;font-weight:700;color:#05051A;}
+  .grid{max-width:1500px;margin:16px auto 0;display:grid;gap:20px;}
+  .card{background:var(--card);border:1px solid rgba(28,199,199,.45);border-radius:12px;overflow:hidden;
+    box-shadow:0 8px 30px rgba(0,0,0,.45);}
+  .card .head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+    padding:12px 16px;border-bottom:1px solid rgba(28,199,199,.25);}
+  .card .name{font-weight:700;font-size:1.06rem;}
+  .badge{font-size:.72rem;border-radius:20px;padding:3px 10px;font-weight:800;white-space:nowrap;color:#05051A;}
+  .built{background:var(--green);} .part{background:var(--amber);} .pend{background:var(--gold);} .diff{background:var(--red);}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(28,199,199,.25);}
+  @media (max-width:820px){ .compare{grid-template-columns:1fr;} }
+  .pane{background:#000;display:flex;flex-direction:column;}
+  .pane .label{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#8f8fb8;
+    padding:7px 12px;background:#161636;}
+  .pane .label b{color:var(--sub);font-weight:700;}
+  .pane img{width:100%;height:100%;object-fit:contain;display:block;background:#000;}
+  .pane .empty{padding:38px 20px;color:#9a9ac0;font-size:.9rem;text-align:center;line-height:1.5;
+    background:repeating-linear-gradient(45deg,#101024,#101024 12px,#0d0d1e 12px,#0d0d1e 24px);}
+  .body{padding:13px 16px 16px;}
+  .body p{color:#C7C7E0;font-size:.87rem;line-height:1.45;margin-bottom:8px;}
+  ul.diffs{margin:4px 0 0 18px;}
+  ul.diffs li{color:#C7C7E0;font-size:.85rem;line-height:1.5;margin-bottom:3px;}
+  ul.diffs li.done{color:var(--green);}
+  .tag{font-size:.7rem;font-weight:700;color:#05051A;border-radius:6px;padding:1px 6px;margin-right:6px;}
+  .tag.do{background:var(--green);} .tag.no{background:var(--amber);}
+  a.raw{color:var(--sub);font-size:.78rem;text-decoration:none;border-bottom:1px dotted rgba(160,239,255,.5);}
+  a.raw:hover{color:#fff;}
+  .note{max-width:1500px;margin:16px auto 0;background:#1a1a3e;border-left:3px solid var(--amber);
+    border-radius:8px;padding:12px 16px;color:#D8D8F0;font-size:.85rem;line-height:1.5;}
+  .note b{color:#fff;}
+  footer{max-width:1500px;margin:40px auto 0;color:#7a7aa0;font-size:.78rem;line-height:1.5;}
+  code{background:#101024;border-radius:4px;padding:1px 5px;color:#A0EFFF;font-size:.85em;}
+</style>
+</head>
+<body>
+  <header>
+    <h1>DIRECT STRIKE — <em>State of the Game</em> vs Style Guide</h1>
+    <div class="sub">Every locked screen board from the style bible, next to what the game <em>actually renders today</em>.
+      Current-state shots are captured from <code>hermes-godot</code> at desktop width (1280&times;720).
+      Screens that do not exist in the playable build yet are marked <b>NOT BUILT</b> — a board with no live page is expected, not a bug.</div>
+    <div class="stamp">Captured 2026-09-13 · desktop-only scope</div>
+  </header>
+
+  <div class="legend">
+    <span class="built">BUILT — matches board</span>
+    <span class="part">BUILT — differs from board</span>
+    <span class="pend">NOT BUILT</span>
+  </div>
+
+  <div class="note">
+    <b>Live-site note:</b> the public <code>/eden/</code> build is <b>one build behind</b> local —
+    public <code>index.pck</code> = <code>051cc475…</code>, local = <code>8794bdb7…</code>.
+    The title-border + backdrop pass below is <b>not yet deployed</b>. Menu shot is from local.
+  </div>
+
+  <h2>Main Menu <span class="hint">screenshot vs board — the one screen that is fully built</span></h2>
+  <div class="grid">
+    <div class="card">
+      <div class="head"><div class="name">Menu / Start screen</div><span class="badge part">BUILT · DIFFERS</span></div>
+      <div class="compare">
+        <div class="pane"><div class="label"><b>CURRENT</b> — live build (local)</div>
+          <img src="current_menu.jpg" alt="Current main menu build"></div>
+        <div class="pane"><div class="label"><b>STYLE GUIDE</b> — menu-board.jpg</div>
+          <img src="../boards/menu-board.jpg" alt="Menu style board"></div>
+      </div>
+      <div class="body">
+        <p>Palette, typography, frame geometry, title and button set are landed and measured. The remaining gap is the <b>flanking character illustration</b> and the board's extra chrome.</p>
+        <ul class="diffs">
+          <li class="done"><span class="tag do">DONE</span> Return-to-Eden title, gradient fill, 3&times; directional border, stencil cuts</li>
+          <li class="done"><span class="tag do">DONE</span> Lowercase tagline, Saira Condensed typography, 370&times;80 / 370&times;60 buttons, 118&times;38 difficulty chips</li>
+          <li class="done"><span class="tag do">DONE</span> Star field backdrop, outer + inner double-line frames</li>
+          <li><span class="tag no">TODO</span> Board flanks the panel with marine/alien key art — current build has none</li>
+          <li><span class="tag no">TODO</span> Board shows top/bottom HUD strips (currency, shields) — absent</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2>Battlefield / In-game <span class="hint">skeleton only — the largest remaining gap</span></h2>
+  <div class="grid">
+    <div class="card">
+      <div class="head"><div class="name">Battlefield frame</div><span class="badge diff">BUILT · DIFFERS</span></div>
+      <div class="compare">
+        <div class="pane"><div class="label"><b>CURRENT</b> — live build (local)</div>
+          <img src="current_game.jpg" alt="Current battlefield frame"></div>
+        <div class="pane"><div class="label"><b>STYLE GUIDE</b> — field-liveframe.jpg</div>
+          <img src="../boards/field-liveframe.jpg" alt="Battlefield style board"></div>
+      </div>
+      <div class="body">
+        <p>A functional tech-demo: sprites spawn and fly, layered correctly. It is <b>not</b> the painted battlefield from the bible — no sky, no ground, no cores, no HUD.</p>
+        <ul class="diffs">
+          <li class="done"><span class="tag do">DONE</span> Sprite spawn + z-order layering verified</li>
+          <li><span class="tag no">TODO</span> Battlefield backdrop (sky + ground tiers) not implemented</li>
+          <li><span class="tag no">TODO</span> Base/core structures, resource nodes, top HUD bar</li>
+          <li><span class="tag no">TODO</span> Placeholder HUD is a raw <code>Spawn sprite</code> / <code>Menu</code> button pair</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2>Screens with a locked board but no playable page yet</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="head"><div class="name">Shop / Unit-card panel</div><span class="badge pend">NOT BUILT</span></div>
+      <div class="compare">
+        <div class="pane"><div class="label"><b>CURRENT</b> — live build</div>
+          <div class="empty">No playable page.<br>Screen does not exist in the build yet.</div></div>
+        <div class="pane"><div class="label"><b>STYLE GUIDE</b> — shop-concept.jpg</div>
+          <img src="../boards/shop-concept.jpg" alt="Shop style board"></div>
+      </div>
+      <div class="body"><p>Canonical card &amp; panel frame — the color guide that surfaces dark→light→dark. Locked.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="head"><div class="name">Map / Route-select</div><span class="badge pend">NOT BUILT</span></div>
+      <div class="compare">
+        <div class="pane"><div class="label"><b>CURRENT</b> — live build</div>
+          <div class="empty">No playable page.<br>Screen does not exist in the build yet.</div></div>
+        <div class="pane"><div class="label"><b>STYLE GUIDE</b> — map-route-ftl.jpg</div>
+          <img src="../boards/map-route-ftl.jpg" alt="Map style board"></div>
+      </div>
+      <div class="body"><p>Mesh tree + creeping fog + varied events. Bible note: live build must be <b>sparser</b> than the board.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="head"><div class="name">Deck / Relic collection</div><span class="badge pend">NOT BUILT</span></div>
+      <div class="compare">
+        <div class="pane"><div class="label"><b>CURRENT</b> — live build</div>
+          <div class="empty">No playable page.<br>Screen does not exist in the build yet.</div></div>
+        <div class="pane"><div class="label"><b>STYLE GUIDE</b> — deck-board.jpg</div>
+          <img src="../boards/deck-board.jpg" alt="Deck style board"></div>
+      </div>
+      <div class="body"><p>Roster grid + owned relics (real names) + <code>?</code>-locked pool slot. Locked.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="head"><div class="name">Reward — Pick a Reward</div><span class="badge pend">NOT BUILT</span></div>
+      <div class="compare">
+        <div class="pane"><div class="label"><b>CURRENT</b> — live build</div>
+          <div class="empty">No playable page.<br>Screen does not exist in the build yet.</div></div>
+        <div class="pane"><div class="label"><b>STYLE GUIDE</b> — reward-board-v2.jpg</div>
+          <img src="../boards/reward-board-v2.jpg" alt="Reward style board"></div>
+      </div>
+      <div class="body"><p>Shop-skeleton clone: single panel, header + currency pill, row of role-diff cards. Locked.</p></div>
+    </div>
+
+    <div class="card">
+      <div class="head"><div class="name">End / Victory screen</div><span class="badge pend">NOT BUILT</span></div>
+      <div class="compare">
+        <div class="pane"><div class="label"><b>CURRENT</b> — live build</div>
+          <div class="empty">No playable page.<br>Screen does not exist in the build yet.</div></div>
+        <div class="pane"><div class="label"><b>STYLE GUIDE</b> — end-board.jpg</div>
+          <img src="../boards/end-board.jpg" alt="End screen style board"></div>
+      </div>
+      <div class="body"><p>Victory / run-end summary. Bible status: <b>END screen still PENDING</b> at board level too.</p></div>
+    </div>
+  </div>
+
+  <h2>Other artset boards <span class="hint">no screen target — direction reference</span></h2>
+  <div class="grid">
+    <div class="card">
+      <div class="head"><div class="name">Field — warm comic variant</div><span class="badge pend">REFERENCE</span></div>
+      <div class="compare">
+        <div class="pane"><div class="label"><b>NOTE</b></div>
+          <div class="empty">Direction reference only — not a screen to match 1:1.</div></div>
+        <div class="pane"><div class="label"><b>STYLE GUIDE</b> — field-warmcomic.jpg</div>
+          <img src="../boards/field-warmcomic.jpg" alt="Warm comic field board"></div>
+      </div>
+      <div class="body"><p>Alternate battlefield direction kept for reference. Not the current locked look.</p></div>
+    </div>
+  </div>
+
+  <footer>
+    Sources — current state: <code>hermes-godot</code> offscreen renders (menu_v16, game_play).
+    Style guide: <code>boards/</code> on this site + <code>docs/STYLE-BIBLE.md</code>.
+    Frozen captures, not live feeds; re-render after each change pass.
+    &nbsp;·&nbsp; <a class="raw" href="../boards/" target="_blank" rel="noopener">open the style-board gallery ↗</a>
+    &nbsp;·&nbsp; <a class="raw" href="../eden/" target="_blank" rel="noopener">open the live game build ↗</a>
+  </footer>
+</body>
+</html>
