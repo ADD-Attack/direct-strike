@@ -1,0 +1,139 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Return to Eden — Art Briefs A1–A6 (operator review)</title><style>
+:root{--ink:#1a1a1a;--muted:#5b6470;--line:#d8dee6;--accent:#1f4e79;--code-bg:#f4f6f8}
+*{box-sizing:border-box}
+body{margin:0;background:#eef1f5;color:var(--ink);
+ font-family:"Segoe UI",-apple-system,Roboto,Helvetica,Arial,sans-serif;
+ font-size:11.5pt;line-height:1.55}
+article{background:#fff;max-width:52rem;margin:0 auto;padding:3rem 3.25rem 4rem}
+h1{font-size:1.7rem;line-height:1.25;margin:0 0 .5rem;color:var(--accent);
+ border-bottom:3px solid var(--accent);padding-bottom:.5rem}
+h2{font-size:1.22rem;margin:2.1rem 0 .7rem;color:var(--accent);
+ border-bottom:1px solid var(--line);padding-bottom:.28rem}
+h3{font-size:1.05rem;margin:1.5rem 0 .5rem}
+h4{font-size:.95rem;margin:1.2rem 0 .4rem;color:var(--muted);
+ text-transform:uppercase;letter-spacing:.05em}
+p{margin:.6rem 0}
+ul,ol{margin:.6rem 0 .6rem 1.35rem;padding:0}
+li{margin:.3rem 0}
+code{font-family:"Cascadia Mono",Consolas,"Courier New",monospace;font-size:.86em;
+ background:var(--code-bg);padding:.1rem .32rem;border-radius:3px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:5px;
+ padding:.8rem 1rem;overflow-wrap:anywhere;white-space:pre-wrap}
+pre code{background:none;padding:0;font-size:.84em}
+table{border-collapse:collapse;width:100%;margin:.9rem 0;font-size:.9em}
+th,td{border:1px solid var(--line);padding:.45rem .62rem;text-align:left;vertical-align:top}
+th{background:#eaf0f7;font-weight:600}
+tr:nth-child(even) td{background:#fafbfc}
+blockquote{margin:.9rem 0;padding:.6rem 1rem;border-left:4px solid var(--accent);
+ background:#f6f9fc;color:#26313d}
+blockquote p{margin:.25rem 0}
+hr{border:none;border-top:1px solid var(--line);margin:2rem 0}
+a{color:var(--accent)}
+.meta{background:#f6f9fc;border:1px solid var(--line);border-radius:6px;
+ padding:.9rem 1.1rem;margin:0 0 1.8rem;font-size:.92em}
+.meta div{margin:.22rem 0}
+.meta b{color:var(--accent)}
+@media print{
+ body{background:#fff;font-size:10pt}
+ article{max-width:none;margin:0;padding:0}
+ h2,h3{page-break-after:avoid}
+ table,pre,blockquote,.meta{page-break-inside:avoid}
+ @page{margin:16mm 15mm}
+}
+</style></head><body><article><div class="meta"><div><b>id</b> — 2026-09-17-return-to-eden-art-briefs</div><div><b>from</b> — cadre-pd (Farnsworth — Project Designer)</div><div><b>to</b> — operator (Brick); PM handoff held</div><div><b>project</b> — Return to Eden (return_to_eden)</div><div><b>version</b> — v1 / REV 6 art briefs</div><div><b>created</b> — 2026-09-17</div><div><b>status</b> — ART BRIEFS — awaiting Brick approval before implementation</div><div><b>source_design</b> — /home/openclaw/.openclaw/cadre/farnsworth/artifacts/2026-09-17-return-to-eden-design.md</div><div><b>style_contract</b> — /home/openclaw/.openclaw/workspace/rogueds/docs/STYLE-BIBLE.md</div><div><b>project_observed</b> — /home/openclaw/hermes-godot @ 2265e89357a45cc1ce75e5f4864d852e7599f8cf</div></div><h1>Return to Eden — v1 new-art briefs</h1>
+<p>These six briefs fill the art gaps named in the signed design’s §5 table. The global <strong>colorful/warm</strong> direction is already locked by Brick; no new look direction is proposed (<code>EDEN-COMBAT-DIRECTION.md</code>, operator additions 2026-09-17 11:09; <code>STYLE-BIBLE.md</code> status). These are production briefs, not gameplay changes. No asset is implemented until Brick approves its concept in its intended screen composition.</p>
+<h2>Shared production and approval contract</h2>
+<ul><li><strong>Palette roles:</strong> UI uses pure saturated deep-indigo glass: panel <code>#0B0B2E</code>, card <code>#23234F</code>, well</li></ul>
+<p><code>#05051A</code>, edge <code>#2D2D7F</code>; ally identity <code>#18B5B5</code> / highlight <code>#8EFFFF</code>; enemy identity <code>#FF3B3B</code> / sub-accent <code>#FF8A00</code>; mineral <code>◆ #A0EFFF</code>; gas <code>◈ #FF7A1A</code>; stat <code>#FFCC00</code>; role-tag <code>#9FB4C7</code>; rare/luxury <code>#FFD324</code>; disabled <code>#3E3E6A</code> with <code>#C7C7E0</code> text. These roles come from <code>STYLE-BIBLE.md</code> “LOCKED HEX PALETTE” and must not be recolored per asset.</p>
+<ul><li><strong>Outline/readability:</strong> field assets use the bible’s black outer stroke and ally/enemy rim-light</li></ul>
+<p>rules; UI icons and markers use a clean dark outline and enough contrast to read at their runtime size. Do not use atmosphere or a battlefield texture inside a UI icon.</p>
+<ul><li><strong>Source/provenance:</strong> the worker keeps the editable source (SVG for flat geometry; layered/vector</li></ul>
+<p>source or lossless PNG for raster art), the final export, dimensions, palette notes, and a provenance record. Generated work keeps the tool/model, prompt, seed or run identifier, and the reviewed concept image. Do not trace third-party copyrighted art; any external font/art license must be verified at source and shipped as required by the bible. Existing Saira Condensed and <code>OFL.txt</code> are reused, not regenerated.</p>
+<ul><li><strong>Approval:</strong> Farnsworth checks the whole intended shot against the bible; then Brick approves the</li></ul>
+<p>concept or requests changes. Approval is recorded with date and concept hash. The final file is checked for dimensions, alpha, palette role, provenance, and path before Godot import. The worker shows the live screen with the final asset; the broader local build still waits on Brick’s pre-QA gate. A generated thumbnail without composition context is not approval.</p>
+<h2>A1 — Spell icons</h2>
+<p><strong>Purpose and trace:</strong> Icons for <code>Orbital Strike</code> and <code>Med-Wave</code> in the mixed Scrap shop and each spell’s own battle cast control. Exact design references: <strong>V2-31, V2-35, §2.6, §6.1</strong>.</p>
+<ul><li><strong>Palette roles:</strong> Orbital Strike is rare/impact-coded with a contained gold <code>#FFD324</code> energy core</li></ul>
+<p>and enemy-facing ember-orange <code>#FF7A1A</code> accent; Med-Wave uses ally highlight <code>#8EFFFF</code> plus a restrained green/organic healing signal allowed by the sprite-role rules. Both sit on the deep UI well <code>#05051A</code>; neither uses mineral ice-blue as its body and neither mimics a card border.</p>
+<ul><li><strong>Silhouette:</strong> Orbital = compact descending comet/strike mark with a sharp tail and a single clear</li></ul>
+<p>impact point; Med-Wave = compact medical wave/crescent with a readable plus or pulse mark. Flat geometric, chunky-slim, black keyline; no character, hero, free-aim reticle, or tiny text inside.</p>
+<ul><li><strong>Dimensions/alpha:</strong> editable SVG <code>viewBox 0 0 128 128</code>; final <code>64×64</code> RGBA PNG or stable imported</li></ul>
+<p>SVG, with artwork inside a 96×96 safe area. Transparent background outside the mark; no baked panel, glow, or drop shadow (Godot supplies the UI well/hover treatment).</p>
+<ul><li><strong>Screen zone/composition:</strong> in the shop entry, icon at the left of kind/name/description/<code>SCRAP</code></li></ul>
+<p>price; in battle, icon centered in the separate <code>CAST</code> control on the support rail, alongside <code>READY</code>/<code>SPENT</code> and the fixed-target description. Show each at actual shop and battle scale in the concept sheet, together with one card and one belt slot to prove hierarchy.</p>
+<ul><li><strong>Landing:</strong> source under project art source storage; final at <code>res://assets/ui/kit/orbital.png</code> and</li></ul>
+<p><code>res://assets/ui/kit/medwave.png</code> (or <code>.svg</code> if Godot import is stable). The shop/cast data maps by stable IDs <code>orbital</code> and <code>medwave</code>; do not use emoji and drawn art simultaneously in the same state.</p>
+<ul><li><strong>Provenance/approval:</strong> generated or hand-drawn source must include its brief, palette, source</li></ul>
+<p>record and concept hash; Brick approval precedes the spell-control implementation.</p>
+<h2>A2 — Consumable icons</h2>
+<p><strong>Purpose and trace:</strong> Icons for <code>Rally Cry</code> and <code>Frag Pack</code> in the mixed Scrap shop and the four-slot battle belt. Exact design references: <strong>V2-31, V2-34, §2.6, §6.1</strong>.</p>
+<ul><li><strong>Palette roles:</strong> Rally Cry uses ally teal <code>#18B5B5</code> as its primary signal with <code>#8EFFFF</code> highlight</li></ul>
+<p>and a small gold/cream emphasis for the rally signal; Frag Pack uses ember-orange <code>#FF7A1A</code> with a gold <code>#FFD324</code> fuse/impact accent. Both remain distinct from the mineral <code>#A0EFFF</code> and gas <code>#FF7A1A</code> <em>currency glyphs</em>: the orange on Frag Pack is item identity, while the gas color remains confined to the <code>◈</code> resource treatment. Place both on <code>#05051A</code> wells with dark outlines.</p>
+<ul><li><strong>Silhouette:</strong> Rally Cry = compact broadcast horn/flag plus a single pulse/radiating mark; Frag Pack</li></ul>
+<p>= compact rectangular charge with visible safety/fuse cue. Flat, iconic geometry; no realistic fragments, smoke cloud, character, building, or card frame. The two must remain distinguishable at 32 px without labels.</p>
+<ul><li><strong>Dimensions/alpha:</strong> editable SVG <code>viewBox 0 0 128 128</code>; final <code>64×64</code> RGBA PNG or stable imported</li></ul>
+<p>SVG, artwork inside a 96×96 safe area. Transparent background outside the icon; no baked slot, charge number, panel fill, or screen text.</p>
+<ul><li><strong>Screen zone/composition:</strong> in a shop entry, icon sits beside <code>BELT ITEM</code>, name, description,</li></ul>
+<p>charge grant, and <code>SCRAP</code> price. In battle, it occupies one of four fixed belt slots and is shown with the visible number key <code>1</code>, <code>2</code>, <code>3</code>, or <code>4</code>, item name, and <code>×N</code> charges. Include full and empty-slot states in the concept sheet; the icon must not visually read as a spell cast control or a sixth card.</p>
+<ul><li><strong>Landing:</strong> final at <code>res://assets/ui/kit/rally.png</code> and <code>res://assets/ui/kit/frag.png</code> (or <code>.svg</code></li></ul>
+<p>if import is stable), keyed to catalogue IDs <code>rally</code> and <code>frag</code>. The belt may show either item in a slot, but the asset itself carries no slot number or charge count.</p>
+<ul><li><strong>Provenance/approval:</strong> worker retains editable source, palette/provenance record and concept hash;</li></ul>
+<p>Farnsworth checks the shop row and a populated/empty belt composition; Brick approves before belt chrome or item art is wired. The shipped emoji catalogue values are a zero-art fallback, not a reason to skip review of this drawn set.</p>
+<h2>A3 — Map backdrop</h2>
+<p><strong>Purpose and trace:</strong> Full-bleed backdrop for the standalone between-battle map scene. Exact design references: <strong>V2-30, §2.4, §6.1</strong>, plus the locked map rules in <code>STYLE-BIBLE.md</code>.</p>
+<ul><li><strong>Palette roles:</strong> Opaque deep-indigo space base <code>#0B0B2E</code> with restrained darker indigo/nebula</li></ul>
+<p>variation; use <code>#2D2D7F</code> only for quiet structural lift, <code>#A0EFFF</code> for the visited/current route trace, <code>#1CC7C7</code> for friendly/neutral accents, <code>#FF4A4A</code>/<code>#FF7A1A</code> for fight/encounter accents, and <code>#FFD324</code> for rare/boss/exit emphasis. The backdrop must not look like the dirty battlefield and must leave high-contrast quiet space for opaque panels and markers.</p>
+<ul><li><strong>Silhouette/texture:</strong> Sparse star/nebula field with subtle cloud depth and a clean horizontal or</li></ul>
+<p>diagonal journey-space read. No battlefield units, buildings, live combat, map labels, roads, or UI baked into the image. Keep the texture low-frequency behind the diagram; no fog that hides an actionable choice.</p>
+<ul><li><strong>Dimensions/alpha:</strong> final <code>1920×1080</code> RGB/RGBA PNG at 16:9; source may be layered/vector or a</li></ul>
+<p>generated raster at the same framing. The backdrop is intentionally opaque (no transparent background), with no baked panel alpha, text, node rings, or route lines. If a source uses alpha, flatten it to the approved indigo base for the final file.</p>
+<ul><li><strong>Screen zone/composition:</strong> fills the entire map scene behind the static diagram. The left 55–60%</li></ul>
+<p>must hold our ship, next encounter/core preview, sparse route thread, and node markers; the right 40–45% must remain quiet enough for the opaque shop/encounter panels; the top bar and fork band remain legible. The concept sheet must show the complete map screenshot at 1280–1440 desktop width, not only the backdrop crop.</p>
+<ul><li><strong>Landing:</strong> final at <code>res://assets/ui/map_backdrop.png</code>; source and review concept stay in the art</li></ul>
+<p>source record. Map logic draws the ship, core, markers, roads, labels, Scrap, shop, and encounter over it; do not paint those into the backdrop.</p>
+<ul><li><strong>Provenance/approval:</strong> generated source retains tool/model, prompt and seed/run identifier; drawn</li></ul>
+<p>source retains editable layers. Farnsworth verifies the whole map shot against the bible’s sparse, airy anti-clutter rule, then Brick approves the concept before <code>map.tscn</code> uses it.</p>
+<h2>A4 — Map marker and icon set</h2>
+<p><strong>Purpose and trace:</strong> Small markers for shop, encounter, road choice, and the four node regions on the map diagram. Exact design references: <strong>V2-25, V2-30, §2.3, §2.4, §6.1</strong>, and the locked map accent rules in <code>STYLE-BIBLE.md</code>.</p>
+<ul><li><strong>Palette roles:</strong> Friendly/neutral/shop markers use teal <code>#1CC7C7</code>; encounter/fight markers use</li></ul>
+<p>ember <code>#FF4A4A</code> with optional <code>#FF7A1A</code>; road/current-route markers use ice-blue <code>#A0EFFF</code> for the visited thread; rare/exit emphasis may use luxury gold <code>#FFD324</code>; unknown/neutral region text uses cool grey <code>#9FB4C7</code>. Marker rings must stay distinct from the panel edge <code>#2D2D7F</code>, mineral diamond, gas glyph, and card borders.</p>
+<ul><li><strong>Silhouette:</strong> Provide a coherent ring-plus-glyph family: storefront/supply for <code>SHOP</code>, compass or</li></ul>
+<p>question-mark-free beacon for <code>ENCOUNTER</code>, forked arrow for <code>ROAD</code>, and four compact region glyphs or ring treatments for <code>REAR</code>, <code>FLANK</code>, <code>MIDFIELD</code>, <code>FORWARD</code>. Region marks must communicate data vocabulary, not imply node capture or a traversable node graph. No tiny prose baked into art.</p>
+<ul><li><strong>Dimensions/alpha:</strong> each marker is an editable SVG <code>viewBox 0 0 128 128</code>; final <code>64×64</code> RGBA</li></ul>
+<p>PNG or stable imported SVG. Transparent background outside the ring/glyph; no baked map backdrop, panel, route line, label, or hover glow. Keep a 96×96 safe area and a single consistent anchor point so Godot can place markers from <code>pos</code> data.</p>
+<ul><li><strong>Screen zone/composition:</strong> markers sit in the left map diagram over A3’s quiet backdrop: our ship,</li></ul>
+<p>next core variant, and sparse static route thread remain the dominant composition. Shop and encounter markers are clickable and visually larger/clearer than informational region markers; the three road markers/cards appear only after battles 1–2. The concept sheet must show normal map, fork-due map, and a map with the shop/encounter panels open, proving markers do not clutter the decision surface.</p>
+<ul><li><strong>Landing:</strong> final set at <code>res://assets/ui/map_markers/shop.png</code>, <code>encounter.png</code>, <code>road.png</code>,</li></ul>
+<p><code>rear.png</code>, <code>flank.png</code>, <code>midfield.png</code>, and <code>forward.png</code> (or same names with <code>.svg</code> where stable). The controller binds markers to <code>side</code>/<code>region</code>/<code>pos</code> and marker type; it must not create an extra map node or traversal system.</p>
+<ul><li><strong>Provenance/approval:</strong> worker retains the shared vector source and per-icon exports, dimensions,</li></ul>
+<p>palette roles and concept hash. Farnsworth reviews a complete static map shot for spacing and legibility at 1280–1440 px; Brick approves the set in composition before marker import.</p>
+<h2>A5 — Bunker sprite</h2>
+<p><strong>Purpose and trace:</strong> The one player-placeable, mineral-bought defensive structure on the live field. Exact design references: <strong>V2-28, §6.1, §8b</strong>, and B2; the frozen reference’s <code>turret</code> definition is the numeric/shape anchor only.</p>
+<ul><li><strong>Palette roles:</strong> Primary structure reads ally/teal <code>#18B5B5</code> with <code>#8EFFFF</code> energy highlights,</li></ul>
+<p>dark outline <code>#000000</code>, and a restrained <code>#A0EFFF</code> mineral-cost association only in the HUD text, not as the body fill. Impact/muzzle accents may use contested gold <code>#FFD700</code>/<code>#FFD324</code>; do not recolor the bunker ember-red or confuse it with an enemy core.</p>
+<ul><li><strong>Silhouette:</strong> Compact anchored bunker with a strong base, clear firing port/muzzle, and a simple</li></ul>
+<p>readable turret or weapon housing. It must look static and defensive, not like a mobile unit, an economy node, a barrier wall, or a second core. Flat geometry, chunky read at field scale, thick dark outline; muzzle flash, projectile, HP bar, hit flash, and death fade are Godot effects, not baked into the sprite.</p>
+<ul><li><strong>Dimensions/alpha:</strong> editable SVG or layered source on a <code>512×512</code> square; final <code>128×128</code> RGBA</li></ul>
+<p>PNG or stable imported SVG, with the bunker inside a 112×112 safe area. Transparent background outside the silhouette; no baked floor, contact glow, projectile, HP bar, mineral price, cursor ghost, or legal-zone indicator.</p>
+<ul><li><strong>Screen zone/composition:</strong> shown in the player legal half of the battle field alongside small</li></ul>
+<p>combat units, nodes, ally barrier, and ship. The concept sheet must show the normal standing bunker, a placement ghost at a legal hover position, the dedicated <code>BUILD BUNKER</code> control with <code>60 ◆</code>, and one travelling projectile. It must also show the bunker damaged/removed without becoming a blocking wall. A map/shop thumbnail is optional only if it reuses the same approved silhouette; no belt-item version is designed under E6(a).</p>
+<ul><li><strong>Landing:</strong> final at <code>res://assets/sprites/structures/bunker.png</code> (or <code>.svg</code> if stable). The</li></ul>
+<p>gameplay data names the only structure <code>bunker</code>; do not land it as <code>turret</code>, <code>bulwark</code>, <code>extractor</code>, or <code>foundry</code> and do not create a second structure asset.</p>
+<ul><li><strong>Provenance/approval:</strong> retain editable source and any generated prompt/run metadata, with no</li></ul>
+<p>third-party art tracing. Farnsworth checks field-scale silhouette and whole-shot composition, including legal ghost and damage/death states; Brick approves before the placement and projectile implementation uses the asset.</p>
+<h2>A6 — Second enemy core variant</h2>
+<p><strong>Purpose and trace:</strong> A distinct data-selected enemy core for a later encounter, proving the core slot is real rather than a single hard-coded object. Exact design references: <strong>V2-26, §6.1, §4</strong>, and A4; the current project’s <code>enemy_core.png</code> is variant 1 and remains unchanged.</p>
+<ul><li><strong>Palette roles:</strong> The enemy identity is ember-red <code>#FF3B3B</code> with orange <code>#FF8A00</code> sub-accent,</li></ul>
+<p>deep blood <code>#6A0D0D</code> shadow and a black outer outline. Use rare/exit gold <code>#FFD324</code> only if the encounter is explicitly finale/exit-coded; do not use ally teal as the core body, mineral ice-blue as an identity fill, or gas orange as a currency-like icon. The variant must remain legible beside the existing enemy core and enemy barrier.</p>
+<ul><li><strong>Silhouette:</strong> Make variant 2 visibly different from <code>enemy_core.png</code> while occupying the same</li></ul>
+<p>semantic slot: for example a compact rogue-faction holdout camp with a hardened command mast, shielded bunker mass, or distinct superstructure. It is a damageable, anchored core with name/HP data only; no core AI, attack animation, deployment, phase, movement, retreat, or extra boss system. Preserve the bible’s chunky, outlined sci-fi construction and enemy jagged/organic vocabulary where appropriate without reusing the existing core silhouette.</p>
+<ul><li><strong>Dimensions/alpha:</strong> editable source on a <code>1024×1024</code> square; final <code>256×256</code> RGBA PNG, with the</li></ul>
+<p>variant inside a 224×224 safe area and aspect ratio preserved at runtime. Transparent background outside the core; no baked field, barrier, HP bar, projectile, health value, encounter title, or map route. Runtime may add contact glow, damage flash and HP bar.</p>
+<ul><li><strong>Screen zone/composition:</strong> on the battle field at the far enemy edge, paired with the enemy</li></ul>
+<p>barrier and the existing small-scale alien army; its HP is represented by the shared HUD bar. On the map, the same asset appears as the <code>NEXT ENCOUNTER</code> core preview in the left diagram at reduced size, with a separate text name. The concept sheet must show both the battle and map uses beside variant 1 so the visual difference and common slot are unambiguous.</p>
+<ul><li><strong>Landing:</strong> final at <code>res://assets/sprites/structures/enemy_core_rogue.png</code> (stable <code>.png</code>; do not</li></ul>
+<p>overwrite <code>enemy_core.png</code>). Encounter data selects <code>enemy_core</code> or <code>enemy_core_rogue</code> through the core-variant slot; art changes do not add core abilities or AI.</p>
+<ul><li><strong>Provenance/approval:</strong> retain editable source, generation/drawing provenance, palette notes and</li></ul>
+<p>concept hash. Farnsworth verifies distinct silhouette, shared scale/slot, and full battle/map composition; Brick approves the concept before it is imported or assigned to an encounter.</p>
+<h2>6. Brief-set completion check</h2>
+<p>The six required briefs are present and individually specify palette roles, silhouette, dimensions, transparent-background behavior, intended screen composition, provenance/approval rule, final landing path, and the exact V2/§5 references: <strong>A1 spell icons</strong>, <strong>A2 consumable icons</strong>, <strong>A3 map backdrop</strong>, <strong>A4 map markers</strong>, <strong>A5 bunker</strong>, and <strong>A6 second enemy core variant</strong>. This artifact does not modify the signed design or the Godot project, and it does not claim that any asset has been generated, approved, imported, or QA-verified.</p></article></body></html>
