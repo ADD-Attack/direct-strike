@@ -1,6 +1,6 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Return to Eden — operator review</title>
+<title>Return to Eden / Cadre — operator review</title>
 <style>
 :root{--ink:#12202f;--muted:#5b6470;--line:#d8dee6;--accent:#1f4e79}
 *{box-sizing:border-box}
@@ -8,35 +8,48 @@ body{margin:0;background:#eef1f5;color:var(--ink);
  font-family:"Segoe UI",-apple-system,Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
 main{background:#fff;max-width:44rem;margin:3rem auto;padding:2.75rem 3rem 3.25rem;border-radius:8px}
 h1{font-size:1.65rem;margin:0 0 .35rem;color:var(--accent);border-bottom:3px solid var(--accent);padding-bottom:.5rem}
-h2{font-size:1.1rem;margin:2rem 0 .4rem;color:var(--accent)}
 p{margin:.6rem 0}
 .sub{color:var(--muted);margin-top:.2rem}
 .card{border:1px solid var(--line);border-radius:6px;padding:1.1rem 1.25rem;margin:1rem 0;background:#f9fbfd}
 .card h3{margin:0 0 .3rem;font-size:1.05rem}
 .card p{margin:.35rem 0;color:#3a4750;font-size:.95rem}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;
+ text-transform:uppercase;padding:.14rem .45rem;border-radius:3px;vertical-align:.12em}
+.t-ok{background:#dff3e6;color:#1d6b3c;border:1px solid #a9d9bd}
+.t-wait{background:#fdf0d8;color:#8a5a10;border:1px solid #e8cfa0}
 .links{margin-top:.7rem}
 .links a{display:inline-block;margin-right:.9rem;font-weight:600;color:var(--accent);
  text-decoration:none;border-bottom:2px solid #cfe0f0;padding-bottom:1px}
 .links a:hover{border-bottom-color:var(--accent)}
 .meta{color:var(--muted);font-size:.88rem;margin-top:2rem;border-top:1px solid var(--line);padding-top:.9rem}
 </style></head><body><main>
-<h1>Return to Eden — operator review</h1>
-<p class="sub">Two documents awaiting sign-off. Nothing is dispatched to build until they are approved.</p>
+<h1>Operator review</h1>
+<p class="sub">Return to Eden design + the Cadre workflow findings. Builds stay paused until these are signed off.</p>
 
 <div class="card">
-  <h3>1. Design v1 — screen, UX and art direction</h3>
+  <h3>1. Eden design v1 — screen, UX and art direction <span class="tag t-ok">Approved 09-17</span></h3>
   <p>Feature inventory with criterion traceability, surface plan, vocabulary and art direction,
-  art pipeline and approval gate, consolidated missing-asset list, and the ordered build tasks T0&ndash;T14.</p>
+  art pipeline and approval gate, missing-asset list, and the ordered build tasks T0&ndash;T14.
+  Approved with two amendments: shop/encounter as modal overlays, and concept sheets composited from real assets.</p>
   <div class="links"><a href="design.html">Read online</a><a href="design.pdf">PDF</a></div>
 </div>
 
 <div class="card">
-  <h3>2. Art Briefs A1&ndash;A6 — one per missing asset</h3>
+  <h3>2. Art Briefs A1&ndash;A6 <span class="tag t-ok">Approved 09-17</span></h3>
   <p>A1 spell icons &middot; A2 consumable icons &middot; A3 map backdrop &middot; A4 map marker set
-  &middot; A5 bunker sprite &middot; A6 second enemy core variant. This is the T0 unblocker.</p>
+  &middot; A5 bunker sprite &middot; A6 second enemy core variant. Clears the T0 art gate.</p>
   <div class="links"><a href="briefs.html">Read online</a><a href="briefs.pdf">PDF</a></div>
 </div>
 
-<p class="meta">Generated 2026-09-17 for operator review. E4/E5/E6 are closed at defaults;
-design and briefs remain unapproved.</p>
+<div class="card">
+  <h3>3. Cadre production &amp; design-management gaps <span class="tag t-wait">Not yet signed off</span></h3>
+  <p>Eleven findings from Hermes covering production management (schedule, capacity, dependencies,
+  change control, estimates, progress source-of-truth) and game-design management (playtesting,
+  design pillars, feel criteria, instrumentation, revision cap). Balance/tuning is explicitly cut for v1.
+  <strong>Every item needs its own yes/no from you.</strong></p>
+  <div class="links"><a href="gaps.html">Read online</a><a href="gaps.pdf">PDF</a></div>
+</div>
+
+<p class="meta">Updated 2026-09-17 14:33 CDT. Items 1 and 2 are approved; item 3 is a requirements
+artifact awaiting scope sign-off, with all eleven findings still gated individually.</p>
 </main></body></html>
