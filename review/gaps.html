@@ -1,0 +1,205 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Cadre production &amp; design-management gaps</title><style>
+:root{--ink:#1a1a1a;--muted:#5b6470;--line:#d8dee6;--accent:#1f4e79;--code-bg:#f4f6f8}
+*{box-sizing:border-box}
+body{margin:0;background:#eef1f5;color:var(--ink);
+ font-family:"Segoe UI",-apple-system,Roboto,Helvetica,Arial,sans-serif;
+ font-size:11.5pt;line-height:1.55}
+article{background:#fff;max-width:52rem;margin:0 auto;padding:3rem 3.25rem 4rem}
+h1{font-size:1.7rem;line-height:1.25;margin:0 0 .5rem;color:var(--accent);
+ border-bottom:3px solid var(--accent);padding-bottom:.5rem}
+h2{font-size:1.22rem;margin:2.1rem 0 .7rem;color:var(--accent);
+ border-bottom:1px solid var(--line);padding-bottom:.28rem}
+h3{font-size:1.05rem;margin:1.5rem 0 .5rem}
+h4{font-size:.95rem;margin:1.2rem 0 .4rem;color:var(--muted);
+ text-transform:uppercase;letter-spacing:.05em}
+p{margin:.6rem 0}
+ul,ol{margin:.6rem 0 .6rem 1.35rem;padding:0}
+li{margin:.3rem 0}
+code{font-family:"Cascadia Mono",Consolas,"Courier New",monospace;font-size:.86em;
+ background:var(--code-bg);padding:.1rem .32rem;border-radius:3px}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:5px;
+ padding:.8rem 1rem;overflow-wrap:anywhere;white-space:pre-wrap}
+pre code{background:none;padding:0;font-size:.84em}
+table{border-collapse:collapse;width:100%;margin:.9rem 0;font-size:.9em}
+th,td{border:1px solid var(--line);padding:.45rem .62rem;text-align:left;vertical-align:top}
+th{background:#eaf0f7;font-weight:600}
+tr:nth-child(even) td{background:#fafbfc}
+blockquote{margin:.9rem 0;padding:.6rem 1rem;border-left:4px solid var(--accent);
+ background:#f6f9fc;color:#26313d}
+blockquote p{margin:.25rem 0}
+hr{border:none;border-top:1px solid var(--line);margin:2rem 0}
+a{color:var(--accent)}
+.meta{background:#f6f9fc;border:1px solid var(--line);border-radius:6px;
+ padding:.9rem 1.1rem;margin:0 0 1.8rem;font-size:.92em}
+.meta div{margin:.22rem 0}
+.meta b{color:var(--accent)}
+@media print{
+ body{background:#fff;font-size:10pt}
+ article{max-width:none;margin:0;padding:0}
+ h2,h3{page-break-after:avoid}
+ table,pre,blockquote,.meta{page-break-inside:avoid}
+ @page{margin:16mm 15mm}
+}
+</style></head><body><article><h1>Requirements Artifact — Cadre production and game-design management gaps</h1>
+<p><strong>Date:</strong> 2026-09-17 <strong>Owner:</strong> Hermes — Requirements Analyst <strong>Status:</strong> Awaiting operator scope sign-off; <strong>not handed downstream</strong> <strong>Requested by:</strong> Michael (main / administrator), recording Brick’s question <strong>Subject:</strong> Second-stage Cadre workflow specification revision</p>
+<h2>1. Objective</h2>
+<p>Specify the missing production-management and game-design-management controls that would let Cadre answer two questions it currently cannot answer:</p>
+<ul><li><strong>Production:</strong> Are we on track, what can the team absorb, and what does a blocker stall?</li><li><strong>Game design:</strong> Is the game good to play, not merely conformant to its written requirements?</li></ul>
+<p>This is a <strong>separate second-stage requirements artifact</strong>. It must not be batched into the already in-flight Pre-production Concept Pass request at <code>artifacts/2026-09-17-cadre-concept-stage-requirements.md</code>.</p>
+<p>This is a <strong>Cadre workflow specification change</strong>, not a change to the published <code>deploy/agent-team-research</code> paper. Generalizing these findings into that paper is a possible future request, not part of this scope.</p>
+<h2>2. Ask, in the operator’s words</h2>
+<p>“Another gaps Cadre has to production management and game design management?”</p>
+<h2>3. Disposition and operator gates</h2>
+<p>Nothing in this brief has been approved for implementation. Every item below requires Brick’s own separate confirmation. The priority is a recommendation, not authorization.</p>
+<table><thead><tr><th>ID</th><th>Gap</th><th>Recommended priority</th><th>Status</th></tr></thead><tbody><tr><td>P1</td><td>Schedule, milestones, and time dimension</td><td>1</td><td>Awaiting separate operator confirmation</td></tr><tr><td>D1</td><td>Playtesting distinct from conformance QA</td><td>1</td><td>Awaiting separate operator confirmation</td></tr><tr><td>P3</td><td>Dependency / critical-path view</td><td>2</td><td>Awaiting separate operator confirmation</td></tr><tr><td>P4</td><td>Change-control path</td><td>2</td><td>Awaiting separate operator confirmation</td></tr><tr><td>D3</td><td>Process-level design pillars</td><td>3</td><td>Awaiting separate operator confirmation</td></tr><tr><td>D4</td><td>Checkable feel / experiential criteria</td><td>3</td><td>Awaiting separate operator confirmation</td></tr><tr><td>P2</td><td>Capacity model</td><td>4 / hygiene</td><td>Awaiting separate operator confirmation</td></tr><tr><td>P5</td><td>Estimate-versus-actuals loop</td><td>4 / hygiene</td><td>Awaiting separate operator confirmation</td></tr><tr><td>P6</td><td>Owned progress-tracking artifact and staleness detection</td><td>4 / hygiene</td><td>Awaiting separate operator confirmation</td></tr><tr><td>D5</td><td>Minimum instrumentation</td><td>4 / hygiene</td><td>Awaiting separate operator confirmation; may be deferred</td></tr><tr><td>D6</td><td>Design-revision iteration model</td><td>4 / hygiene</td><td>Awaiting separate operator confirmation</td></tr><tr><td>D2</td><td>Balance / numeric tuning loop</td><td>—</td><td><strong>Explicitly out of scope for v1</strong></td></tr></tbody></table>
+<p>Brick’s recorded steer for D2 is: <strong>“I’m not super concerned with balance.”</strong> Numeric balance remains authored and frozen at design time for v1. A playtest may identify comprehension, legibility, or experience problems, but this artifact must not turn those findings into a numeric tuning pass.</p>
+<h2>4. Doable first version</h2>
+<p>The first implementation wave should be the smallest useful control set, not eleven new systems at once:</p>
+<ol><li><strong>P1:</strong> a minimal per-project plan with baseline, milestones, forecast, and actuals fields.</li><li><strong>D1:</strong> a distinct playtest gate with a bounded experiential checklist.</li><li><strong>P3:</strong> a dependency/blocker view that exposes downstream impact.</li><li><strong>P4:</strong> a change-request path with impact and decision records.</li><li><strong>D3 + D4:</strong> a short pillar set and observable feel criteria that playtest can check.</li></ol>
+<p>P2, P5, P6, D5, and D6 are fully specified as candidates below but should be deferred unless Brick separately opts them into the first implementation wave. D2 is cut from v1.</p>
+<p>The deliverable now is the <strong>requirements artifact only</strong>. It does not open a board, create a plan instance, dispatch workers, alter a project, or edit Cadre reference files.</p>
+<h2>5. Production-management requirements</h2>
+<h3>P1 — Schedule, milestones, and time dimension</h3>
+<p><strong>Requirement:</strong> Cadre must produce a minimal project-plan artifact for each active project. It must carry a dated baseline and make planned-versus-current status answerable without a verbal update.</p>
+<p>At minimum, each plan records: project identifier, owner, baseline start, baseline finish, named milestones, estimate or effort basis, current forecast, actual completion fields, status, and the date of the last update. A milestone is not just a task label; it has an observable exit condition.</p>
+<p>The plan must distinguish:</p>
+<ul><li><strong>baseline:</strong> what was agreed before work began;</li><li><strong>forecast:</strong> the current expected finish based on evidence;</li><li><strong>actual:</strong> what happened when the milestone completed or was stopped.</li></ul>
+<p><strong>Evidence:</strong> the brief reports Eden estimates of “14–21 builder-days” without a schedule, start date, milestones, burndown, or planned-versus-actual (<code>inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:67-70</code>).</p>
+<p><strong>Separate gate:</strong> Brick must confirm whether this plan is the first production-control mechanism to implement and what planning window/date precision is acceptable.</p>
+<h3>P2 — Capacity model</h3>
+<p><strong>Requirement:</strong> Cadre must distinguish spend budgets from work capacity. For every active role or lane, a project window must state an intake limit, current committed load, available capacity, and the response when the limit is reached. The model must expose contention when two projects or tasks compete for one lane.</p>
+<p>The capacity unit and window are intentionally unresolved: possible units include concurrent tasks, builder-days, review slots, or another operator-approved measure. Token/currency envelopes are not capacity by themselves.</p>
+<p><strong>Evidence:</strong> Cadre’s budget reference defines unit, period, ceiling, enforcement, and threshold as spend controls (<code>reference/budgets.md:7-22</code>); the brief confirms those controls do not model how much work a role can absorb (<code>inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:72-75</code>).</p>
+<p><strong>Separate gate:</strong> Brick must choose whether P2 is first-wave or deferred, and approve the capacity unit, window, and overload policy. No capacity number is invented in this artifact.</p>
+<h3>P3 — Dependency and critical-path view</h3>
+<p><strong>Requirement:</strong> Cadre must represent task dependencies explicitly enough to show what is blocked, who/what unblocks it, and which downstream tasks or milestone are affected. The view must identify the current critical path or state that no critical path can be computed from the available edges.</p>
+<p>Each tracked task needs a stable identifier, owner/lane, predecessor or dependency links, current state, blocker reason where applicable, and downstream impact. A linear task list alone does not meet this requirement.</p>
+<p><strong>Evidence:</strong> Eden’s design orders T1–T14, while the art/code relationship creates cross-cutting dependencies; the brief cites the art problem as a dependency discovered by hand (<code>inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:77-81</code>). The Eden task sequence is visible at <code>cadre/farnsworth/artifacts/2026-09-17-return-to-eden-design.md:311-336</code>.</p>
+<p><strong>Separate gate:</strong> Brick must confirm whether the dependency view is a required first-wave control and whether it lives in the project plan, a board, or a separate graph artifact.</p>
+<h3>P4 — Change-control path</h3>
+<p><strong>Requirement:</strong> A proposed change to approved scope, design, art direction, dependency order, or milestone must enter a change request before being absorbed. The request records an identifier, requester, date, reason, before/after statement, affected acceptance criteria, and an impact statement covering schedule, art, dependencies, capacity, and downstream tasks. It also records the decision, decision-maker, date, and resulting plan/task updates.</p>
+<p>No “small” change is exempt merely because it can be implemented quickly. A change may be rejected, approved, deferred, or returned to requirements/design; the selected state must be visible.</p>
+<p><strong>Evidence:</strong> the brief found no change-control or scope-creep mechanism; the current Eden note only returns an overridden surface to design (<code>inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:83-86</code>).</p>
+<p><strong>Separate gate:</strong> Brick must confirm the decision authority, emergency-change treatment, and whether approved changes create a new requirements/design revision or amend the current one.</p>
+<h3>P5 — Estimate-versus-actuals loop</h3>
+<p><strong>Requirement:</strong> On completion, pause, or cancellation, each tracked task or milestone records estimate and actual values side by side, the unit for each value, variance, and a short reason for material variance. A periodic review uses these records to improve future estimates.</p>
+<p>The record must be honest about measurement limits. If provider dollars, model tokens, or elapsed agent time cannot be measured reliably, the unavailable field is marked unknown rather than fabricated. “Actual” must not silently mean a different unit from “estimate.”</p>
+<p><strong>Evidence:</strong> the brief reports no <code>actuals</code>, <code>velocity</code>, or <code>retrospective</code> terms and distinguishes the existing lessons mechanism from estimate-versus-actual records (<code>inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:88-91</code>). Cadre’s budget reference also says the platform exposes no usage/cost report (<code>reference/budgets.md:87-110</code>).</p>
+<p><strong>Separate gate:</strong> Brick must choose the minimum actuals unit(s), the material-variance threshold, and the review cadence. P5 may be deferred as hygiene.</p>
+<h3>P6 — Owned progress-tracking artifact and staleness detection</h3>
+<p><strong>Requirement:</strong> Cadre must name one authoritative progress-tracking artifact per active project and one owner responsible for keeping it current. The specification must define its state model, write protocol, update event, last-generated/last-updated marker, and a deterministic stale-state condition. A status report must identify stale data instead of presenting it as current.</p>
+<p>If the artifact is a compiled board, the spec must state its source files, generator/owner, and how the project lane writes to those sources. If the board is not authoritative, the spec must name the actual source of truth; “the board exists somewhere in the workspace” is not ownership.</p>
+<p><strong>Evidence:</strong> the brief reports that Cadre requires no task state and that the workspace board is a compiled artifact, not regenerated since 2026-09-14, with retired-agent lanes; it links the stale board to a false status report (<code>inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:52-63</code>). The board itself says it is compiled and must not be hand-edited, with generated date 2026-09-14 (<code>workspace/KANBAN.md:1-18</code>).</p>
+<p><strong>Separate gate:</strong> Brick must decide whether the project board becomes authoritative, whether each project gets its own board, and who owns generator/staleness policy. This artifact does not open or modify a board.</p>
+<h2>6. Game-design-management requirements</h2>
+<h3>D1 — Playtesting distinct from conformance QA</h3>
+<p><strong>Requirement:</strong> Cadre must include a playtest step that evaluates the player experience separately from Scruffy’s conformance verification. It must use a bounded, screen/path-specific experiential checklist and record observations, failures, evidence, and a decision: pass, revise, or stop.</p>
+<p>The checklist must test comprehension, legibility, feedback, and whether the intended interaction can be understood and completed. It must not use “fun” or “feels good” as an unobservable pass condition. It must state the test setup, path, participant/operator role, build identifier, and what counts as a failure. Playtest findings return to requirements/design or a change request; they do not silently become code changes.</p>
+<p>D1 is not numeric balance tuning. Numbers remain frozen under D2’s v1 exclusion.</p>
+<p><strong>Evidence:</strong> the brief found no playtest term in Cadre or REV 6 and describes the terminal gate as conformance only (inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:100-104). Cadre’s verification reference defines evidence-based conformance and independent QA (reference/verification.md:1-6), but does not define an experiential gate.</p>
+<p><strong>Separate gate:</strong> Brick must confirm whether playtest is a required first-wave gate, who performs it, and whether the operator is the only participant or additional testers are allowed.</p>
+<h3>D3 — Process-level design pillars</h3>
+<p><strong>Requirement:</strong> Each project must state a short, finite set of design pillars before design decisions are finalized. Every feature addition, cut, major design choice, and change request must cite the pillar(s) it serves or explicitly record that it serves none. A pillar is a decision filter, not a feature list or marketing slogan.</p>
+<p>The project artifact must record the pillar text, rationale, owner, date/version, and the decision records that reference it. A feature that cannot justify itself against scope acceptance criteria or the pillars is returned to requirements instead of being absorbed.</p>
+<p><strong>Evidence:</strong> the brief found no process-level pillar term in Cadre even though the Eden project uses pillars four times; it identifies the absence of a cut filter (inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:121-124).</p>
+<p><strong>Separate gate:</strong> Brick must approve whether pillars are mandatory for every project or only games, the allowed number/range of pillars, and whether existing project pillars may be adopted without re-authoring scope.</p>
+<h3>D4 — Checkable feel / experiential criteria</h3>
+<p><strong>Requirement:</strong> For each player-facing screen or critical interaction included in the project, the design must state a short feel specification made of observable checks. Each check names the trigger, the expected visible/audible/input response, and the relevant timing, readability, or feedback condition. It must be possible for a playtest or verifier to mark pass/fail from the artifact and a captured run; “polished” alone is not a criterion.</p>
+<p>The feel specification must cover only the approved project scope and must not invent mechanics. It complements, rather than replaces, functional acceptance criteria and the style guide.</p>
+<p><strong>Evidence:</strong> the brief reports no process terms for juice, player experience, or the standalone word “fun,” and recommends observable checks for impact, feedback latency, and readability at speed (inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:126-130). Cadre’s design reference currently defines visual, interaction, and technical style-guide layers but no experiential target (reference/design.md:30-43).</p>
+<p><strong>Separate gate:</strong> Brick must confirm which feel dimensions are mandatory, whether timing thresholds must be numeric per project, and who may accept a subjective-looking criterion after it is rewritten as observable evidence.</p>
+<h3>D5 — Minimum instrumentation</h3>
+<p><strong>Requirement:</strong> Cadre must make an explicit project decision about instrumentation before build review: either define the minimum local/temporary signals needed to observe play, or mark instrumentation out of scope for that project/version. It must not be silently implied by the word “playtest.”</p>
+<p>If enabled, the design must name each event/measurement, trigger, storage location, retention, owner, and privacy boundary. Instrumentation must be minimal and must not require an external analytics service unless separately authorized. If disabled, the playtest must state what evidence it can and cannot collect without instrumentation.</p>
+<p><strong>Evidence:</strong> the brief found only incidental telemetry references and no defined measurement of play (inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:132-134).</p>
+<p><strong>Separate gate:</strong> Brick must decide whether D5 is first-wave, deferred, or explicitly out of v1; if enabled, he must approve the minimum event set, retention, and external-service boundary. No telemetry schema is invented here.</p>
+<h3>D6 — Design-revision iteration model</h3>
+<p><strong>Requirement:</strong> Cadre must model revisions of feature inventories, style guides, pillars, feel specs, and other design artifacts as a finite state transition: draft → review → changes requested or approved → rejected/closed. Each revision records its parent version, requested change, owner, date, decision, and artifact hash where applicable.</p>
+<p>The model must define a numeric cap on revision rounds per design artifact and an escalation when the cap is reached. It must be distinct from the QA two-round screen-review safety cap and from the G4b concept-art ladder in the separate concept-stage request. A design revision may reveal a new requirement, but that requirement returns to RA rather than entering the task list silently.</p>
+<p><strong>Evidence:</strong> the brief reports that Cadre’s two-round rule caps screen verification but does not model design iteration or a ladder for concepts/designs (inbox/2026-09-17T18-25-00Z-michael-cadre-production-design-gaps.md:136-139).</p>
+<p><strong>Separate gate:</strong> Brick must approve whether D6 is deferred, the revision cap, and whether the cap is per artifact, per design gate, or per project phase. The existing QA cap is not assumed to be the answer.</p>
+<h2>7. D2 — explicit exclusion</h2>
+<p>D2 (balance/numeric tuning) is <strong>out of scope for v1</strong>, per Brick’s 2026-09-17 direction. This artifact must not add:</p>
+<ul><li>a post-build balance pass;</li><li>a tuning loop for gas, costs, damage, pacing, or other authored numbers;</li><li>balance telemetry or operator review time dedicated to numeric adjustment; or</li><li>a requirement that playtest findings alter frozen numeric design.</li></ul>
+<p>Playtest, if approved under D1, may report comprehension, legibility, responsiveness, or experience issues. Those findings do not authorize balance changes. Reintroducing D2 requires a new RA request and a fresh operator decision.</p>
+<h2>8. Acceptance criteria</h2>
+<p>These are observable requirements for a future Cadre workflow-spec revision. The artifact itself passes intake only when every item P1–P6 and D1/D3–D6 is present with its evidence reference, recommended priority, and separate operator gate. D2 must be marked out of scope.</p>
+<h3>Production controls</h3>
+<ol><li><strong>P1:</strong> The Cadre spec defines one minimal per-project plan artifact with baseline start/finish,</li></ol>
+<p>named milestones, estimate basis, forecast, actual fields, status, last-update date, and observable milestone exits. It distinguishes baseline, forecast, and actual.</p>
+<ol><li><strong>P2:</strong> The spec distinguishes capacity from spend and defines the required fields for lane/role</li></ol>
+<p>intake limit, committed load, available capacity, contention, and overload response; the capacity unit/window remain explicit decisions if not yet selected.</p>
+<ol><li><strong>P3:</strong> The spec defines stable task IDs, dependencies/predecessors, owner/lane, state, blocker,</li></ol>
+<p>unblocker, downstream impact, and critical-path/no-computation reporting. A flat T1–T14 list alone cannot pass.</p>
+<ol><li><strong>P4:</strong> The spec defines a change-request record containing before/after, affected criteria,</li></ol>
+<p>schedule/art/dependency/capacity impact, decision authority, decision, date, and resulting updates. Unapproved changes cannot be silently absorbed.</p>
+<ol><li><strong>P5:</strong> The spec requires estimate and actual values with units, variance, and material-variance</li></ol>
+<p>reason on completion/pause/cancellation, plus a review loop. Unmeasurable actuals are marked unknown, not fabricated.</p>
+<ol><li><strong>P6:</strong> The spec names one authoritative progress source per project, its owner, state model,</li></ol>
+<p>write path, update event, freshness marker, and deterministic stale condition. A stale source cannot be reported as current.</p>
+<h3>Game-design controls</h3>
+<ol><li><strong>D1:</strong> The spec defines a playtest gate separate from conformance QA, with setup, selected path,</li></ol>
+<p>bounded experiential checklist, evidence, and pass/revise/stop decision. It does not introduce numeric tuning.</p>
+<ol><li><strong>D3:</strong> The spec defines a finite process-level pillar artifact and requires scope/design/change</li></ol>
+<p>decisions to reference it or explain why they do not.</p>
+<ol><li><strong>D4:</strong> The spec defines per-screen or per-critical-interaction feel checks with trigger,</li></ol>
+<p>expected observable response, and timing/readability/feedback condition; “fun” alone cannot pass.</p>
+<ol><li><strong>D5:</strong> The spec records an explicit in/out-of-scope instrumentation decision. If enabled, it</li></ol>
+<p>names minimum events, trigger, storage, retention, owner, and privacy/external-service boundary.</p>
+<ol><li><strong>D6:</strong> The spec defines design-artifact revision states, parent/version/decision records, a</li></ol>
+<p>numeric cap, and escalation at the cap; it distinguishes this from QA and concept iteration.</p>
+<h3>Governance and preservation</h3>
+<ol><li>Each item P1–P6 and D1/D3–D6 has a visible <strong>separate operator gate</strong>; priority labels do not</li></ol>
+<p>count as approval.</p>
+<ol><li>D2 is explicitly out of scope for v1 and is not reintroduced through D1, D4, or D5.</li><li>The revision does not alter the RA → Designer → PM → Worker → QA sequence or the existing</li></ol>
+<p>file-claim, evidence, independence, and two-round QA guardrails.</p>
+<ol><li>The revision preserves the art pipeline’s existing provenance, editable-source, license,</li></ol>
+<p>dimensions, palette/transparency, landing-path, hash, dated-approval, frozen-build, and verification discipline.</p>
+<ol><li>The revision does not alter gameplay scope, REV 6 criteria, or Eden workstream estimates.</li><li>The revision remains separate from the in-flight concept-stage artifact and does not edit the</li></ol>
+<p>published agent-team-research paper.</p>
+<ol><li>No board is opened, no PM task is created, and no downstream agent is dispatched as part of</li></ol>
+<p>this requirements pass.</p>
+<h2>9. Assumptions and unresolved questions</h2>
+<p>The following are deliberately not silently decided:</p>
+<ol><li><strong>P1 plan form:</strong> Is one Markdown plan per project sufficient, or does Cadre need a structured</li></ol>
+<p>machine-readable source with a rendered view?</p>
+<ol><li><strong>P1 time basis:</strong> Should baseline/forecast use calendar dates, working days, builder-days, or</li></ol>
+<p>both? What is the minimum milestone granularity?</p>
+<ol><li><strong>P2 capacity unit:</strong> Should capacity be concurrent-task slots, builder-days, review slots, or a</li></ol>
+<p>project-specific unit? What planning window and overload response should be standard?</p>
+<ol><li><strong>P3 location:</strong> Should dependencies live in the project plan, a per-project board, or a separate</li></ol>
+<p>graph? Who owns the critical-path calculation when edges are incomplete?</p>
+<ol><li><strong>P4 authority:</strong> Who may approve an emergency change, and must an approved scope/design change</li></ol>
+<p>always return through RA → Designer before implementation?</p>
+<ol><li><strong>P5 measurement:</strong> Which actuals are worth collecting first—elapsed time, worker/model tokens,</li></ol>
+<p>provider cost, or a smaller reliable subset? The platform’s lack of a native usage/cost report means provider dollars cannot be promised as an automatic field.</p>
+<ol><li><strong>P5 cadence:</strong> What variance threshold and review cadence justify a retrospective without creating</li></ol>
+<p>a new expensive ceremony?</p>
+<ol><li><strong>P6 source of truth:</strong> Does Brick want each project to own a board, or should a plan artifact be</li></ol>
+<p>authoritative with a board as a compiled view? What exact stale condition should block a status claim?</p>
+<ol><li><strong>D1 playtest owner:</strong> Is Brick the player/tester, may another human test, or should a designated</li></ol>
+<p>agent perform only scripted experiential checks? How many playtest rounds are permitted?</p>
+<ol><li><strong>D3 pillar scope:</strong> Are pillars mandatory for every Cadre project or only games, and what finite</li></ol>
+<p>count/range avoids turning them into another unbounded requirements list?</p>
+<ol><li><strong>D4 thresholds:</strong> Which experience dimensions must every game specify, and which timing/readability</li></ol>
+<p>thresholds are project-specific rather than Cadre defaults?</p>
+<ol><li><strong>D5 decision:</strong> Is instrumentation deferred or explicitly out of v1 for projects that can be</li></ol>
+<p>playtested manually? If enabled, are local-only logs sufficient?</p>
+<ol><li><strong>D6 cap:</strong> What numeric design-revision cap does Brick want, and is it per artifact, per design</li></ol>
+<p>gate, or per phase? The QA two-round cap and the concept-stage G4b ladder are not assumed to answer this.</p>
+<ol><li><strong>Paper boundary:</strong> Should any general lesson be entered as a separate future paper request, or</li></ol>
+<p>remain confined to Cadre’s workflow reference?</p>
+<h2>10. Explicitly out of scope</h2>
+<ul><li>D2 balance/numeric tuning for v1, including a tuning pass or balance telemetry.</li><li>The already-in-flight Pre-production Concept Pass requirements; this artifact does not merge,</li></ul>
+<p>revise, or re-gate that work.</p>
+<ul><li>Opening a PM board, creating project tasks, dispatching workers, or implementing any proposed</li></ul>
+<p>workflow mechanism.</p>
+<ul><li>Editing Cadre reference files, Eden project files, REV 6 requirements, or workstream estimates.</li><li>Changing the RA → Designer → PM → Worker → QA pipeline, art provenance/hash discipline, file-claim</li></ul>
+<p>lease, evidence method, independent QA rule, or QA two-round cap.</p>
+<ul><li>Editing or generalizing the published agent-team-research paper.</li><li>Adding gameplay, features, numeric design changes, analytics services, new agents, credentials,</li></ul>
+<p>permissions, schedules, or external integrations.</p>
+<h2>11. Cost of a yes and sign-off gate</h2>
+<p><strong>Yes to this requirements scope</strong> buys a clear decision surface for eleven findings without pretending they are all approved. It costs one review of the priority order and separate decisions on each proposed control’s authority, measurement, and storage.</p>
+<p><strong>Yes to the recommended first wave</strong> costs a small plan artifact, a distinct playtest packet, dependency/change records, and process-level design criteria. It adds coordination overhead, but it also makes schedule slippage, blocked work, and non-conformant player experience visible earlier.</p>
+<p><strong>Yes to every candidate at once</strong> is rejected as the default. It creates a production-management system before the team has agreed on its source of truth or measurement units, and it mixes hygiene with the two urgent blind spots. D2 remains a firm no for v1.</p>
+<p><strong>Requested decision:</strong> Brick must sign off on this separate requirements artifact, then confirm or reject P1–P6 and D1/D3–D6 individually. Once scope is signed off, the next owner is Farnsworth — Project Designer. Until then, this artifact stays at RA intake; no PM board and no downstream dispatch.</p></article></body></html>
