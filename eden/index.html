@@ -111,7 +111,7 @@ body {
 
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":27063164,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":27343892,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
@@ -215,6 +215,23 @@ const engine = new Engine(GODOT_CONFIG);
 	}
 }());
 		</script>
+	<div id="t3-ir-build-label" aria-label="Return to Eden build identity"></div>
+	<script>
+	(() => {
+		const label = document.getElementById('t3-ir-build-label');
+		label.textContent = 'RETURN TO EDEN v1 · T3-IR · BUILD …';
+		Object.assign(label.style, {
+			position: 'fixed', left: '28px', top: '24px', width: '332px', height: '30px',
+			zIndex: '20', color: '#a1dcff', font: '18px sans-serif', lineHeight: '30px',
+			textAlign: 'center', pointerEvents: 'none', textShadow: '0 2px 3px #000'
+		});
+		crypto.subtle.digest('SHA-256', new TextEncoder().encode('')).catch(() => null);
+		fetch('index.pck', {cache: 'no-store'}).then(r => r.arrayBuffer()).then(buf => crypto.subtle.digest('SHA-256', buf)).then(digest => {
+			const hash = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('').slice(0, 8);
+			label.textContent = `RETURN TO EDEN v1 · T3-IR · BUILD ${hash}`;
+		}).catch(() => { label.textContent = 'RETURN TO EDEN v1 · T3-IR · BUILD unavailable'; });
+		document.addEventListener('pointerdown', () => { label.style.display = 'none'; }, {once: true, capture: true});
+	})();
+	</script>
 	</body>
 </html>
-
