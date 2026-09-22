@@ -92,7 +92,7 @@ body {
 		</style>
 		<link id="-gd-engine-icon" rel="icon" type="image/png" href="index.icon.png" />
 <link rel="apple-touch-icon" href="index.apple-touch-icon.png"/>
-
+<script>(function(){window.__edenBuild='';var f=function(v){window.__edenBuild=v};var nf=window.fetch.bind(window),sh=null;window.fetch=function(u,o){if(u==='index.pck'){if(!sh){sh=nf(u);sh.then(function(r){if(!r.ok)sh=null},function(){sh=null})}var p=sh;return p.then(function(r){return r.clone()})}return nf(u,o)};window.fetch('index.pck').then(function(r){if(!r.ok){f('unavailable');return null}return r.arrayBuffer()}).then(function(b){if(!b)return null;var w=(typeof GODOT_CONFIG!=='undefined'&&GODOT_CONFIG.fileSizes)?GODOT_CONFIG.fileSizes['index.pck']:0;if(w&&b.byteLength!==w){f('mismatch');return null}return crypto.subtle.digest('SHA-256',b)}).then(function(d){if(!d)return;var a=new Uint8Array(d),h='';for(var i=0;i<4;i++){h+=('0'+a[i].toString(16)).slice(-2)}f(h)}).catch(function(){f('unavailable')})})();</script>
 	</head>
 	<body>
 		<canvas id="canvas">
@@ -111,7 +111,7 @@ body {
 
 		<script src="index.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":22942464,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"emscriptenPoolSize":8,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":22954308,"index.wasm":39514754},"focusCanvas":true,"gdextensionLibs":[],"godotPoolSize":4};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
