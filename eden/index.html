@@ -26,13 +26,13 @@ body {
 	outline: none;
 }
 
-#status, #status-splash, #status-progress {
+#status, #status-progress {
 	position: absolute;
 	left: 0;
 	right: 0;
 }
 
-#status, #status-splash {
+#status {
 	top: 0;
 	bottom: 0;
 }
@@ -46,24 +46,40 @@ body {
 	visibility: hidden;
 }
 
-#status-splash {
-	max-height: 100%;
-	max-width: 100%;
-	margin: auto;
-}
-
-#status-splash.show-image--false {
+#status-art.art-hidden {
 	display: none;
 }
 
-#status-splash.fullsize--true {
-	height: 100%;
-	width: 100%;
-	object-fit: contain;
+#status-art {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: min(160px, 25vmin);
+	height: min(160px, 25vmin);
+	z-index: 0;
 }
 
-#status-splash.use-filter--false {
+#status-splash, #status-splash-motion {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 	image-rendering: pixelated;
+	pointer-events: none;
+}
+
+#status-splash-motion {
+	display: none;
+}
+
+@media (max-width: 479px) {
+	#status-art {
+		width: min(96px, 25vmin);
+		height: min(96px, 25vmin);
+	}
 }
 
 #status-progress, #status-notice {
@@ -137,7 +153,10 @@ body {
 		</noscript>
 
 		<div id="status">
-			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.png" alt="">
+			<div id="status-art" aria-hidden="true">
+				<img id="status-splash" src="loader_miner_poster.png" alt="" aria-hidden="true" decoding="async" fetchpriority="low">
+				<img id="status-splash-motion" alt="" aria-hidden="true" decoding="async">
+			</div>
 			<progress id="status-progress" max="100" role="progressbar" aria-label="Game loading progress" aria-valuemin="0" aria-valuemax="100"></progress>
 			<div id="status-loader-details">
 				<div id="loader-state">Progress total unavailable</div>
@@ -349,6 +368,86 @@ const engine = new Engine(GODOT_CONFIG);
 		});
 	}
 
+	function initializeLoaderArt() {
+		const art = document.getElementById('status-art');
+		const poster = document.getElementById('status-splash');
+		const motion = document.getElementById('status-splash-motion');
+		const reducedMotion = window.matchMedia
+			? window.matchMedia('(prefers-reduced-motion: reduce)')
+			: { matches: false, addEventListener: function () {} };
+		let posterLoaded = poster.complete && poster.naturalWidth > 0;
+		let posterFailed = poster.complete && poster.naturalWidth === 0;
+		let motionLoaded = false;
+		let motionFailed = false;
+		let motionStarted = false;
+
+		function updateArtVisibility() {
+			if (reducedMotion.matches) {
+				poster.style.display = posterLoaded ? 'block' : 'none';
+				motion.style.display = 'none';
+			} else if (motionLoaded) {
+				poster.style.display = 'none';
+				motion.style.display = 'block';
+			} else {
+				poster.style.display = posterLoaded ? 'block' : 'none';
+				motion.style.display = 'none';
+			}
+			art.classList.toggle('art-hidden',
+				(reducedMotion.matches && posterFailed && !posterLoaded)
+				|| (!reducedMotion.matches && posterFailed && motionFailed && !motionLoaded));
+		}
+
+		poster.addEventListener('load', function () {
+			posterLoaded = true;
+			posterFailed = false;
+			updateArtVisibility();
+		});
+		poster.addEventListener('error', function () {
+			posterLoaded = false;
+			posterFailed = true;
+			updateArtVisibility();
+		});
+		motion.addEventListener('load', function () {
+			motionLoaded = motion.naturalWidth > 0;
+			motionFailed = !motionLoaded;
+			updateArtVisibility();
+		});
+		motion.addEventListener('error', function () {
+			motionLoaded = false;
+			motionFailed = true;
+			updateArtVisibility();
+		});
+
+		function startMotion() {
+			if (motionStarted || reducedMotion.matches || !art.isConnected) {
+				return;
+			}
+			motionStarted = true;
+			motion.fetchPriority = 'low';
+			motion.src = 'loader_miner.gif';
+		}
+
+		function onMotionPreferenceChange() {
+			updateArtVisibility();
+			if (!reducedMotion.matches) {
+				startMotion();
+			}
+		}
+
+		if (typeof reducedMotion.addEventListener === 'function') {
+			reducedMotion.addEventListener('change', onMotionPreferenceChange);
+		} else if (typeof reducedMotion.addListener === 'function') {
+			reducedMotion.addListener(onMotionPreferenceChange);
+		}
+		updateArtVisibility();
+		if (!reducedMotion.matches) {
+			const schedule = window.requestIdleCallback
+				? function (callback) { window.requestIdleCallback(callback, { timeout: 1500 }); }
+				: function (callback) { window.setTimeout(callback, 0); };
+			schedule(startMotion);
+		}
+	}
+
 	function displayFailureNotice(err) {
 		console.error(err);
 		let diagnostic;
@@ -429,6 +528,7 @@ const engine = new Engine(GODOT_CONFIG);
 				recordLoaderProgress(current, total);
 			},
 			});
+			initializeLoaderArt();
 		} catch (err) {
 			displayFailureNotice(err);
 			return;
