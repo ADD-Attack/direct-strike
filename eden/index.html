@@ -26,13 +26,13 @@ body {
 	outline: none;
 }
 
-#status, #status-splash, #status-progress {
+#status, #status-progress {
 	position: absolute;
 	left: 0;
 	right: 0;
 }
 
-#status, #status-splash {
+#status {
 	top: 0;
 	bottom: 0;
 }
@@ -46,24 +46,40 @@ body {
 	visibility: hidden;
 }
 
-#status-splash {
-	max-height: 100%;
-	max-width: 100%;
-	margin: auto;
-}
-
-#status-splash.show-image--false {
+#status-art.art-hidden {
 	display: none;
 }
 
-#status-splash.fullsize--true {
-	height: 100%;
-	width: 100%;
-	object-fit: contain;
+#status-art {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: min(160px, 25vmin);
+	height: min(160px, 25vmin);
+	z-index: 0;
 }
 
-#status-splash.use-filter--false {
+#status-splash, #status-splash-motion {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
 	image-rendering: pixelated;
+	pointer-events: none;
+}
+
+#status-splash-motion {
+	display: none;
+}
+
+@media (max-width: 479px) {
+	#status-art {
+		width: min(96px, 25vmin);
+		height: min(96px, 25vmin);
+	}
 }
 
 #status-progress, #status-notice {
@@ -74,6 +90,39 @@ body {
 	bottom: 10%;
 	width: 50%;
 	margin: 0 auto;
+}
+
+#status-loader-details {
+	display: none;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: calc(10% + 2.25rem);
+	width: min(50%, 38rem);
+	margin: 0 auto;
+	color: #fff;
+	font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
+	font-size: clamp(12px, 1.5vw, 16px);
+	line-height: 1.35;
+	text-align: center;
+	text-shadow: 0 1px 3px #000, 0 0 5px #000;
+	z-index: 1;
+}
+
+#loader-state {
+	font-weight: 700;
+}
+
+#loader-live {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 
 #status-notice {
@@ -104,8 +153,17 @@ body {
 		</noscript>
 
 		<div id="status">
-			<img id="status-splash" class="show-image--true fullsize--true use-filter--true" src="index.png" alt="">
-			<progress id="status-progress"></progress>
+			<div id="status-art" aria-hidden="true">
+				<img id="status-splash" src="loader_miner_poster.png" alt="" aria-hidden="true" decoding="async" fetchpriority="low">
+				<img id="status-splash-motion" alt="" aria-hidden="true" decoding="async">
+			</div>
+			<progress id="status-progress" max="100" role="progressbar" aria-label="Game loading progress" aria-valuemin="0" aria-valuemax="100"></progress>
+			<div id="status-loader-details">
+				<div id="loader-state">Progress total unavailable</div>
+				<div id="loader-downloaded">Downloaded: 0 B</div>
+				<div id="loader-rate">Estimated rate: Calculating…</div>
+			</div>
+			<div id="loader-live" role="status" aria-live="polite" aria-atomic="true"></div>
 			<div id="status-notice"></div>
 		</div>
 
@@ -119,9 +177,168 @@ const engine = new Engine(GODOT_CONFIG);
 	const statusOverlay = document.getElementById('status');
 	const statusProgress = document.getElementById('status-progress');
 	const statusNotice = document.getElementById('status-notice');
+	const statusLoaderDetails = document.getElementById('status-loader-details');
+	const loaderStateText = document.getElementById('loader-state');
+	const loaderDownloadedText = document.getElementById('loader-downloaded');
+	const loaderRateText = document.getElementById('loader-rate');
+	const loaderLive = document.getElementById('loader-live');
+	const RATE_WINDOW_MS = 2000;
+	const VISIBLE_UPDATE_MS = 1000;
+	const loader = {
+		currentBytes: 0,
+		lastCallbackBytes: null,
+		currentValid: false,
+		totalBytes: 0,
+		totalValid: false,
+		samples: [],
+		lastMeasuredRate: null,
+		lastRenderedAt: -Infinity,
+		terminal: null,
+	};
 
 	let initializing = true;
 	let statusMode = '';
+	let loaderTimer = null;
+
+	function setProgressDeterminate(value) {
+		statusProgress.max = 100;
+		statusProgress.value = value;
+		statusProgress.setAttribute('aria-valuemin', '0');
+		statusProgress.setAttribute('aria-valuemax', '100');
+		statusProgress.setAttribute('aria-valuenow', String(value));
+	}
+
+	function setProgressIndeterminate() {
+		statusProgress.max = 100;
+		statusProgress.removeAttribute('value');
+		statusProgress.removeAttribute('aria-valuenow');
+		statusProgress.setAttribute('aria-valuemin', '0');
+		statusProgress.setAttribute('aria-valuemax', '100');
+	}
+
+	function formatBytes(bytes) {
+		const value = Math.max(0, bytes);
+		if (value < 1000) {
+			return `${Math.floor(value)} B`;
+		}
+		const units = ['kB', 'MB', 'GB', 'TB'];
+		let scaled = value;
+		let unit = -1;
+		do {
+			scaled /= 1000;
+			unit += 1;
+		} while ((scaled >= 999.95) && unit < units.length - 1);
+		return `${scaled.toFixed(1)} ${units[unit]}`;
+	}
+
+	function formatRate(bytesPerSecond) {
+		const value = Math.max(0, bytesPerSecond);
+		if (value < 1000) {
+			return `${Math.floor(value)} B/s`;
+		}
+		return `${formatBytes(value).replace(/\s(?:B|kB|MB|GB|TB)$/, '')} ${formatBytes(value).match(/(?:kB|MB|GB|TB)$/)[0]}/s`;
+	}
+
+	function measureRate(now) {
+		if (loader.terminal === 'success') {
+			return null;
+		}
+		if (loader.terminal === 'failure') {
+			return loader.lastMeasuredRate;
+		}
+		const cutoff = now - RATE_WINDOW_MS;
+		while (loader.samples.length > 0 && loader.samples[0].time < cutoff) {
+			loader.samples.shift();
+		}
+		if (loader.samples.length < 2) {
+			return null;
+		}
+		const first = loader.samples[0];
+		const last = loader.samples[loader.samples.length - 1];
+		const elapsedMs = last.time - first.time;
+		if (elapsedMs <= 0 || now - last.time > RATE_WINDOW_MS) {
+			return null;
+		}
+		const rate = (last.bytes - first.bytes) / (elapsedMs / 1000);
+		if (!Number.isFinite(rate) || rate < 0) {
+			return null;
+		}
+		loader.lastMeasuredRate = rate;
+		return rate;
+	}
+
+	function loaderStateLabel(percent) {
+		if (loader.terminal === 'success') {
+			return '100% · Loaded';
+		}
+		if (loader.terminal === 'failure') {
+			return loader.totalValid && loader.currentValid ? `Loading failed · ${percent}%` : 'Loading failed';
+		}
+		if (!loader.totalValid) {
+			return 'Progress total unavailable';
+		}
+		if (!loader.currentValid) {
+			return 'Progress data unavailable';
+		}
+		return `${percent}%`;
+	}
+
+	function updateLoaderUI(force) {
+		const now = performance.now();
+		if (!force && now - loader.lastRenderedAt < VISIBLE_UPDATE_MS) {
+			return;
+		}
+		let percent = null;
+		if (loader.terminal === 'success') {
+			percent = 100;
+			setProgressDeterminate(percent);
+		} else if (loader.totalValid && loader.currentValid) {
+			percent = Math.min(99, Math.max(0, Math.floor(100 * loader.currentBytes / loader.totalBytes)));
+			setProgressDeterminate(percent);
+		} else {
+			setProgressIndeterminate();
+		}
+
+		const state = loaderStateLabel(percent);
+		const rate = measureRate(now);
+		const rateLabel = loader.terminal === 'success' || (loader.terminal === 'failure' && rate === null)
+			? '—'
+			: (rate === null ? 'Calculating…' : formatRate(rate));
+		loaderStateText.textContent = state;
+		loaderDownloadedText.textContent = `Downloaded: ${formatBytes(loader.currentBytes)}`;
+		loaderRateText.textContent = `Estimated rate: ${rateLabel}`;
+		loaderLive.textContent = `${state}. Downloaded: ${formatBytes(loader.currentBytes)}. Estimated rate: ${rateLabel}`;
+		loader.lastRenderedAt = now;
+	}
+
+	function recordLoaderProgress(current, total) {
+		if (loader.terminal !== null) {
+			return;
+		}
+		const now = performance.now();
+		const currentNumber = typeof current === 'number' ? current : NaN;
+		const totalNumber = typeof total === 'number' ? total : NaN;
+		const currentValid = Number.isFinite(currentNumber) && currentNumber >= 0;
+		const totalValid = Number.isFinite(totalNumber) && totalNumber > 0;
+		loader.totalValid = totalValid;
+		loader.totalBytes = totalValid ? totalNumber : 0;
+		loader.currentValid = currentValid;
+		if (currentValid) {
+			const bytes = Math.floor(currentNumber);
+			if (loader.lastCallbackBytes !== null && bytes < loader.lastCallbackBytes) {
+				loader.samples = [];
+				loader.lastMeasuredRate = null;
+			}
+			loader.lastCallbackBytes = bytes;
+			loader.currentBytes = bytes;
+			loader.samples.push({ time: now, bytes });
+			const cutoff = now - RATE_WINDOW_MS;
+			while (loader.samples.length > 0 && loader.samples[0].time < cutoff) {
+				loader.samples.shift();
+			}
+		}
+		updateLoaderUI(false);
+	}
 
 	function setStatusMode(mode) {
 		if (statusMode === mode || !initializing) {
@@ -133,8 +350,10 @@ const engine = new Engine(GODOT_CONFIG);
 			return;
 		}
 		statusOverlay.style.visibility = 'visible';
-		statusProgress.style.display = mode === 'progress' ? 'block' : 'none';
-		statusNotice.style.display = mode === 'notice' ? 'block' : 'none';
+		const showProgress = mode === 'progress' || mode === 'failure';
+		statusProgress.style.display = showProgress ? 'block' : 'none';
+		statusLoaderDetails.style.display = showProgress ? 'block' : 'none';
+		statusNotice.style.display = mode === 'notice' || mode === 'failure' ? 'block' : 'none';
 		statusMode = mode;
 	}
 
@@ -149,17 +368,118 @@ const engine = new Engine(GODOT_CONFIG);
 		});
 	}
 
+	function initializeLoaderArt() {
+		const art = document.getElementById('status-art');
+		const poster = document.getElementById('status-splash');
+		const motion = document.getElementById('status-splash-motion');
+		const reducedMotion = window.matchMedia
+			? window.matchMedia('(prefers-reduced-motion: reduce)')
+			: { matches: false, addEventListener: function () {} };
+		let posterLoaded = poster.complete && poster.naturalWidth > 0;
+		let posterFailed = poster.complete && poster.naturalWidth === 0;
+		let motionLoaded = false;
+		let motionFailed = false;
+		let motionStarted = false;
+
+		function updateArtVisibility() {
+			if (reducedMotion.matches) {
+				poster.style.display = posterLoaded ? 'block' : 'none';
+				motion.style.display = 'none';
+			} else if (motionLoaded) {
+				poster.style.display = 'none';
+				motion.style.display = 'block';
+			} else {
+				poster.style.display = posterLoaded ? 'block' : 'none';
+				motion.style.display = 'none';
+			}
+			art.classList.toggle('art-hidden',
+				(reducedMotion.matches && posterFailed && !posterLoaded)
+				|| (!reducedMotion.matches && posterFailed && motionFailed && !motionLoaded));
+		}
+
+		poster.addEventListener('load', function () {
+			posterLoaded = true;
+			posterFailed = false;
+			updateArtVisibility();
+		});
+		poster.addEventListener('error', function () {
+			posterLoaded = false;
+			posterFailed = true;
+			updateArtVisibility();
+		});
+		motion.addEventListener('load', function () {
+			motionLoaded = motion.naturalWidth > 0;
+			motionFailed = !motionLoaded;
+			updateArtVisibility();
+		});
+		motion.addEventListener('error', function () {
+			motionLoaded = false;
+			motionFailed = true;
+			updateArtVisibility();
+		});
+
+		function startMotion() {
+			if (motionStarted || reducedMotion.matches || !art.isConnected) {
+				return;
+			}
+			motionStarted = true;
+			motion.fetchPriority = 'low';
+			motion.src = 'loader_miner.gif';
+		}
+
+		function onMotionPreferenceChange() {
+			updateArtVisibility();
+			if (!reducedMotion.matches) {
+				startMotion();
+			}
+		}
+
+		if (typeof reducedMotion.addEventListener === 'function') {
+			reducedMotion.addEventListener('change', onMotionPreferenceChange);
+		} else if (typeof reducedMotion.addListener === 'function') {
+			reducedMotion.addListener(onMotionPreferenceChange);
+		}
+		updateArtVisibility();
+		if (!reducedMotion.matches) {
+			const schedule = window.requestIdleCallback
+				? function (callback) { window.requestIdleCallback(callback, { timeout: 1500 }); }
+				: function (callback) { window.setTimeout(callback, 0); };
+			schedule(startMotion);
+		}
+	}
+
 	function displayFailureNotice(err) {
 		console.error(err);
+		let diagnostic;
 		if (err instanceof Error) {
-			setStatusNotice(err.message);
+			diagnostic = err.message;
 		} else if (typeof err === 'string') {
-			setStatusNotice(err);
+			diagnostic = err;
 		} else {
-			setStatusNotice('An unknown error occurred.');
+			diagnostic = 'An unknown error occurred.';
 		}
-		setStatusMode('notice');
+		loader.terminal = 'failure';
+		setStatusNotice(`Loading failed\n${diagnostic}`);
+		updateLoaderUI(true);
+		loaderLive.textContent += `. ${diagnostic}`;
+		if (loaderTimer !== null) {
+			clearInterval(loaderTimer);
+		}
+		setStatusMode('failure');
 		initializing = false;
+	}
+
+	function finishLoaderSuccessfully() {
+		loader.terminal = 'success';
+		loader.samples = [];
+		loader.lastMeasuredRate = null;
+		updateLoaderUI(true);
+		if (loaderTimer !== null) {
+			clearInterval(loaderTimer);
+		}
+		requestAnimationFrame(() => {
+			requestAnimationFrame(() => setStatusMode('hidden'));
+		});
 	}
 
 	const missing = Engine.getMissingFeatures({
@@ -199,22 +519,23 @@ const engine = new Engine(GODOT_CONFIG);
 		}
 	} else {
 		setStatusMode('progress');
-		engine.startGame({
+		updateLoaderUI(true);
+		loaderTimer = setInterval(() => updateLoaderUI(false), 250);
+		let loadingPromise;
+		try {
+			loadingPromise = engine.startGame({
 			'onProgress': function (current, total) {
-				if (current > 0 && total > 0) {
-					statusProgress.value = current;
-					statusProgress.max = total;
-				} else {
-					statusProgress.removeAttribute('value');
-					statusProgress.removeAttribute('max');
-				}
+				recordLoaderProgress(current, total);
 			},
-		}).then(() => {
-			setStatusMode('hidden');
-		}, displayFailureNotice);
+			});
+			initializeLoaderArt();
+		} catch (err) {
+			displayFailureNotice(err);
+			return;
+		}
+		loadingPromise.then(finishLoaderSuccessfully, displayFailureNotice);
 	}
 }());
 		</script>
 	</body>
 </html>
-

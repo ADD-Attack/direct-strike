@@ -1,0 +1,74 @@
+{
+  "base_pck_sha256": "a90785caa8fda12faa1433081dc5c2b32abc005291c4eb87edaff0985b045a34",
+  "base_source_manifest_sha256": "a4a8f950860fc06c637b9a991d8dfc0eff978badd8aa5a04164b9d47e354cfcf",
+  "flowboard_task": null,
+  "live_payload_base_html_sha256": "115e9a04a922c572be5af52a906fa61e77f4337eecaa27c77cd6714ec11165e7",
+  "live_payload_base_pck_sha256": "bb35f7c837ede9cbaa3149840af575f11a3a2a169798b58d73f436cdd2f6462b",
+  "loader_miner_gif_sha256": "25b7f9f8e413cb3f032e3f75caa947f6b0cc4d0725e6db814fb33da30056da3a",
+  "loader_miner_poster_sha256": "e3360c593f07cbf8c12d27ca123b5b9045b797934547d20cf9b66958dba8aa9f",
+  "loader_source_export": "/home/openclaw/.openclaw/builds/eden-f-loader-miner-20260925T1722Z/frozen-v1",
+  "loader_source_html_sha256": "606fbff5f5a4b8278509564f40d78dffb2f8177e8b1d5436cc0575efcfc3ff4d",
+  "package_kind": "wip-live-payload-loader-restoration",
+  "payloads": [
+    {
+      "file": "index.apple-touch-icon.png",
+      "sha256": "01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5",
+      "size_bytes": 11944
+    },
+    {
+      "file": "index.audio.position.worklet.js",
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
+      "size_bytes": 2973
+    },
+    {
+      "file": "index.audio.worklet.js",
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
+      "size_bytes": 7298
+    },
+    {
+      "file": "index.html",
+      "sha256": "a969ffa5b89123f1f6f7c13df92d820e39b21ceac95e8bdf373b6648080195ed",
+      "size_bytes": 16148
+    },
+    {
+      "file": "index.icon.png",
+      "sha256": "ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5",
+      "size_bytes": 5700
+    },
+    {
+      "file": "index.js",
+      "sha256": "33c94cb3175f3333b82e2a3be5e8e86f77986f0aa2042b1631f6367a4e5bb6ba",
+      "size_bytes": 279815
+    },
+    {
+      "file": "index.pck",
+      "sha256": "bb35f7c837ede9cbaa3149840af575f11a3a2a169798b58d73f436cdd2f6462b",
+      "size_bytes": 23883148
+    },
+    {
+      "file": "index.png",
+      "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e",
+      "size_bytes": 21443
+    },
+    {
+      "file": "index.wasm",
+      "sha256": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0",
+      "size_bytes": 39514754
+    },
+    {
+      "file": "loader_miner.gif",
+      "sha256": "25b7f9f8e413cb3f032e3f75caa947f6b0cc4d0725e6db814fb33da30056da3a",
+      "size_bytes": 201858
+    },
+    {
+      "file": "loader_miner_poster.png",
+      "sha256": "e3360c593f07cbf8c12d27ca123b5b9045b797934547d20cf9b66958dba8aa9f",
+      "size_bytes": 68007
+    }
+  ],
+  "pck_changed": false,
+  "schema": "return-to-eden-frozen-web-v1",
+  "source_changes": false,
+  "source_manifest_sha256": "213822939dbf20040d983065ec12aa969d2d18c417e1d3a1958dfc73004140f5",
+  "task": "T-008-15"
+}
