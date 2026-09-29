@@ -1,14 +1,37 @@
 {
-  "base_pck_sha256": "a90785caa8fda12faa1433081dc5c2b32abc005291c4eb87edaff0985b045a34",
-  "base_source_manifest_sha256": "a4a8f950860fc06c637b9a991d8dfc0eff978badd8aa5a04164b9d47e354cfcf",
-  "flowboard_task": null,
-  "live_payload_base_html_sha256": "115e9a04a922c572be5af52a906fa61e77f4337eecaa27c77cd6714ec11165e7",
-  "live_payload_base_pck_sha256": "bb35f7c837ede9cbaa3149840af575f11a3a2a169798b58d73f436cdd2f6462b",
-  "loader_miner_gif_sha256": "25b7f9f8e413cb3f032e3f75caa947f6b0cc4d0725e6db814fb33da30056da3a",
-  "loader_miner_poster_sha256": "e3360c593f07cbf8c12d27ca123b5b9045b797934547d20cf9b66958dba8aa9f",
-  "loader_source_export": "/home/openclaw/.openclaw/builds/eden-f-loader-miner-20260925T1722Z/frozen-v1",
-  "loader_source_html_sha256": "606fbff5f5a4b8278509564f40d78dffb2f8177e8b1d5436cc0575efcfc3ff4d",
-  "package_kind": "wip-live-payload-loader-restoration",
+  "schema": "return-to-eden-frozen-web-v1",
+  "task": "T-008-41",
+  "package_kind": "aggregate-operator-review-wip",
+  "base_task": "T-008-38",
+  "base_live_payload": "T-008-15",
+  "base_pages_commit": "83d3362b728bb8e2ebc58d57f0cd9e610a1f6bb9",
+  "base_pck_sha256": "bb35f7c837ede9cbaa3149840af575f11a3a2a169798b58d73f436cdd2f6462b",
+  "base_source_manifest_sha256": "213822939dbf20040d983065ec12aa969d2d18c417e1d3a1958dfc73004140f5",
+  "source_manifest_sha256": "2fd86f9973841d1ed6e5f1f160d3a3efa5fc1bad0e5d6be2c3851486195f4332",
+  "source_file_count": 533,
+  "source_changes": true,
+  "source_changed_paths": [
+    "assets/sprites/aliens/alien_s.png",
+    "assets/sprites/flash_masks/alien_s_white.png",
+    "assets/sprites/flash_masks/ally_barrier_white.png",
+    "assets/sprites/flash_masks/rebel_g_white.png",
+    "assets/sprites/flash_masks/rebel_s_white.png",
+    "assets/sprites/rebels/rebel_g.png",
+    "assets/sprites/rebels/rebel_s.png",
+    "assets/sprites/structures/ally_barrier.png",
+    "battle_shell.tscn",
+    "scripts/battle_shell.gd",
+    "scripts/combat_projectile.gd",
+    "scripts/combat_unit.gd",
+    "scripts/run_state.gd",
+    "scripts/victory.gd"
+  ],
+  "source_diff_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/source.diff",
+  "source_change_inventory_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/source-change-inventory.tsv",
+  "live_loader_html_base_sha256": "a969ffa5b89123f1f6f7c13df92d820e39b21ceac95e8bdf373b6648080195ed",
+  "loader_html_only_pck_size_token_changed": true,
+  "qa_status": "not_run_in_implementation_task",
+  "publication": "not_performed",
   "payloads": [
     {
       "file": "index.apple-touch-icon.png",
@@ -27,7 +50,7 @@
     },
     {
       "file": "index.html",
-      "sha256": "a969ffa5b89123f1f6f7c13df92d820e39b21ceac95e8bdf373b6648080195ed",
+      "sha256": "6a042814c3163b8678608bbd4d900fb5dd0985dcbb2759db21879494fd3fa1f0",
       "size_bytes": 16148
     },
     {
@@ -42,8 +65,8 @@
     },
     {
       "file": "index.pck",
-      "sha256": "bb35f7c837ede9cbaa3149840af575f11a3a2a169798b58d73f436cdd2f6462b",
-      "size_bytes": 23883148
+      "sha256": "6a94fcbcefcd39bd71900b3b218403d31bbfc7d486880f20405445d0e2a6b0cd",
+      "size_bytes": 23779196
     },
     {
       "file": "index.png",
@@ -66,9 +89,34 @@
       "size_bytes": 68007
     }
   ],
-  "pck_changed": false,
-  "schema": "return-to-eden-frozen-web-v1",
-  "source_changes": false,
-  "source_manifest_sha256": "213822939dbf20040d983065ec12aa969d2d18c417e1d3a1958dfc73004140f5",
-  "task": "T-008-15"
+  "source_diff_sha256": "ee27833fb9e6587bf6d2073886a08eac567d6e06c97ebb898c3cea4398a96b4c",
+  "source_change_inventory_sha256": "8c456c49121a150bdce1576d462bccedecd721b20a4464b1c2c663f5670a078c",
+  "binary_asset_diff_sha256": "3e007c44b59e31fa02c503a6132b793ccf06c0e35a7f1e984d64a020499ebe8b",
+  "payload_comparison_sha256": "345ecf7963c6029ea1e7852bcee92b8e337add956513923efa3196127f55979d",
+  "loader_html_diff_sha256": "b951811405b77aaae59ee4a95bfffd954fbfe48c7bf244783f458ef6d4d30312",
+  "evidence_readme_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/README.md",
+  "final_import_log_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/logs/editor-import-final.log",
+  "final_export_log_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/logs/web-export-final.log",
+  "source_manifest_verification_sha256": "a536b1236c277eda6802e143e49836e76799869ca65e90235db107e611048a3f",
+  "integrated_source_tracks": [
+    {
+      "task": "T-008-20",
+      "source_root": "/home/openclaw/.openclaw/builds/eden-f-t008-20-guard-slash-radial-r1-20260928T0410Z/src",
+      "source_manifest_sha256": "efdfc54c5dfce2ea458c074fb5777a456e9162eb78c50d70f5de760075cd16b1",
+      "declared_ancestor": "T-008-11"
+    },
+    {
+      "task": "T-008-22",
+      "source_root": "/home/openclaw/.openclaw/builds/eden-f-t008-1-hpbar-r2-20260927T2336Z/src",
+      "source_manifest_sha256": "51fc4d0297d93d97d6bbe93561473402e07bcb0e25a8d00396ef100154edea73",
+      "declared_ancestor": "T-008-11"
+    },
+    {
+      "task": "T-008-14/T-008-17",
+      "source_root": "/home/openclaw/.openclaw/builds/eden-b-t008-17-hud-layout-20260927T2203Z/src",
+      "source_manifest_sha256": "1319c8a05713e6f10fb2ce8f2259d80de05417b227c32c23c2e50605f4e56710",
+      "source_ancestor_manifest_sha256": "89063130f2705cb1925189b3e41aae9fec2ae2aa39574e3c05bb0c3d1a24e7a2",
+      "declared_ancestor": "T-008-12"
+    }
+  ]
 }
