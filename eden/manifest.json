@@ -1,122 +1,92 @@
 {
-  "schema": "return-to-eden-frozen-web-v1",
-  "task": "T-008-41",
-  "package_kind": "aggregate-operator-review-wip",
-  "base_task": "T-008-38",
-  "base_live_payload": "T-008-15",
-  "base_pages_commit": "83d3362b728bb8e2ebc58d57f0cd9e610a1f6bb9",
-  "base_pck_sha256": "bb35f7c837ede9cbaa3149840af575f11a3a2a169798b58d73f436cdd2f6462b",
-  "base_source_manifest_sha256": "213822939dbf20040d983065ec12aa969d2d18c417e1d3a1958dfc73004140f5",
-  "source_manifest_sha256": "2fd86f9973841d1ed6e5f1f160d3a3efa5fc1bad0e5d6be2c3851486195f4332",
-  "source_file_count": 533,
-  "source_changes": true,
-  "source_changed_paths": [
-    "assets/sprites/aliens/alien_s.png",
-    "assets/sprites/flash_masks/alien_s_white.png",
-    "assets/sprites/flash_masks/ally_barrier_white.png",
-    "assets/sprites/flash_masks/rebel_g_white.png",
-    "assets/sprites/flash_masks/rebel_s_white.png",
-    "assets/sprites/rebels/rebel_g.png",
-    "assets/sprites/rebels/rebel_s.png",
-    "assets/sprites/structures/ally_barrier.png",
-    "battle_shell.tscn",
-    "scripts/battle_shell.gd",
-    "scripts/combat_projectile.gd",
-    "scripts/combat_unit.gd",
-    "scripts/run_state.gd",
-    "scripts/victory.gd"
+  "schema": "return-to-eden-artifact-manifest-v1",
+  "task_id": "T-008-48",
+  "verdict": "PASS_PRE_QA",
+  "created_at_utc": "2026-09-29T23:31:48.843873+00:00",
+  "artifact": "local frozen Web export; not QA-approved or published",
+  "pck": {
+    "path": "index.pck",
+    "bytes": 23779532,
+    "sha256": "65a43dfe57d5222fa9dfb4d0009d7079a66d80b3fe2cdee6d00ec0132d55d82e"
+  },
+  "source": {
+    "path": "/home/openclaw/.openclaw/builds/eden-f-t008-48-economy-replacement-20260929T2312Z/src",
+    "manifest": "/home/openclaw/.openclaw/builds/eden-f-t008-48-economy-replacement-20260929T2312Z/source-manifest.sha256",
+    "manifest_sha256": "0e5fba96ed5cc30c0745d85ca2759336e3d04742b417ad8d6a9d78e7408c61e6",
+    "entries": 525,
+    "base_source": "/home/openclaw/.openclaw/builds/eden-b-t008-46-guard-40px-20260929T1538Z/src",
+    "base_manifest": "/home/openclaw/.openclaw/builds/eden-b-t008-46-guard-40px-20260929T1538Z/source-manifest-v2.sha256",
+    "base_manifest_sha256": "ca50b2ff9bd9fa6b08171e2559b9c534d091a205d985556abf69612b9dfeba73",
+    "base_pck_sha256": "d3da074b6553287f1d1d98337efb55cea8cbdc6a7dc47b8d5c133ed9c3ff3923"
+  },
+  "production_source_delta": [
+    "src/scripts/battle_shell.gd"
   ],
-  "source_diff_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/source.diff",
-  "source_change_inventory_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/source-change-inventory.tsv",
-  "live_loader_html_base_sha256": "a969ffa5b89123f1f6f7c13df92d820e39b21ceac95e8bdf373b6648080195ed",
-  "loader_html_only_pck_size_token_changed": true,
-  "qa_status": "not_run_in_implementation_task",
-  "publication": "not_performed",
-  "payloads": [
+  "source_only_focused_fixture": [
+    "src/qa/t00848_economy_replacement_assert.gd",
+    "src/qa/t00848_economy_replacement_assert.gd.uid"
+  ],
+  "export": {
+    "engine": "Godot 4.7.2",
+    "preset": "Web",
+    "pck_identity": "SHA-256 matches export-staging/index.pck from final source export"
+  },
+  "payload_files": [
     {
-      "file": "index.apple-touch-icon.png",
-      "sha256": "01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5",
-      "size_bytes": 11944
+      "path": "index.apple-touch-icon.png",
+      "bytes": 11944,
+      "sha256": "01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5"
     },
     {
-      "file": "index.audio.position.worklet.js",
-      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8",
-      "size_bytes": 2973
+      "path": "index.audio.position.worklet.js",
+      "bytes": 2973,
+      "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
     },
     {
-      "file": "index.audio.worklet.js",
-      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3",
-      "size_bytes": 7298
+      "path": "index.audio.worklet.js",
+      "bytes": 7298,
+      "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
     },
     {
-      "file": "index.html",
-      "sha256": "6a042814c3163b8678608bbd4d900fb5dd0985dcbb2759db21879494fd3fa1f0",
-      "size_bytes": 16148
+      "path": "index.html",
+      "bytes": 16148,
+      "sha256": "764a1123985e112d2def3fcdf2dca870184ccea3e4fb550abad6fc1142dc0bb1"
     },
     {
-      "file": "index.icon.png",
-      "sha256": "ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5",
-      "size_bytes": 5700
+      "path": "index.icon.png",
+      "bytes": 5700,
+      "sha256": "ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5"
     },
     {
-      "file": "index.js",
-      "sha256": "33c94cb3175f3333b82e2a3be5e8e86f77986f0aa2042b1631f6367a4e5bb6ba",
-      "size_bytes": 279815
+      "path": "index.js",
+      "bytes": 279815,
+      "sha256": "33c94cb3175f3333b82e2a3be5e8e86f77986f0aa2042b1631f6367a4e5bb6ba"
     },
     {
-      "file": "index.pck",
-      "sha256": "6a94fcbcefcd39bd71900b3b218403d31bbfc7d486880f20405445d0e2a6b0cd",
-      "size_bytes": 23779196
+      "path": "index.pck",
+      "bytes": 23779532,
+      "sha256": "65a43dfe57d5222fa9dfb4d0009d7079a66d80b3fe2cdee6d00ec0132d55d82e"
     },
     {
-      "file": "index.png",
-      "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e",
-      "size_bytes": 21443
+      "path": "index.png",
+      "bytes": 21443,
+      "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e"
     },
     {
-      "file": "index.wasm",
-      "sha256": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0",
-      "size_bytes": 39514754
+      "path": "index.wasm",
+      "bytes": 39514754,
+      "sha256": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
     },
     {
-      "file": "loader_miner.gif",
-      "sha256": "25b7f9f8e413cb3f032e3f75caa947f6b0cc4d0725e6db814fb33da30056da3a",
-      "size_bytes": 201858
+      "path": "loader_miner.gif",
+      "bytes": 201858,
+      "sha256": "25b7f9f8e413cb3f032e3f75caa947f6b0cc4d0725e6db814fb33da30056da3a"
     },
     {
-      "file": "loader_miner_poster.png",
-      "sha256": "e3360c593f07cbf8c12d27ca123b5b9045b797934547d20cf9b66958dba8aa9f",
-      "size_bytes": 68007
+      "path": "loader_miner_poster.png",
+      "bytes": 68007,
+      "sha256": "e3360c593f07cbf8c12d27ca123b5b9045b797934547d20cf9b66958dba8aa9f"
     }
   ],
-  "source_diff_sha256": "ee27833fb9e6587bf6d2073886a08eac567d6e06c97ebb898c3cea4398a96b4c",
-  "source_change_inventory_sha256": "8c456c49121a150bdce1576d462bccedecd721b20a4464b1c2c663f5670a078c",
-  "binary_asset_diff_sha256": "3e007c44b59e31fa02c503a6132b793ccf06c0e35a7f1e984d64a020499ebe8b",
-  "payload_comparison_sha256": "345ecf7963c6029ea1e7852bcee92b8e337add956513923efa3196127f55979d",
-  "loader_html_diff_sha256": "b951811405b77aaae59ee4a95bfffd954fbfe48c7bf244783f458ef6d4d30312",
-  "evidence_readme_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/README.md",
-  "final_import_log_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/logs/editor-import-final.log",
-  "final_export_log_path": "/home/openclaw/.openclaw/cadre/fry/evidence/eden-f-t008-41-aggregate-20260929/logs/web-export-final.log",
-  "source_manifest_verification_sha256": "a536b1236c277eda6802e143e49836e76799869ca65e90235db107e611048a3f",
-  "integrated_source_tracks": [
-    {
-      "task": "T-008-20",
-      "source_root": "/home/openclaw/.openclaw/builds/eden-f-t008-20-guard-slash-radial-r1-20260928T0410Z/src",
-      "source_manifest_sha256": "efdfc54c5dfce2ea458c074fb5777a456e9162eb78c50d70f5de760075cd16b1",
-      "declared_ancestor": "T-008-11"
-    },
-    {
-      "task": "T-008-22",
-      "source_root": "/home/openclaw/.openclaw/builds/eden-f-t008-1-hpbar-r2-20260927T2336Z/src",
-      "source_manifest_sha256": "51fc4d0297d93d97d6bbe93561473402e07bcb0e25a8d00396ef100154edea73",
-      "declared_ancestor": "T-008-11"
-    },
-    {
-      "task": "T-008-14/T-008-17",
-      "source_root": "/home/openclaw/.openclaw/builds/eden-b-t008-17-hud-layout-20260927T2203Z/src",
-      "source_manifest_sha256": "1319c8a05713e6f10fb2ce8f2259d80de05417b227c32c23c2e50605f4e56710",
-      "source_ancestor_manifest_sha256": "89063130f2705cb1925189b3e41aae9fec2ae2aa39574e3c05bb0c3d1a24e7a2",
-      "declared_ancestor": "T-008-12"
-    }
-  ]
+  "comparison": "All frozen payload files equal final export except index.html, which is the known T-008-41 loader with only index.pck byte-size token updated; miner art and other support payloads unchanged."
 }
