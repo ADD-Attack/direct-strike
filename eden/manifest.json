@@ -1,31 +1,31 @@
 {
   "schema": "return-to-eden-artifact-manifest-v1",
-  "task_id": "T-008-48",
+  "task_id": "T-008-59",
   "verdict": "PASS_PRE_QA",
-  "created_at_utc": "2026-09-29T23:31:48.843873+00:00",
-  "artifact": "local frozen Web export; not QA-approved or published",
+  "created_at_utc": "2026-09-30T18:55:13.570295+00:00",
+  "artifact": "local frozen Web export; pre-QA and unpublished",
   "pck": {
     "path": "index.pck",
-    "bytes": 23779532,
-    "sha256": "65a43dfe57d5222fa9dfb4d0009d7079a66d80b3fe2cdee6d00ec0132d55d82e"
+    "bytes": 23764484,
+    "sha256": "9155e252799b1ddc5807338d6ce7d14d300588a492cf2accddc0e7ffb05aa823"
   },
   "source": {
-    "path": "/home/openclaw/.openclaw/builds/eden-f-t008-48-economy-replacement-20260929T2312Z/src",
-    "manifest": "/home/openclaw/.openclaw/builds/eden-f-t008-48-economy-replacement-20260929T2312Z/source-manifest.sha256",
-    "manifest_sha256": "0e5fba96ed5cc30c0745d85ca2759336e3d04742b417ad8d6a9d78e7408c61e6",
-    "entries": 525,
-    "base_source": "/home/openclaw/.openclaw/builds/eden-b-t008-46-guard-40px-20260929T1538Z/src",
-    "base_manifest": "/home/openclaw/.openclaw/builds/eden-b-t008-46-guard-40px-20260929T1538Z/source-manifest-v2.sha256",
-    "base_manifest_sha256": "ca50b2ff9bd9fa6b08171e2559b9c534d091a205d985556abf69612b9dfeba73",
-    "base_pck_sha256": "d3da074b6553287f1d1d98337efb55cea8cbdc6a7dc47b8d5c133ed9c3ff3923"
+    "path": "/home/openclaw/.openclaw/builds/eden-f-t008-59-mouse-placement-20260930T1840Z/src",
+    "manifest": "/home/openclaw/.openclaw/builds/eden-f-t008-59-mouse-placement-20260930T1840Z/source-manifest.sha256",
+    "manifest_sha256": "c52ba3b7cd60fd49af0bcf00596de7ad03fb39ce2eac3c8602f9fdd92445c4c9",
+    "entries": 527,
+    "base_source": "/home/openclaw/.openclaw/builds/eden-f-t008-48-economy-replacement-20260929T2312Z/src",
+    "base_manifest": "/home/openclaw/.openclaw/builds/eden-f-t008-59-mouse-placement-20260930T1840Z/base-source-manifest.sha256",
+    "base_manifest_sha256": "0e5fba96ed5cc30c0745d85ca2759336e3d04742b417ad8d6a9d78e7408c61e6",
+    "base_pck_sha256": "65a43dfe57d5222fa9dfb4d0009d7079a66d80b3fe2cdee6d00ec0132d55d82e"
   },
   "production_source_delta": [
-    "src/scripts/battle_shell.gd"
+    "src/scripts/battle_shell.gd",
+    "src/scripts/placement_feedback.gd",
+    "src/scripts/placement_feedback.gd.uid",
+    "src/scripts/placement_marker.gd"
   ],
-  "source_only_focused_fixture": [
-    "src/qa/t00848_economy_replacement_assert.gd",
-    "src/qa/t00848_economy_replacement_assert.gd.uid"
-  ],
+  "source_only_focused_fixture": [],
   "export": {
     "engine": "Godot 4.7.2",
     "preset": "Web",
@@ -50,7 +50,7 @@
     {
       "path": "index.html",
       "bytes": 16148,
-      "sha256": "764a1123985e112d2def3fcdf2dca870184ccea3e4fb550abad6fc1142dc0bb1"
+      "sha256": "51cc1d1362324d1bd213975332e4895d12216b0c533705287f92173626e88e6b"
     },
     {
       "path": "index.icon.png",
@@ -64,8 +64,8 @@
     },
     {
       "path": "index.pck",
-      "bytes": 23779532,
-      "sha256": "65a43dfe57d5222fa9dfb4d0009d7079a66d80b3fe2cdee6d00ec0132d55d82e"
+      "bytes": 23764484,
+      "sha256": "9155e252799b1ddc5807338d6ce7d14d300588a492cf2accddc0e7ffb05aa823"
     },
     {
       "path": "index.png",
@@ -88,5 +88,5 @@
       "sha256": "e3360c593f07cbf8c12d27ca123b5b9045b797934547d20cf9b66958dba8aa9f"
     }
   ],
-  "comparison": "All frozen payload files equal final export except index.html, which is the known T-008-41 loader with only index.pck byte-size token updated; miner art and other support payloads unchanged."
+  "comparison": "Candidate is derived from exact live T-008-54 frozen payload. Only index.pck and index.html payloads changed; index.html differs solely by its embedded index.pck byte-count token. JS/WASM/worklets/icons/miner-loader files remain byte-identical."
 }
