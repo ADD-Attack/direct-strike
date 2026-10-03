@@ -1,0 +1,9 @@
+RETURN TO EDEN — T-008-69 DIAGNOSTIC PREVIEW
+
+Diagnostic-only operator test fixture; not the live beta, not a product release, and not a QA verdict.
+The game payload remains the exact frozen-v2 export. This notice is a separate sidecar and is not part of its payload manifest.
+
+Expected index.pck SHA-256:
+72e647be1892eabbef7c8df5b0793036f33887181aeb6f1827f23b2c5fffc650
+
+Use only for the bounded T-008-92 Start/Deploy hover + single-click observation. Do not treat behavior as QA or root-cause evidence outside that task.
