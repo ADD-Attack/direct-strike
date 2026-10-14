@@ -220,6 +220,8 @@ func _apply_command(cmd: Dictionary) -> void:
 			_do_buy_unit(cmd["player_id"], cmd.get("params", {}))
 		"BUY_GAS":
 			_do_buy_gas(cmd["player_id"])
+		"SELL_UNIT":
+			_do_sell_unit(cmd["player_id"], cmd.get("params", {}))
 		"PLACE_UNIT":
 			_do_place_unit(cmd["player_id"], cmd.get("params", {}))
 		_:
@@ -261,6 +263,36 @@ func _do_buy_gas(side: String) -> void:
 	gas_count[side] += 1
 	trickle_rate[side] += GAS_TRICKLE_BONUS_PER_SEC
 	_emit_event("gas_purchased", {"side": side, "cost": cost, "gas_count": gas_count[side], "new_trickle_rate": trickle_rate[side]})
+
+## params: {queue_index: int}. Only purchases still waiting for their next
+## wave can be sold. The purchase price is refunded in full, matching Direct
+## Strike's undeployed-unit sell-back rule from studio/REFERENCE.md.
+func _do_sell_unit(side: String, params: Dictionary) -> void:
+	var idx: int = params.get("queue_index", -1)
+	if idx < 0 or idx >= queued_purchases[side].size():
+		_emit_event("sell_rejected", {"side": side, "queue_index": idx, "reason": "no_such_queued_unit", "queued_units": queued_purchases[side].size(), "minerals": minerals[side]})
+		return
+
+	var purchase: Dictionary = queued_purchases[side][idx]
+	var role: String = purchase["role"]
+	var cost: float = ROLE_STATS[role]["cost"]
+	queued_purchases[side].remove_at(idx)
+	minerals[side] += cost
+
+	# queue_index is the current array index used by both SELL_UNIT and
+	# PLACE_UNIT. Removing an entry shifts later purchases left, so keep their
+	# staged formation cells attached to the same purchases.
+	var old_placements: Dictionary = queued_placements[side]
+	var shifted_placements: Dictionary = {}
+	for old_idx_value in old_placements.keys():
+		var old_idx: int = old_idx_value
+		if old_idx < idx:
+			shifted_placements[old_idx] = old_placements[old_idx]
+		elif old_idx > idx:
+			shifted_placements[old_idx - 1] = old_placements[old_idx]
+	queued_placements[side] = shifted_placements
+
+	_emit_event("unit_sold", {"side": side, "queue_index": idx, "role": role, "refund": cost, "minerals_remaining": minerals[side], "total_spent": total_spent[side], "queued_units": queued_purchases[side].size()})
 
 ## params: {queue_index: int, row: int, col: int}. queue_index addresses a
 ## purchase already queued (not yet spawned) this build phase for `side`.

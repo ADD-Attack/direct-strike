@@ -1,0 +1,291 @@
+{
+	"all_pass": true,
+	"assertions": [
+		{
+			"detail": "SceneTree playtest executed under --headless",
+			"id": "boots_headless",
+			"pass": true
+		},
+		{
+			"detail": "host.gd routes SELL_UNIT through _apply_command(), alongside BUY_UNIT/BUY_GAS/PLACE_UNIT",
+			"id": "sell_unit_uses_existing_command_dispatch",
+			"pass": true
+		},
+		{
+			"detail": "recorded command log contains {tick, player_id, action: SELL_UNIT, params: {queue_index}}",
+			"id": "sell_unit_command_shape_logged",
+			"pass": true
+		},
+		{
+			"detail": "SELL_UNIT uses MatchClient.submit_command(); no sell-specific client method was added",
+			"id": "no_sell_specific_client_path",
+			"pass": true
+		},
+		{
+			"detail": "ranged cost/refund=10.0; minerals after retaining one 10.0-cost unit and one income tick: expected 40.1000, actual 40.1000",
+			"id": "sell_refunds_exact_purchase_cost",
+			"pass": true
+		},
+		{
+			"detail": "first A wave contains exactly the retained frontline_tank and no sold ranged unit: [{ \"unit_id\": 1, \"role\": \"frontline_tank\", \"row\": 2, \"col\": 4, \"lane_offset\": 0.6, \"hp\": 50.0, \"damage\": 4.0, \"range\": 1.0, \"cooldown\": 20, \"speed\": 0.1 }]",
+			"id": "sold_unit_absent_from_next_wave",
+			"pass": true
+		},
+		{
+			"detail": "placement originally attached to queue_index 1 followed the retained unit to queue_index 0: [{ \"unit_id\": 1, \"role\": \"frontline_tank\", \"row\": 2, \"col\": 4, \"lane_offset\": 0.6, \"hp\": 50.0, \"damage\": 4.0, \"range\": 1.0, \"cooldown\": 20, \"speed\": 0.1 }]",
+			"id": "remaining_queue_placement_survives_index_shift",
+			"pass": true
+		},
+		{
+			"detail": "invalid index 99 left one queued unit and minerals unchanged; rejection={ \"side\": \"A\", \"queue_index\": 99, \"reason\": \"no_such_queued_unit\", \"queued_units\": 1, \"minerals\": 40.0 }",
+			"id": "invalid_queue_index_rejected_without_state_change",
+			"pass": true
+		},
+		{
+			"detail": "post-spawn index 0 found an empty queue, did not refund, and left the spawned unit present; rejection={ \"side\": \"A\", \"queue_index\": 0, \"reason\": \"no_such_queued_unit\", \"queued_units\": 0, \"minerals\": 40.0 }",
+			"id": "deployed_queue_index_rejected_without_refund",
+			"pass": true
+		},
+		{
+			"detail": "replayed the exact 7-command log including SELL_UNIT into a fresh host for 1 tick(s): 7 vs 7 events, identical=true",
+			"id": "determinism_same_sell_log_identical_ledgers",
+			"pass": true
+		}
+	],
+	"command_log": [
+		{
+			"action": "BUY_UNIT",
+			"params": {
+				"role": "ranged"
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {
+				"role": "frontline_tank"
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "PLACE_UNIT",
+			"params": {
+				"col": 4,
+				"queue_index": 1,
+				"row": 2
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "SELL_UNIT",
+			"params": {
+				"queue_index": 0
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "SELL_UNIT",
+			"params": {
+				"queue_index": 99
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "SELL_UNIT",
+			"params": {
+				"queue_index": 0
+			},
+			"player_id": "A",
+			"tick": 0
+		}
+	],
+	"command_shape": "{tick, player_id, action: SELL_UNIT, params: {queue_index}}",
+	"engine_version": {
+		"build": "official",
+		"hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+		"hex": 263938,
+		"major": 4,
+		"minor": 7,
+		"patch": 2,
+		"status": "stable",
+		"string": "4.7.2-stable (official)",
+		"timestamp": 0
+	},
+	"event_log": [
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 40.0,
+				"queue_index": 0,
+				"queued_units": 1,
+				"role": "ranged",
+				"side": "A",
+				"total_spent": 10.0
+			},
+			"tick": 0,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 30.0,
+				"queue_index": 1,
+				"queued_units": 2,
+				"role": "frontline_tank",
+				"side": "A",
+				"total_spent": 20.0
+			},
+			"tick": 0,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"col": 4,
+				"queue_index": 1,
+				"row": 2,
+				"side": "A"
+			},
+			"tick": 0,
+			"type": "unit_placed"
+		},
+		{
+			"data": {
+				"minerals_remaining": 40.0,
+				"queue_index": 0,
+				"queued_units": 1,
+				"refund": 10.0,
+				"role": "ranged",
+				"side": "A",
+				"total_spent": 20.0
+			},
+			"tick": 0,
+			"type": "unit_sold"
+		},
+		{
+			"data": {
+				"minerals": 40.0,
+				"queue_index": 99,
+				"queued_units": 1,
+				"reason": "no_such_queued_unit",
+				"side": "A"
+			},
+			"tick": 0,
+			"type": "sell_rejected"
+		},
+		{
+			"data": {
+				"formation": [
+					{
+						"col": 4,
+						"cooldown": 20,
+						"damage": 4.0,
+						"hp": 50.0,
+						"lane_offset": 0.6,
+						"range": 1.0,
+						"role": "frontline_tank",
+						"row": 2,
+						"speed": 0.1,
+						"unit_id": 1
+					}
+				],
+				"purchased_count": 1,
+				"side": "A",
+				"unit_ids": [
+					1
+				],
+				"wave_number": 1
+			},
+			"tick": 0,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"minerals": 40.0,
+				"queue_index": 0,
+				"queued_units": 0,
+				"reason": "no_such_queued_unit",
+				"side": "A"
+			},
+			"tick": 0,
+			"type": "sell_rejected"
+		}
+	],
+	"final_state": {
+		"base_hp": {
+			"A": 200.0,
+			"B": 200.0
+		},
+		"build_phase_ticks": 650,
+		"gas_count": {
+			"A": 0,
+			"B": 0
+		},
+		"match_over": false,
+		"middle_controller": "",
+		"minerals": {
+			"A": 40.1,
+			"B": 50.1
+		},
+		"queued_units": {
+			"A": 0,
+			"B": 0
+		},
+		"tick": 1,
+		"ticks_until_next_wave": 649,
+		"tier2_unlocked": {
+			"A": false,
+			"B": false
+		},
+		"total_spent": {
+			"A": 20.0,
+			"B": 0.0
+		},
+		"trickle_rate": {
+			"A": 3.0,
+			"B": 3.0
+		},
+		"units": {
+			"1": {
+				"avoid_roles": [],
+				"bonus_vs": {},
+				"cooldown": 0,
+				"cooldown_max": 20,
+				"damage": 4.0,
+				"formation_cell": {
+					"col": 4,
+					"row": 2
+				},
+				"hp": 50.0,
+				"id": 1,
+				"lane_offset": 0.6,
+				"max_hp": 50.0,
+				"pos": -4.9,
+				"range": 1.0,
+				"role": "frontline_tank",
+				"side": "A",
+				"speed": 0.1,
+				"splash_radius": 0.0,
+				"state": "marching",
+				"target_id": -1
+			}
+		},
+		"wave_count": {
+			"A": 1,
+			"B": 0
+		},
+		"winner": ""
+	},
+	"generated_utc": "2026-10-14T23:44:11",
+	"task": "SELL_UNIT command"
+}
