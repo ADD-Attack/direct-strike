@@ -1,0 +1,1979 @@
+{
+	"all_pass": true,
+	"assertions": [
+		{
+			"detail": "SceneTree playtest executed under --headless with no display/window/GPU context",
+			"id": "boots_headless",
+			"pass": true
+		},
+		{
+			"detail": "first scripted match reached a win within 20000 ticks (took 3584)",
+			"id": "first_match_concludes",
+			"pass": true
+		},
+		{
+			"detail": "pre-restart: match_over=true base_hp={ \"A\": 0.0, \"B\": 100.0 } -> post-restart: match_over=false base_hp={ \"A\": 200.0, \"B\": 200.0 } units=0 minerals={ \"A\": 50.0, \"B\": 50.0 }",
+			"id": "restart_resets_match",
+			"pass": true
+		},
+		{
+			"detail": "second match (post-restart) also reached a win, proving the match is fully replayable after restart",
+			"id": "second_match_concludes_after_restart",
+			"pass": true
+		},
+		{
+			"detail": "host.gd (sim) and match_client.gd (client) exist as separate files",
+			"id": "sim_and_client_are_separate_modules",
+			"pass": true
+		},
+		{
+			"detail": "MatchClient exposes submit_command()/step()/get_state()/drain_new_events() as its only public surface",
+			"id": "client_exposes_message_interface",
+			"pass": true
+		},
+		{
+			"detail": "Host.step() advances exactly one fixed tick per call, independent of real time",
+			"id": "host_has_fixed_tick_step",
+			"pass": true
+		},
+		{
+			"detail": "scenes/main.gd contains no '.host.' access — the UI only calls MatchClient's public methods, never Host directly",
+			"id": "no_direct_ui_to_sim_calls",
+			"pass": true
+		},
+		{
+			"detail": "render loop steps the sim on a fixed-duration accumulator (TICK_DT), decoupled from render framerate",
+			"id": "fixed_timestep_sim_in_render_loop",
+			"pass": true
+		},
+		{
+			"detail": "scenes/main.gd issues BUY_UNIT purchases via client.submit_command(), the same interface every other command uses",
+			"id": "buy_menu_uses_command_interface",
+			"pass": true
+		},
+		{
+			"detail": "wave counts: A=10 B=10",
+			"id": "waves_spawn_ge_2_per_side",
+			"pass": true
+		},
+		{
+			"detail": "first_contact combat event observed",
+			"id": "first_contact_fires",
+			"pass": true
+		},
+		{
+			"detail": "8 unit_death events recorded",
+			"id": "unit_deaths_recorded",
+			"pass": true
+		},
+		{
+			"detail": "base_damage sequences (per match segment, reset on restart): { \"A\": [175.0, 150.0, 125.0, 100.0, 75.0, 50.0, 25.0, 0.0, 175.0, 150.0, 125.0, 100.0, 75.0, 50.0, 25.0, 0.0], \"B\": [175.0, 150.0, 125.0, 100.0, 175.0, 150.0, 125.0, 100.0] }",
+			"id": "base_hp_strictly_decreases_once_survivors_arrive",
+			"pass": true
+		},
+		{
+			"detail": "2 match_won event(s) fired: [{ \"tick\": 3583, \"type\": \"match_won\", \"data\": { \"winner\": \"B\", \"loser\": \"A\" } }, { \"tick\": 7167, \"type\": \"match_won\", \"data\": { \"winner\": \"B\", \"loser\": \"A\" } }]",
+			"id": "win_event_fires",
+			"pass": true
+		},
+		{
+			"detail": "1 match_restarted event(s) recorded",
+			"id": "restart_event_recorded_in_ledger",
+			"pass": true
+		},
+		{
+			"detail": "40 unit_purchased events; every wave_spawned.purchased_count matched purchases queued since that side's previous wave (mismatches=none); total_spent incremented by UNIT_COST=10.0 per purchase (consistent=true)",
+			"id": "buy_commands_debit_minerals_and_join_next_wave",
+			"pass": true
+		},
+		{
+			"detail": "20 income_paid events, all matched BASE_INCOME(10.0) + floor(total_spent * 0.15) (mismatches=none)",
+			"id": "income_per_wave_matches_formula",
+			"pass": true
+		},
+		{
+			"detail": "8 buy_rejected events, all occurred while minerals < UNIT_COST=10.0 (violations=none)",
+			"id": "unaffordable_buys_rejected",
+			"pass": true
+		},
+		{
+			"detail": "wave_spawned ticks per side: A=[650, 1300, 1950, 2600, 3250, 4234, 4884, 5534, 6184, 6834] B=[650, 1300, 1950, 2600, 3250, 4234, 4884, 5534, 6184, 6834]; consecutive gaps equal BUILD_PHASE_TICKS=650 except across a restart (violations=none)",
+			"id": "wave_timer_cycles_build_spawn_build",
+			"pass": true
+		},
+		{
+			"detail": "replayed the exact recorded command log (89 commands, incl. buy/income commands) into a fresh host for 7168 ticks: 125 vs 125 events, identical=true",
+			"id": "determinism_same_log_identical_ledgers",
+			"pass": true
+		}
+	],
+	"command_log": [
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 5
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 10
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 15
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 20
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 25
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 30
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 90
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 150
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 650
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 650
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 650
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 650
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 680
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 740
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 800
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 1300
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 1300
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 1300
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 1300
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 1330
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 1390
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 1450
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 1950
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 1950
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 1950
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 1950
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 1980
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2040
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2100
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 2600
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 2600
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 2600
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 2600
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2630
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2690
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2750
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 3250
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 3250
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 3250
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 3250
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 3280
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 3340
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 3400
+		},
+		{
+			"action": "RESTART",
+			"params": {},
+			"player_id": "owner",
+			"tick": 3584
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 3589
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 3594
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 3599
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 3604
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 3609
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 3614
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 3614
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 3674
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 3734
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 4234
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 4234
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 4234
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 4234
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 4264
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 4324
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 4384
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 4884
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 4884
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 4884
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 4884
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 4914
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 4974
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 5034
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 5534
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 5534
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 5534
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 5534
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 5564
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 5624
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 5684
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 6184
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 6184
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 6184
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 6184
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 6214
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 6274
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 6334
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 6834
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 6834
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 6834
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 6834
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 6864
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 6924
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 6984
+		}
+	],
+	"economy_formula": "income = BASE_INCOME(10.0) + floor(total_spent * INCOME_RATE(0.15)); UNIT_COST=10.0; STARTING_MINERALS=50.0; BUILD_PHASE_TICKS=650",
+	"engine_version": {
+		"build": "official",
+		"hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+		"hex": 263938,
+		"major": 4,
+		"minor": 7,
+		"patch": 2,
+		"status": "stable",
+		"string": "4.7.2-stable (official)",
+		"timestamp": 0
+	},
+	"event_log": [
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 40.0,
+				"queued_units": 1,
+				"side": "A",
+				"total_spent": 10.0
+			},
+			"tick": 0,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 30.0,
+				"queued_units": 2,
+				"side": "A",
+				"total_spent": 20.0
+			},
+			"tick": 5,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 20.0,
+				"queued_units": 3,
+				"side": "A",
+				"total_spent": 30.0
+			},
+			"tick": 10,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 10.0,
+				"queued_units": 4,
+				"side": "A",
+				"total_spent": 40.0
+			},
+			"tick": 15,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 0.0,
+				"queued_units": 5,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 20,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 0.0,
+				"reason": "insufficient_minerals",
+				"side": "A"
+			},
+			"tick": 25,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 40.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 10.0
+			},
+			"tick": 30,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 30.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 20.0
+			},
+			"tick": 90,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 20.0,
+				"queued_units": 3,
+				"side": "B",
+				"total_spent": 30.0
+			},
+			"tick": 150,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 17.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 650,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 14.0,
+				"new_minerals": 34.0,
+				"side": "B",
+				"total_spent": 30.0
+			},
+			"tick": 650,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 5,
+				"side": "A",
+				"unit_ids": [
+					1,
+					2,
+					3,
+					4,
+					5
+				],
+				"wave_number": 1
+			},
+			"tick": 650,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 3,
+				"side": "B",
+				"unit_ids": [
+					6,
+					7,
+					8
+				],
+				"wave_number": 1
+			},
+			"tick": 650,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 24.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 40.0
+			},
+			"tick": 680,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 14.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 50.0
+			},
+			"tick": 740,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 4.0,
+				"queued_units": 3,
+				"side": "B",
+				"total_spent": 60.0
+			},
+			"tick": 800,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"unit_a": 1,
+				"unit_b": 6
+			},
+			"tick": 812,
+			"type": "first_contact"
+		},
+		{
+			"data": {
+				"killer_id": 5,
+				"side": "B",
+				"unit_id": 6
+			},
+			"tick": 830,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 8,
+				"side": "A",
+				"unit_id": 1
+			},
+			"tick": 842,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 5,
+				"side": "B",
+				"unit_id": 7
+			},
+			"tick": 852,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 2,
+				"side": "B",
+				"unit_id": 8
+			},
+			"tick": 884,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 175.0,
+				"side": "B",
+				"unit_id": 2
+			},
+			"tick": 1056,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 150.0,
+				"side": "B",
+				"unit_id": 3
+			},
+			"tick": 1060,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 125.0,
+				"side": "B",
+				"unit_id": 4
+			},
+			"tick": 1064,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 100.0,
+				"side": "B",
+				"unit_id": 5
+			},
+			"tick": 1067,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 34.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 1300,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 19.0,
+				"new_minerals": 23.0,
+				"side": "B",
+				"total_spent": 60.0
+			},
+			"tick": 1300,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 2
+			},
+			"tick": 1300,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 3,
+				"side": "B",
+				"unit_ids": [
+					9,
+					10,
+					11
+				],
+				"wave_number": 2
+			},
+			"tick": 1300,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 13.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 70.0
+			},
+			"tick": 1330,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 3.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 80.0
+			},
+			"tick": 1390,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 3.0,
+				"reason": "insufficient_minerals",
+				"side": "B"
+			},
+			"tick": 1450,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 175.0,
+				"side": "A",
+				"unit_id": 9
+			},
+			"tick": 1633,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 150.0,
+				"side": "A",
+				"unit_id": 10
+			},
+			"tick": 1637,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 125.0,
+				"side": "A",
+				"unit_id": 11
+			},
+			"tick": 1641,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 51.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 1950,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 22.0,
+				"new_minerals": 25.0,
+				"side": "B",
+				"total_spent": 80.0
+			},
+			"tick": 1950,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 3
+			},
+			"tick": 1950,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 2,
+				"side": "B",
+				"unit_ids": [
+					12,
+					13
+				],
+				"wave_number": 3
+			},
+			"tick": 1950,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 15.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 90.0
+			},
+			"tick": 1980,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 5.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 100.0
+			},
+			"tick": 2040,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 5.0,
+				"reason": "insufficient_minerals",
+				"side": "B"
+			},
+			"tick": 2100,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 100.0,
+				"side": "A",
+				"unit_id": 12
+			},
+			"tick": 2283,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 75.0,
+				"side": "A",
+				"unit_id": 13
+			},
+			"tick": 2287,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 68.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 2600,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 25.0,
+				"new_minerals": 30.0,
+				"side": "B",
+				"total_spent": 100.0
+			},
+			"tick": 2600,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 4
+			},
+			"tick": 2600,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 2,
+				"side": "B",
+				"unit_ids": [
+					14,
+					15
+				],
+				"wave_number": 4
+			},
+			"tick": 2600,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 20.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 110.0
+			},
+			"tick": 2630,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 10.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 120.0
+			},
+			"tick": 2690,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 0.0,
+				"queued_units": 3,
+				"side": "B",
+				"total_spent": 130.0
+			},
+			"tick": 2750,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 50.0,
+				"side": "A",
+				"unit_id": 14
+			},
+			"tick": 2933,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 25.0,
+				"side": "A",
+				"unit_id": 15
+			},
+			"tick": 2937,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 85.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 3250,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 29.0,
+				"new_minerals": 29.0,
+				"side": "B",
+				"total_spent": 130.0
+			},
+			"tick": 3250,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 5
+			},
+			"tick": 3250,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 3,
+				"side": "B",
+				"unit_ids": [
+					16,
+					17,
+					18
+				],
+				"wave_number": 5
+			},
+			"tick": 3250,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 19.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 140.0
+			},
+			"tick": 3280,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 9.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 150.0
+			},
+			"tick": 3340,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 9.0,
+				"reason": "insufficient_minerals",
+				"side": "B"
+			},
+			"tick": 3400,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 0.0,
+				"side": "A",
+				"unit_id": 16
+			},
+			"tick": 3583,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"loser": "A",
+				"winner": "B"
+			},
+			"tick": 3583,
+			"type": "match_won"
+		},
+		{
+			"data": {},
+			"tick": 3584,
+			"type": "match_restarted"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 40.0,
+				"queued_units": 1,
+				"side": "A",
+				"total_spent": 10.0
+			},
+			"tick": 3589,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 30.0,
+				"queued_units": 2,
+				"side": "A",
+				"total_spent": 20.0
+			},
+			"tick": 3594,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 20.0,
+				"queued_units": 3,
+				"side": "A",
+				"total_spent": 30.0
+			},
+			"tick": 3599,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 10.0,
+				"queued_units": 4,
+				"side": "A",
+				"total_spent": 40.0
+			},
+			"tick": 3604,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 0.0,
+				"queued_units": 5,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 3609,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 0.0,
+				"reason": "insufficient_minerals",
+				"side": "A"
+			},
+			"tick": 3614,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 40.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 10.0
+			},
+			"tick": 3614,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 30.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 20.0
+			},
+			"tick": 3674,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 20.0,
+				"queued_units": 3,
+				"side": "B",
+				"total_spent": 30.0
+			},
+			"tick": 3734,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 17.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 4234,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 14.0,
+				"new_minerals": 34.0,
+				"side": "B",
+				"total_spent": 30.0
+			},
+			"tick": 4234,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 5,
+				"side": "A",
+				"unit_ids": [
+					19,
+					20,
+					21,
+					22,
+					23
+				],
+				"wave_number": 1
+			},
+			"tick": 4234,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 3,
+				"side": "B",
+				"unit_ids": [
+					24,
+					25,
+					26
+				],
+				"wave_number": 1
+			},
+			"tick": 4234,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 24.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 40.0
+			},
+			"tick": 4264,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 14.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 50.0
+			},
+			"tick": 4324,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 4.0,
+				"queued_units": 3,
+				"side": "B",
+				"total_spent": 60.0
+			},
+			"tick": 4384,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"unit_a": 19,
+				"unit_b": 24
+			},
+			"tick": 4396,
+			"type": "first_contact"
+		},
+		{
+			"data": {
+				"killer_id": 23,
+				"side": "B",
+				"unit_id": 24
+			},
+			"tick": 4414,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 26,
+				"side": "A",
+				"unit_id": 19
+			},
+			"tick": 4426,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 23,
+				"side": "B",
+				"unit_id": 25
+			},
+			"tick": 4436,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 20,
+				"side": "B",
+				"unit_id": 26
+			},
+			"tick": 4468,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 175.0,
+				"side": "B",
+				"unit_id": 20
+			},
+			"tick": 4640,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 150.0,
+				"side": "B",
+				"unit_id": 21
+			},
+			"tick": 4644,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 125.0,
+				"side": "B",
+				"unit_id": 22
+			},
+			"tick": 4648,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 100.0,
+				"side": "B",
+				"unit_id": 23
+			},
+			"tick": 4651,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 34.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 4884,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 19.0,
+				"new_minerals": 23.0,
+				"side": "B",
+				"total_spent": 60.0
+			},
+			"tick": 4884,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 2
+			},
+			"tick": 4884,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 3,
+				"side": "B",
+				"unit_ids": [
+					27,
+					28,
+					29
+				],
+				"wave_number": 2
+			},
+			"tick": 4884,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 13.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 70.0
+			},
+			"tick": 4914,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 3.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 80.0
+			},
+			"tick": 4974,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 3.0,
+				"reason": "insufficient_minerals",
+				"side": "B"
+			},
+			"tick": 5034,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 175.0,
+				"side": "A",
+				"unit_id": 27
+			},
+			"tick": 5217,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 150.0,
+				"side": "A",
+				"unit_id": 28
+			},
+			"tick": 5221,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 125.0,
+				"side": "A",
+				"unit_id": 29
+			},
+			"tick": 5225,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 51.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 5534,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 22.0,
+				"new_minerals": 25.0,
+				"side": "B",
+				"total_spent": 80.0
+			},
+			"tick": 5534,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 3
+			},
+			"tick": 5534,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 2,
+				"side": "B",
+				"unit_ids": [
+					30,
+					31
+				],
+				"wave_number": 3
+			},
+			"tick": 5534,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 15.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 90.0
+			},
+			"tick": 5564,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 5.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 100.0
+			},
+			"tick": 5624,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 5.0,
+				"reason": "insufficient_minerals",
+				"side": "B"
+			},
+			"tick": 5684,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 100.0,
+				"side": "A",
+				"unit_id": 30
+			},
+			"tick": 5867,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 75.0,
+				"side": "A",
+				"unit_id": 31
+			},
+			"tick": 5871,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 68.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 6184,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 25.0,
+				"new_minerals": 30.0,
+				"side": "B",
+				"total_spent": 100.0
+			},
+			"tick": 6184,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 4
+			},
+			"tick": 6184,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 2,
+				"side": "B",
+				"unit_ids": [
+					32,
+					33
+				],
+				"wave_number": 4
+			},
+			"tick": 6184,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 20.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 110.0
+			},
+			"tick": 6214,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 10.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 120.0
+			},
+			"tick": 6274,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 0.0,
+				"queued_units": 3,
+				"side": "B",
+				"total_spent": 130.0
+			},
+			"tick": 6334,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 50.0,
+				"side": "A",
+				"unit_id": 32
+			},
+			"tick": 6517,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 25.0,
+				"side": "A",
+				"unit_id": 33
+			},
+			"tick": 6521,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 85.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 6834,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 29.0,
+				"new_minerals": 29.0,
+				"side": "B",
+				"total_spent": 130.0
+			},
+			"tick": 6834,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 5
+			},
+			"tick": 6834,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"purchased_count": 3,
+				"side": "B",
+				"unit_ids": [
+					34,
+					35,
+					36
+				],
+				"wave_number": 5
+			},
+			"tick": 6834,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 19.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 140.0
+			},
+			"tick": 6864,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 9.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 150.0
+			},
+			"tick": 6924,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 9.0,
+				"reason": "insufficient_minerals",
+				"side": "B"
+			},
+			"tick": 6984,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 0.0,
+				"side": "A",
+				"unit_id": 34
+			},
+			"tick": 7167,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"loser": "A",
+				"winner": "B"
+			},
+			"tick": 7167,
+			"type": "match_won"
+		}
+	],
+	"generated_utc": "2026-10-14T21:00:49",
+	"slice": "Slice 1 — The Economy"
+}

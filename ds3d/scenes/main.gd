@@ -28,6 +28,10 @@ var base_b
 @onready var base_b_label: Label = $HUDLayer/HUD/BaseBLabel
 @onready var wave_label: Label = $HUDLayer/HUD/WaveLabel
 @onready var status_label: Label = $HUDLayer/HUD/StatusLabel
+@onready var minerals_label: Label = $HUDLayer/HUD/MineralsLabel
+@onready var income_label: Label = $HUDLayer/HUD/IncomeLabel
+@onready var build_timer_label: Label = $HUDLayer/HUD/BuildTimerLabel
+@onready var buy_button: Button = $HUDLayer/HUD/BuyButton
 
 func _ready() -> void:
 	client = MatchClient.new(true)
@@ -36,7 +40,11 @@ func _ready() -> void:
 	_build_bases()
 	_configure_camera()
 	_configure_lighting()
+	buy_button.pressed.connect(_on_buy_pressed)
 	_update_hud()
+
+func _on_buy_pressed() -> void:
+	client.submit_command("A", "BUY_UNIT", {})
 
 func _build_environment() -> void:
 	var env := Environment.new()
@@ -210,7 +218,16 @@ func _update_hud() -> void:
 		status_label.text = "MATCH OVER — Winner: %s   (press R to restart)" % state["winner"]
 	else:
 		status_label.text = "Tick: %d   (press R to restart)" % state["tick"]
+	minerals_label.text = "Minerals A: %d   Queued for next wave: %d" % [int(state["minerals"]["A"]), state["queued_units"]["A"]]
+	var next_income: int = int(Host.BASE_INCOME + floor(state["total_spent"]["A"] * Host.INCOME_RATE))
+	income_label.text = "Total spent A: %d   Next income: %d" % [int(state["total_spent"]["A"]), next_income]
+	var seconds_left: float = max(0.0, state["ticks_until_next_wave"]) / 30.0
+	build_timer_label.text = "Next wave in: %.1fs" % seconds_left
+	buy_button.disabled = state["minerals"]["A"] < Host.UNIT_COST
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and event.keycode == KEY_R:
-		client.submit_command("owner", "RESTART", {})
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_R:
+			client.submit_command("owner", "RESTART", {})
+		elif event.keycode == KEY_B:
+			client.submit_command("A", "BUY_UNIT", {})

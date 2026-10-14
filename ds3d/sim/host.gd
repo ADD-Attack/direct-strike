@@ -11,11 +11,19 @@ const UNIT_HP := 30.0
 const UNIT_DAMAGE := 6.0
 const UNIT_ATTACK_RANGE := 1.2
 const UNIT_ATTACK_COOLDOWN_TICKS := 20
-const UNITS_PER_WAVE := 4
-const WAVE_INTERVAL_TICKS := 650
 const BASE_DAMAGE_PER_UNIT := 25.0
 const BASE_HP := 200.0
 const SIDES := ["A", "B"]
+
+## --- Economy (Slice 1) ---
+const STARTING_MINERALS := 50.0
+const UNIT_COST := 10.0
+const BASE_INCOME := 10.0
+const INCOME_RATE := 0.15 ## income = BASE_INCOME + floor(total_spent * INCOME_RATE)
+const BUILD_PHASE_TICKS := 650 ## countdown length; wave spawns + income paid at each boundary
+## Fixed, deterministic enemy (side B) buy schedule: tick offsets from the
+## start of each build phase at which B issues one BUY_UNIT command each.
+const ENEMY_BUY_OFFSETS := [30, 90, 150]
 
 var tick: int = 0
 var base_hp: Dictionary = {}
@@ -29,8 +37,13 @@ var event_log: Array = []
 var auto_source_enabled: bool = true
 var pending_log: Array = []
 var pending_cursor: int = 0
-var next_auto_wave_tick: Dictionary = {}
 var first_contact_fired: bool = false
+
+var minerals: Dictionary = {}
+var total_spent: Dictionary = {}
+var queued_units: Dictionary = {}
+var phase_start_tick: int = 0
+var next_phase_tick: int = 0
 
 func _init(auto_source: bool = true) -> void:
 	reset_match(auto_source)
@@ -48,8 +61,12 @@ func reset_match(auto_source: bool) -> void:
 	auto_source_enabled = auto_source
 	pending_log = []
 	pending_cursor = 0
-	next_auto_wave_tick = {"A": WAVE_INTERVAL_TICKS, "B": WAVE_INTERVAL_TICKS}
 	first_contact_fired = false
+	minerals = {"A": STARTING_MINERALS, "B": STARTING_MINERALS}
+	total_spent = {"A": 0.0, "B": 0.0}
+	queued_units = {"A": 0, "B": 0}
+	phase_start_tick = 0
+	next_phase_tick = BUILD_PHASE_TICKS
 
 ## Load a pre-recorded command log and run in pure replay mode (no auto-source).
 func load_replay_log(log: Array) -> void:
@@ -65,10 +82,16 @@ func submit_command(cmd: Dictionary) -> void:
 func step() -> void:
 	_consume_scheduled_commands()
 	if auto_source_enabled and not match_over:
-		for side in SIDES:
-			if tick >= next_auto_wave_tick[side]:
+		for offset in ENEMY_BUY_OFFSETS:
+			if tick == phase_start_tick + offset:
+				_apply_command({"tick": tick, "player_id": "B", "action": "BUY_UNIT", "params": {}})
+		if tick >= next_phase_tick:
+			for side in SIDES:
+				_apply_command({"tick": tick, "player_id": side, "action": "PAY_INCOME", "params": {}})
+			for side in SIDES:
 				_apply_command({"tick": tick, "player_id": side, "action": "SPAWN_WAVE", "params": {}})
-				next_auto_wave_tick[side] = tick + WAVE_INTERVAL_TICKS
+			phase_start_tick = tick
+			next_phase_tick = tick + BUILD_PHASE_TICKS
 	if not match_over:
 		_simulate_units()
 		_resolve_base_damage()
@@ -88,15 +111,34 @@ func _apply_command(cmd: Dictionary) -> void:
 			_do_spawn_wave(cmd["player_id"])
 		"RESTART":
 			_do_restart()
+		"BUY_UNIT":
+			_do_buy_unit(cmd["player_id"])
+		"PAY_INCOME":
+			_do_pay_income(cmd["player_id"])
 		_:
 			_emit_event("unknown_command", {"action": cmd.get("action", "")})
 
+func _do_buy_unit(side: String) -> void:
+	if minerals[side] >= UNIT_COST:
+		minerals[side] -= UNIT_COST
+		total_spent[side] += UNIT_COST
+		queued_units[side] += 1
+		_emit_event("unit_purchased", {"side": side, "cost": UNIT_COST, "minerals_remaining": minerals[side], "total_spent": total_spent[side], "queued_units": queued_units[side]})
+	else:
+		_emit_event("buy_rejected", {"side": side, "reason": "insufficient_minerals", "minerals": minerals[side], "cost": UNIT_COST})
+
+func _do_pay_income(side: String) -> void:
+	var amount: float = BASE_INCOME + floor(total_spent[side] * INCOME_RATE)
+	minerals[side] += amount
+	_emit_event("income_paid", {"side": side, "amount": amount, "total_spent": total_spent[side], "new_minerals": minerals[side]})
+
 func _do_spawn_wave(side: String) -> void:
 	wave_count[side] += 1
+	var count: int = queued_units[side]
 	var ids: Array = []
 	var start_pos: float = 0.0 if side == "A" else LANE_LENGTH
 	var dir: float = 1.0 if side == "A" else -1.0
-	for i in range(UNITS_PER_WAVE):
+	for i in range(count):
 		var id := next_unit_id
 		units[id] = {
 			"id": id,
@@ -110,7 +152,8 @@ func _do_spawn_wave(side: String) -> void:
 		}
 		ids.append(id)
 		next_unit_id += 1
-	_emit_event("wave_spawned", {"side": side, "wave_number": wave_count[side], "unit_ids": ids})
+	queued_units[side] = 0
+	_emit_event("wave_spawned", {"side": side, "wave_number": wave_count[side], "unit_ids": ids, "purchased_count": count})
 
 func _do_restart() -> void:
 	base_hp = {"A": BASE_HP, "B": BASE_HP}
@@ -119,7 +162,11 @@ func _do_restart() -> void:
 	match_over = false
 	winner = ""
 	first_contact_fired = false
-	next_auto_wave_tick = {"A": tick + WAVE_INTERVAL_TICKS, "B": tick + WAVE_INTERVAL_TICKS}
+	minerals = {"A": STARTING_MINERALS, "B": STARTING_MINERALS}
+	total_spent = {"A": 0.0, "B": 0.0}
+	queued_units = {"A": 0, "B": 0}
+	phase_start_tick = tick
+	next_phase_tick = tick + BUILD_PHASE_TICKS
 	_emit_event("match_restarted", {})
 
 func _simulate_units() -> void:
@@ -209,6 +256,11 @@ func get_state() -> Dictionary:
 		"match_over": match_over,
 		"winner": winner,
 		"wave_count": wave_count.duplicate(true),
+		"minerals": minerals.duplicate(true),
+		"total_spent": total_spent.duplicate(true),
+		"queued_units": queued_units.duplicate(true),
+		"ticks_until_next_wave": next_phase_tick - tick,
+		"build_phase_ticks": BUILD_PHASE_TICKS,
 	}
 
 func get_event_log() -> Array:
