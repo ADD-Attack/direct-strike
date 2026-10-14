@@ -99,3 +99,58 @@ interface + fixed-tick + no-direct-UI-to-sim checks, ≥2 waves per side,
 first contact, deaths, strictly-decreasing base HP once survivors arrive
 (reset correctly across the restart boundary), win event, restart event
 recorded in the ledger, and the determinism replay match.
+
+## Revision 1 (owner checkpoint verdict: CHANGES REQUESTED, presentation only)
+
+Order op-studio-slice0-rev1-20261014-1525. Brick played the first build and
+ruled it read as the 2D Direct Strike game, not SC2 Direct Strike. THE
+REFERENCE was added to `studio/SLICE-PLAN.md`. Sim/architecture untouched
+this revision — only `scenes/main.gd` plus two new files,
+`scenes/unit_visual.gd` and `scenes/base_visual.gd`, changed.
+
+**What changed, presentation only:**
+- Terrain: flat grey plane replaced with metal lane plating (glowing seam
+  lines), raised dirt embankments with a ridge lip on each side, and 8
+  scattered rock props — real elevation and material contrast instead of
+  one flat color.
+- Bases: single colored box replaced with a composed command-structure rig
+  (foundation slab, tapered 3-stage core tower, two side pods, a beacon
+  spire, emissive team-color trim) per side.
+- Units: capsule blob replaced with a composed rig (torso/head/legs/
+  side-mounted weapon/emissive core) in `unit_visual.gd`, driven entirely by
+  `MatchClient.get_state()` — march bob + leg swing while `state=="marching"`,
+  a forward lunge + core brightening when a unit's `cooldown` jumps (an
+  attack just landed), and a red/white torso flash when a unit's `hp` drops
+  since the last frame it was read. All three are inferred client-side from
+  state the sim already reports — no sim changes, no new commands.
+- Camera: moved from a distant, steep, roughly top-down angle to a closer
+  oblique RTS angle positioned near Base A looking down the lane (FOV 55,
+  ~40° pitch), so both bases fit in frame with strong forced-perspective
+  depth (near base large, far base recedes).
+- Lighting: `WorldEnvironment` added (procedural sky, fog, filmic tonemap,
+  glow), sun lowered to a grazing ~28° angle for visible raking shadows
+  across the terrain (a steep near-overhead angle, tried first, produced
+  almost no visible shadow), plus a dim cool fill light from the opposite
+  side; ambient trimmed down so the directional light's contrast actually
+  reads instead of washing out.
+
+**Real rendered screenshots, this time.** Last revision substituted JSON
+state snapshots for pixel frames because Godot's own engine binary hangs
+instantiating any Viewport under `--headless` in this sandbox (still true,
+reconfirmed). This revision found a working path: OpenClaw's browser tool
+can load the **published** `https://add-attack.github.io/...` URL (its
+software WebGL renders real pixels there) even though it cannot reach
+`localhost` (blocked by policy) and its own `status`/`doctor` checks report
+WebGL as unavailable — that check is apparently pessimistic for actual page
+loads. `studio/builds/slice-0/screenshots/` holds three real captures taken
+against the live published build: `01_establishing.png` (both bases, full
+terrain, tick 78, before any wave), `02_combat_base_under_attack.png`
+(mid-fight, Base B HP 150, two units visible mid-lane, tick 1461),
+`03_victory.png` (Base B HP 0, "MATCH OVER — Winner: A", after the first
+match concludes). The `frames/*.json` state snapshots from the headless
+playtest are kept alongside as the machine-checkable evidence; the PNGs are
+the human glance-test evidence.
+
+Playtest re-run after every change in this revision; still 15/15 PASS,
+determinism replay still identical — confirms the rework never touched
+sim/architecture, only how state gets drawn.
