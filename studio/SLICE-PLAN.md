@@ -11,6 +11,13 @@ without a rewrite.
 
 Engine: Godot 4, 3D, web export per slice (playable in a browser).
 
+**Design inputs:** this plan, `studio/CHARTER.md`, the owner's
+checkpoint verdicts, and **`studio/REFERENCE.md`** (added 2026-10-14) —
+the sourced breakdown of the real SC2 Direct Strike: structure,
+economy, tiers, roster, counters, pacing, plus the demo's adaptation
+decisions and divergences. Where this plan and the reference conflict,
+the reference names it and the owner rules.
+
 **THE REFERENCE (owner checkpoint ruling, 2026-10-14):** the visual and
 structural reference is **StarCraft II's Direct Strike** — a real 3D
 RTS battlefield: modeled 3D units and substantial base structures,
