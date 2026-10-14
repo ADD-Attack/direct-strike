@@ -15,15 +15,28 @@ const BASE_DAMAGE_PER_UNIT := 25.0
 const BASE_HP := 200.0
 const SIDES := ["A", "B"]
 
-## --- Economy (Slice 1) ---
+## --- Economy (Slice 1, per studio/REFERENCE.md — the real Direct Strike
+## economy: fixed trickle + up to 4 escalating-cost gases + a middle-control
+## bonus. Real rates are undocumented; these are demo tuning. ---
+const TICK_RATE := 30
 const STARTING_MINERALS := 50.0
 const UNIT_COST := 10.0
-const BASE_INCOME := 10.0
-const INCOME_RATE := 0.15 ## income = BASE_INCOME + floor(total_spent * INCOME_RATE)
-const BUILD_PHASE_TICKS := 650 ## countdown length; wave spawns + income paid at each boundary
+const BASE_TRICKLE_PER_SEC := 3.0
+const MAX_GASES := 4
+const GAS_COSTS := [60.0, 120.0, 240.0, 480.0] ## escalating cost per successive gas
+const GAS_TRICKLE_BONUS_PER_SEC := 1.5 ## each gas raises trickle by this much
+## Side holding more units on the enemy half of the lane gets this bonus —
+## REFERENCE.md cites a forum guide calling it "worth ~2 gases"; set to match.
+const MIDDLE_CONTROL_BONUS_PER_SEC := 2.0 * GAS_TRICKLE_BONUS_PER_SEC
+const MID_X := LANE_LENGTH * 0.5
+const BUILD_PHASE_TICKS := 650 ## countdown length; wave spawns at each boundary (kept from Slice 0/1a tuning, per REFERENCE.md divergence #5)
 ## Fixed, deterministic enemy (side B) buy schedule: tick offsets from the
 ## start of each build phase at which B issues one BUY_UNIT command each.
 const ENEMY_BUY_OFFSETS := [30, 90, 150]
+## Enemy also buys gas, slower and later, so it doesn't out-economy the
+## player every single phase: one BUY_GAS every 3rd phase, at this offset.
+const ENEMY_GAS_EVERY_N_PHASES := 3
+const ENEMY_GAS_OFFSET := 200
 
 var tick: int = 0
 var base_hp: Dictionary = {}
@@ -42,8 +55,12 @@ var first_contact_fired: bool = false
 var minerals: Dictionary = {}
 var total_spent: Dictionary = {}
 var queued_units: Dictionary = {}
+var trickle_rate: Dictionary = {}
+var gas_count: Dictionary = {}
+var middle_controller: String = "" ## "" (none), "A", or "B"
 var phase_start_tick: int = 0
 var next_phase_tick: int = 0
+var enemy_phase_count: int = 0
 
 func _init(auto_source: bool = true) -> void:
 	reset_match(auto_source)
@@ -65,8 +82,12 @@ func reset_match(auto_source: bool) -> void:
 	minerals = {"A": STARTING_MINERALS, "B": STARTING_MINERALS}
 	total_spent = {"A": 0.0, "B": 0.0}
 	queued_units = {"A": 0, "B": 0}
+	trickle_rate = {"A": BASE_TRICKLE_PER_SEC, "B": BASE_TRICKLE_PER_SEC}
+	gas_count = {"A": 0, "B": 0}
+	middle_controller = ""
 	phase_start_tick = 0
 	next_phase_tick = BUILD_PHASE_TICKS
+	enemy_phase_count = 0
 
 ## Load a pre-recorded command log and run in pure replay mode (no auto-source).
 func load_replay_log(log: Array) -> void:
@@ -85,18 +106,44 @@ func step() -> void:
 		for offset in ENEMY_BUY_OFFSETS:
 			if tick == phase_start_tick + offset:
 				_apply_command({"tick": tick, "player_id": "B", "action": "BUY_UNIT", "params": {}})
+		if enemy_phase_count % ENEMY_GAS_EVERY_N_PHASES == 0 and tick == phase_start_tick + ENEMY_GAS_OFFSET:
+			_apply_command({"tick": tick, "player_id": "B", "action": "BUY_GAS", "params": {}})
 		if tick >= next_phase_tick:
-			for side in SIDES:
-				_apply_command({"tick": tick, "player_id": side, "action": "PAY_INCOME", "params": {}})
 			for side in SIDES:
 				_apply_command({"tick": tick, "player_id": side, "action": "SPAWN_WAVE", "params": {}})
 			phase_start_tick = tick
 			next_phase_tick = tick + BUILD_PHASE_TICKS
+			enemy_phase_count += 1
 	if not match_over:
+		_update_middle_control()
+		for side in SIDES:
+			var rate: float = trickle_rate[side] + (MIDDLE_CONTROL_BONUS_PER_SEC if middle_controller == side else 0.0)
+			minerals[side] += rate / float(TICK_RATE)
 		_simulate_units()
 		_resolve_base_damage()
 		_check_win()
 	tick += 1
+
+## Recomputes which side (if either) holds more units on the enemy half of
+## the lane, and emits an event only when that changes — this runs every
+## tick (authoritative), the event is just a ledger breadcrumb of the flips.
+func _update_middle_control() -> void:
+	var count_a := 0
+	var count_b := 0
+	for id in units:
+		var u: Dictionary = units[id]
+		if u["side"] == "A" and u["pos"] > MID_X:
+			count_a += 1
+		elif u["side"] == "B" and u["pos"] < MID_X:
+			count_b += 1
+	var new_controller: String = ""
+	if count_a > count_b:
+		new_controller = "A"
+	elif count_b > count_a:
+		new_controller = "B"
+	if new_controller != middle_controller:
+		middle_controller = new_controller
+		_emit_event("middle_control_changed", {"controller": middle_controller, "units_on_enemy_half": {"A": count_a, "B": count_b}})
 
 func _consume_scheduled_commands() -> void:
 	while pending_cursor < pending_log.size() and pending_log[pending_cursor]["tick"] <= tick:
@@ -113,8 +160,8 @@ func _apply_command(cmd: Dictionary) -> void:
 			_do_restart()
 		"BUY_UNIT":
 			_do_buy_unit(cmd["player_id"])
-		"PAY_INCOME":
-			_do_pay_income(cmd["player_id"])
+		"BUY_GAS":
+			_do_buy_gas(cmd["player_id"])
 		_:
 			_emit_event("unknown_command", {"action": cmd.get("action", "")})
 
@@ -127,10 +174,19 @@ func _do_buy_unit(side: String) -> void:
 	else:
 		_emit_event("buy_rejected", {"side": side, "reason": "insufficient_minerals", "minerals": minerals[side], "cost": UNIT_COST})
 
-func _do_pay_income(side: String) -> void:
-	var amount: float = BASE_INCOME + floor(total_spent[side] * INCOME_RATE)
-	minerals[side] += amount
-	_emit_event("income_paid", {"side": side, "amount": amount, "total_spent": total_spent[side], "new_minerals": minerals[side]})
+func _do_buy_gas(side: String) -> void:
+	if gas_count[side] >= MAX_GASES:
+		_emit_event("buy_rejected", {"side": side, "reason": "max_gases_reached", "gas_count": gas_count[side]})
+		return
+	var cost: float = GAS_COSTS[gas_count[side]]
+	if minerals[side] < cost:
+		_emit_event("buy_rejected", {"side": side, "reason": "insufficient_minerals", "minerals": minerals[side], "cost": cost})
+		return
+	minerals[side] -= cost
+	total_spent[side] += cost
+	gas_count[side] += 1
+	trickle_rate[side] += GAS_TRICKLE_BONUS_PER_SEC
+	_emit_event("gas_purchased", {"side": side, "cost": cost, "gas_count": gas_count[side], "new_trickle_rate": trickle_rate[side]})
 
 func _do_spawn_wave(side: String) -> void:
 	wave_count[side] += 1
@@ -165,8 +221,12 @@ func _do_restart() -> void:
 	minerals = {"A": STARTING_MINERALS, "B": STARTING_MINERALS}
 	total_spent = {"A": 0.0, "B": 0.0}
 	queued_units = {"A": 0, "B": 0}
+	trickle_rate = {"A": BASE_TRICKLE_PER_SEC, "B": BASE_TRICKLE_PER_SEC}
+	gas_count = {"A": 0, "B": 0}
+	middle_controller = ""
 	phase_start_tick = tick
 	next_phase_tick = tick + BUILD_PHASE_TICKS
+	enemy_phase_count = 0
 	_emit_event("match_restarted", {})
 
 func _simulate_units() -> void:
@@ -259,6 +319,9 @@ func get_state() -> Dictionary:
 		"minerals": minerals.duplicate(true),
 		"total_spent": total_spent.duplicate(true),
 		"queued_units": queued_units.duplicate(true),
+		"trickle_rate": trickle_rate.duplicate(true),
+		"gas_count": gas_count.duplicate(true),
+		"middle_controller": middle_controller,
 		"ticks_until_next_wave": next_phase_tick - tick,
 		"build_phase_ticks": BUILD_PHASE_TICKS,
 	}

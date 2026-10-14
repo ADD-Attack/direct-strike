@@ -29,9 +29,10 @@ var base_b
 @onready var wave_label: Label = $HUDLayer/HUD/WaveLabel
 @onready var status_label: Label = $HUDLayer/HUD/StatusLabel
 @onready var minerals_label: Label = $HUDLayer/HUD/MineralsLabel
-@onready var income_label: Label = $HUDLayer/HUD/IncomeLabel
+@onready var trickle_label: Label = $HUDLayer/HUD/TrickleLabel
 @onready var build_timer_label: Label = $HUDLayer/HUD/BuildTimerLabel
 @onready var buy_button: Button = $HUDLayer/HUD/BuyButton
+@onready var buy_gas_button: Button = $HUDLayer/HUD/BuyGasButton
 
 func _ready() -> void:
 	client = MatchClient.new(true)
@@ -40,11 +41,15 @@ func _ready() -> void:
 	_build_bases()
 	_configure_camera()
 	_configure_lighting()
-	buy_button.pressed.connect(_on_buy_pressed)
+	buy_button.pressed.connect(_on_buy_unit_pressed)
+	buy_gas_button.pressed.connect(_on_buy_gas_pressed)
 	_update_hud()
 
-func _on_buy_pressed() -> void:
+func _on_buy_unit_pressed() -> void:
 	client.submit_command("A", "BUY_UNIT", {})
+
+func _on_buy_gas_pressed() -> void:
+	client.submit_command("A", "BUY_GAS", {})
 
 func _build_environment() -> void:
 	var env := Environment.new()
@@ -219,15 +224,26 @@ func _update_hud() -> void:
 	else:
 		status_label.text = "Tick: %d   (press R to restart)" % state["tick"]
 	minerals_label.text = "Minerals A: %d   Queued for next wave: %d" % [int(state["minerals"]["A"]), state["queued_units"]["A"]]
-	var next_income: int = int(Host.BASE_INCOME + floor(state["total_spent"]["A"] * Host.INCOME_RATE))
-	income_label.text = "Total spent A: %d   Next income: %d" % [int(state["total_spent"]["A"]), next_income]
+	var controller: String = state["middle_controller"]
+	var control_text: String = "A (you)" if controller == "A" else ("B (enemy)" if controller == "B" else "—")
+	trickle_label.text = "Trickle A: %.1f/s   Gases: %d/%d   Middle control: %s" % [state["trickle_rate"]["A"], state["gas_count"]["A"], Host.MAX_GASES, control_text]
 	var seconds_left: float = max(0.0, state["ticks_until_next_wave"]) / 30.0
 	build_timer_label.text = "Next wave in: %.1fs" % seconds_left
 	buy_button.disabled = state["minerals"]["A"] < Host.UNIT_COST
+	var gas_idx: int = state["gas_count"]["A"]
+	if gas_idx >= Host.MAX_GASES:
+		buy_gas_button.disabled = true
+		buy_gas_button.text = "Buy Gas — MAX (G)"
+	else:
+		var gas_cost: float = Host.GAS_COSTS[gas_idx]
+		buy_gas_button.disabled = state["minerals"]["A"] < gas_cost
+		buy_gas_button.text = "Buy Gas — %d minerals (G)" % int(gas_cost)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R:
 			client.submit_command("owner", "RESTART", {})
-		elif event.keycode == KEY_B:
+		elif event.keycode == KEY_U:
 			client.submit_command("A", "BUY_UNIT", {})
+		elif event.keycode == KEY_G:
+			client.submit_command("A", "BUY_GAS", {})

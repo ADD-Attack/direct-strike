@@ -19,6 +19,10 @@ const MAX_TICKS_PER_MATCH := 20000
 ## from the start of each phase. 6 attempts against a 50-mineral starting
 ## bank (5 affordable) exercises both successful purchases and a rejection.
 const PLAYER_BUY_OFFSETS := [0, 5, 10, 15, 20, 25]
+## Player also tries to buy gas once per phase, early — guaranteed to be
+## unaffordable on phase 0 (exercises a gas-specific rejection) and
+## affordable later once minerals accumulate.
+const PLAYER_GAS_OFFSET := 2
 
 var assertions: Array = []
 
@@ -32,10 +36,11 @@ func _init() -> void:
 	var events: Array = run["events"]
 	var command_log: Array = run["command_log"]
 	var total_ticks: int = run["ticks"]
+	var final_minerals: Dictionary = run["final_minerals"]
 
 	_assert_architecture()
 	_assert_gameplay(events)
-	_assert_economy(events)
+	_assert_economy(events, total_ticks, final_minerals)
 	_assert_determinism(command_log, events, total_ticks)
 
 	_write_ledger(events, command_log)
@@ -53,6 +58,8 @@ func _play_full_script() -> Dictionary:
 		var since_phase: int = ticks - last_phase_reset_tick
 		if since_phase in PLAYER_BUY_OFFSETS:
 			client.submit_command("A", "BUY_UNIT", {})
+		if since_phase == PLAYER_GAS_OFFSET:
+			client.submit_command("A", "BUY_GAS", {})
 		client.step()
 		ticks += 1
 
@@ -65,18 +72,28 @@ func _play_full_script() -> Dictionary:
 		ticks += 1
 	last_phase_reset_tick = ticks
 	var post_restart: Dictionary = client.get_state()
+	# Minerals aren't exactly STARTING_MINERALS here: trickle is continuous
+	# (per REFERENCE.md), so the 5 ticks stepped since RESTART already
+	# accrued a bit (5 * BASE_TRICKLE_PER_SEC / TICK_RATE). Check against
+	# that expected value, not a stale exact-equality from the old
+	# lump-sum-income model.
+	var expected_post_restart_minerals: float = Host.STARTING_MINERALS + 5.0 * Host.BASE_TRICKLE_PER_SEC / float(Host.TICK_RATE)
 	var restart_ok: bool = (not post_restart["match_over"]) \
 		and post_restart["base_hp"]["A"] == Host.BASE_HP \
 		and post_restart["base_hp"]["B"] == Host.BASE_HP \
 		and post_restart["units"].size() == 0 \
-		and post_restart["minerals"]["A"] == Host.STARTING_MINERALS \
-		and post_restart["minerals"]["B"] == Host.STARTING_MINERALS
-	_assert("restart_resets_match", restart_ok, "pre-restart: match_over=%s base_hp=%s -> post-restart: match_over=%s base_hp=%s units=%d minerals=%s" % [pre_restart["match_over"], pre_restart["base_hp"], post_restart["match_over"], post_restart["base_hp"], post_restart["units"].size(), post_restart["minerals"]])
+		and absf(post_restart["minerals"]["A"] - expected_post_restart_minerals) < 0.01 \
+		and absf(post_restart["minerals"]["B"] - expected_post_restart_minerals) < 0.01 \
+		and post_restart["gas_count"]["A"] == 0 and post_restart["gas_count"]["B"] == 0 \
+		and post_restart["middle_controller"] == ""
+	_assert("restart_resets_match", restart_ok, "pre-restart: match_over=%s base_hp=%s -> post-restart: match_over=%s base_hp=%s units=%d minerals=%s (expected ~%.2f after 5 ticks of trickle) gas_count=%s middle_controller=%s" % [pre_restart["match_over"], pre_restart["base_hp"], post_restart["match_over"], post_restart["base_hp"], post_restart["units"].size(), post_restart["minerals"], expected_post_restart_minerals, post_restart["gas_count"], post_restart["middle_controller"]])
 
 	while not client.get_state()["match_over"] and ticks < MAX_TICKS_PER_MATCH * 2:
 		var since_phase2: int = ticks - last_phase_reset_tick
 		if since_phase2 in PLAYER_BUY_OFFSETS:
 			client.submit_command("A", "BUY_UNIT", {})
+		if since_phase2 == PLAYER_GAS_OFFSET:
+			client.submit_command("A", "BUY_GAS", {})
 		client.step()
 		ticks += 1
 
@@ -86,6 +103,7 @@ func _play_full_script() -> Dictionary:
 		"events": client.get_full_event_log(),
 		"command_log": client.get_command_log(),
 		"ticks": ticks,
+		"final_minerals": client.get_state()["minerals"],
 	}
 
 func _assert_gameplay(events: Array) -> void:
@@ -129,71 +147,119 @@ func _assert_gameplay(events: Array) -> void:
 	_assert("win_event_fires", win_events.size() >= 1, "%d match_won event(s) fired: %s" % [win_events.size(), win_events])
 	_assert("restart_event_recorded_in_ledger", restart_events >= 1, "%d match_restarted event(s) recorded" % restart_events)
 
-func _assert_economy(events: Array) -> void:
+func _assert_economy(events: Array, total_ticks: int, final_minerals: Dictionary) -> void:
 	var queued_since_last_wave: Dictionary = {"A": 0, "B": 0}
-	var total_spent_running: Dictionary = {"A": 0.0, "B": 0.0}
 	var wave_match_ok := true
 	var wave_match_detail := ""
-	var spend_ledger_ok := true
 	var purchased_count := 0
 	var rejected_count := 0
 	var rejected_violation := ""
-	var income_formula_ok := true
-	var income_detail := ""
-	var income_count := 0
+	var gas_count := 0
+	var gas_formula_ok := true
+	var gas_detail := ""
+	var control_change_count := 0
+	var control_flip_ok := true
+	var control_flip_detail := ""
 	var wave_ticks: Dictionary = {"A": [], "B": []}
 	var restart_ticks: Array = []
 
-	for e in events:
-		match e["type"]:
-			"unit_purchased":
-				var side: String = e["data"]["side"]
-				queued_since_last_wave[side] += 1
-				purchased_count += 1
-				var expected_spent: float = total_spent_running[side] + Host.UNIT_COST
-				if e["data"]["total_spent"] != expected_spent:
-					spend_ledger_ok = false
-				total_spent_running[side] = e["data"]["total_spent"]
-			"buy_rejected":
-				rejected_count += 1
-				if e["data"]["minerals"] >= Host.UNIT_COST:
-					rejected_violation += "tick %d side %s had %s minerals (>= cost %s) yet was rejected; " % [e["tick"], e["data"]["side"], e["data"]["minerals"], Host.UNIT_COST]
-			"wave_spawned":
-				var side2: String = e["data"]["side"]
-				var expected_count: int = queued_since_last_wave[side2]
-				if e["data"]["purchased_count"] != expected_count or e["data"]["unit_ids"].size() != expected_count:
-					wave_match_ok = false
-					wave_match_detail += "side=%s tick=%d expected_queued=%d got_purchased_count=%d got_unit_ids=%d; " % [side2, e["tick"], expected_count, e["data"]["purchased_count"], e["data"]["unit_ids"].size()]
-				queued_since_last_wave[side2] = 0
-				wave_ticks[side2].append(e["tick"])
-			"income_paid":
-				income_count += 1
-				var expected_amount: float = Host.BASE_INCOME + floor(e["data"]["total_spent"] * Host.INCOME_RATE)
-				if e["data"]["amount"] != expected_amount:
-					income_formula_ok = false
-					income_detail += "side=%s spent=%s expected=%s got=%s; " % [e["data"]["side"], e["data"]["total_spent"], expected_amount, e["data"]["amount"]]
-			"match_restarted":
-				restart_ticks.append(e["tick"])
-				# Host._do_restart() discards any queued-but-unspawned purchases and
-				# resets total_spent to 0 for both sides — mirror that here so a
-				# purchase stranded right before a restart isn't wrongly carried
-				# over and blamed on the next match segment's first wave.
-				queued_since_last_wave = {"A": 0, "B": 0}
-				total_spent_running = {"A": 0.0, "B": 0.0}
+	# Reconstructed economy state, walked forward tick-by-tick through the
+	# ledger's own events — proves the trickle+gas+middle-control formula by
+	# re-deriving the ENTIRE match's minerals purely from public events and
+	# checking it against the host's actual final balance, rather than
+	# spot-sampling a window.
+	var recon_minerals: Dictionary = {"A": Host.STARTING_MINERALS, "B": Host.STARTING_MINERALS}
+	var recon_trickle: Dictionary = {"A": Host.BASE_TRICKLE_PER_SEC, "B": Host.BASE_TRICKLE_PER_SEC}
+	var recon_controller := ""
+	var cursor_tick := 0
 
-	_assert("buy_commands_debit_minerals_and_join_next_wave", wave_match_ok and spend_ledger_ok and purchased_count > 0, "%d unit_purchased events; every wave_spawned.purchased_count matched purchases queued since that side's previous wave (mismatches=%s); total_spent incremented by UNIT_COST=%s per purchase (consistent=%s)" % [purchased_count, ("none" if wave_match_ok else wave_match_detail), Host.UNIT_COST, spend_ledger_ok])
+	var i := 0
+	while i < events.size():
+		var t: int = events[i]["tick"]
+		var n: int = t - cursor_tick
+		if n > 0:
+			for side in ["A", "B"]:
+				var rate: float = recon_trickle[side] + (Host.MIDDLE_CONTROL_BONUS_PER_SEC if recon_controller == side else 0.0)
+				recon_minerals[side] += rate / float(Host.TICK_RATE) * n
+			cursor_tick = t
+		var j := i
+		while j < events.size() and events[j]["tick"] == t:
+			var e: Dictionary = events[j]
+			match e["type"]:
+				"unit_purchased":
+					var side: String = e["data"]["side"]
+					queued_since_last_wave[side] += 1
+					purchased_count += 1
+					recon_minerals[side] -= Host.UNIT_COST
+				"buy_rejected":
+					rejected_count += 1
+					var reason: String = e["data"]["reason"]
+					if reason == "insufficient_minerals" and e["data"]["minerals"] >= e["data"]["cost"]:
+						rejected_violation += "tick %d side %s had %s minerals (>= cost %s) yet was rejected; " % [t, e["data"]["side"], e["data"]["minerals"], e["data"]["cost"]]
+				"gas_purchased":
+					var gside: String = e["data"]["side"]
+					gas_count += 1
+					var expected_cost: float = Host.GAS_COSTS[e["data"]["gas_count"] - 1]
+					var expected_trickle: float = Host.BASE_TRICKLE_PER_SEC + e["data"]["gas_count"] * Host.GAS_TRICKLE_BONUS_PER_SEC
+					if e["data"]["cost"] != expected_cost or e["data"]["new_trickle_rate"] != expected_trickle:
+						gas_formula_ok = false
+						gas_detail += "tick %d side %s gas#%d cost=%s(expected %s) new_trickle=%s(expected %s); " % [t, gside, e["data"]["gas_count"], e["data"]["cost"], expected_cost, e["data"]["new_trickle_rate"], expected_trickle]
+					recon_minerals[gside] -= e["data"]["cost"]
+					recon_trickle[gside] += Host.GAS_TRICKLE_BONUS_PER_SEC
+				"middle_control_changed":
+					var new_controller: String = e["data"]["controller"]
+					if new_controller == recon_controller:
+						control_flip_ok = false
+						control_flip_detail += "tick %d controller re-announced as unchanged (%s); " % [t, new_controller]
+					control_change_count += 1
+					recon_controller = new_controller
+				"wave_spawned":
+					var side3: String = e["data"]["side"]
+					var expected_count: int = queued_since_last_wave[side3]
+					if e["data"]["purchased_count"] != expected_count or e["data"]["unit_ids"].size() != expected_count:
+						wave_match_ok = false
+						wave_match_detail += "side=%s tick=%d expected_queued=%d got_purchased_count=%d got_unit_ids=%d; " % [side3, t, expected_count, e["data"]["purchased_count"], e["data"]["unit_ids"].size()]
+					queued_since_last_wave[side3] = 0
+					wave_ticks[side3].append(t)
+				"match_restarted":
+					restart_ticks.append(t)
+					queued_since_last_wave = {"A": 0, "B": 0}
+					recon_minerals = {"A": Host.STARTING_MINERALS, "B": Host.STARTING_MINERALS}
+					recon_trickle = {"A": Host.BASE_TRICKLE_PER_SEC, "B": Host.BASE_TRICKLE_PER_SEC}
+					recon_controller = ""
+			j += 1
+		i = j
+	var n_final: int = total_ticks - cursor_tick
+	if n_final > 0:
+		for side in ["A", "B"]:
+			var rate2: float = recon_trickle[side] + (Host.MIDDLE_CONTROL_BONUS_PER_SEC if recon_controller == side else 0.0)
+			recon_minerals[side] += rate2 / float(Host.TICK_RATE) * n_final
 
-	_assert("income_per_wave_matches_formula", income_formula_ok and income_count > 0, "%d income_paid events, all matched BASE_INCOME(%s) + floor(total_spent * %s) (mismatches=%s)" % [income_count, Host.BASE_INCOME, Host.INCOME_RATE, ("none" if income_formula_ok else income_detail)])
+	var recon_matches := true
+	var recon_detail := ""
+	for side in ["A", "B"]:
+		var diff: float = absf(recon_minerals[side] - final_minerals[side])
+		if diff > 0.01:
+			recon_matches = false
+			recon_detail += "side=%s reconstructed=%.4f actual=%.4f diff=%.4f; " % [side, recon_minerals[side], final_minerals[side], diff]
 
-	_assert("unaffordable_buys_rejected", rejected_count > 0 and rejected_violation == "", "%d buy_rejected events, all occurred while minerals < UNIT_COST=%s (violations=%s)" % [rejected_count, Host.UNIT_COST, ("none" if rejected_violation == "" else rejected_violation)])
+	_assert("buy_commands_debit_minerals_and_join_next_wave", wave_match_ok and purchased_count > 0, "%d unit_purchased events; every wave_spawned.purchased_count matched purchases queued since that side's previous wave (mismatches=%s)" % [purchased_count, ("none" if wave_match_ok else wave_match_detail)])
+
+	_assert("trickle_and_middle_control_match_stated_formula", recon_matches, "reconstructed minerals walking the ledger tick-by-tick (fixed trickle=%s/s, +%s/s per gas, +%s/s middle-control bonus paid only to the controlling side, %d control-change events) match the host's actual final minerals: A recon=%.2f actual=%.2f, B recon=%.2f actual=%.2f%s" % [Host.BASE_TRICKLE_PER_SEC, Host.GAS_TRICKLE_BONUS_PER_SEC, Host.MIDDLE_CONTROL_BONUS_PER_SEC, control_change_count, recon_minerals["A"], final_minerals["A"], recon_minerals["B"], final_minerals["B"], ("" if recon_matches else " MISMATCH: " + recon_detail)])
+
+	_assert("gas_purchase_escalating_cost_and_trickle_bonus", gas_formula_ok and gas_count > 0, "%d gas_purchased events, all matched GAS_COSTS=%s (escalating) and trickle += %s/gas (mismatches=%s)" % [gas_count, Host.GAS_COSTS, Host.GAS_TRICKLE_BONUS_PER_SEC, ("none" if gas_formula_ok else gas_detail)])
+
+	_assert("middle_control_flips_with_unit_distribution", control_flip_ok and control_change_count > 0, "%d middle_control_changed events, each one actually changed the controller value (no-op re-announcements=%s)" % [control_change_count, ("none" if control_flip_ok else control_flip_detail)])
+
+	_assert("unaffordable_buys_rejected", rejected_count > 0 and rejected_violation == "", "%d buy_rejected events (units + gas), all occurred while actually unaffordable or at the gas cap (violations=%s)" % [rejected_count, ("none" if rejected_violation == "" else rejected_violation)])
 
 	var cycle_ok := true
 	var cycle_detail := ""
 	for side in ["A", "B"]:
 		var ts: Array = wave_ticks[side]
-		for i in range(1, ts.size()):
-			var prev_tick: int = ts[i - 1]
-			var cur_tick: int = ts[i]
+		for k in range(1, ts.size()):
+			var prev_tick: int = ts[k - 1]
+			var cur_tick: int = ts[k]
 			var crosses_restart := false
 			for rt in restart_ticks:
 				if rt > prev_tick and rt <= cur_tick:
@@ -261,7 +327,7 @@ func _write_ledger(events: Array, command_log: Array) -> void:
 		"slice": "Slice 1 — The Economy",
 		"generated_utc": Time.get_datetime_string_from_system(true),
 		"engine_version": Engine.get_version_info(),
-		"economy_formula": "income = BASE_INCOME(%s) + floor(total_spent * INCOME_RATE(%s)); UNIT_COST=%s; STARTING_MINERALS=%s; BUILD_PHASE_TICKS=%s" % [Host.BASE_INCOME, Host.INCOME_RATE, Host.UNIT_COST, Host.STARTING_MINERALS, Host.BUILD_PHASE_TICKS],
+		"economy_formula": "per-tick: minerals[side] += (trickle_rate[side] + (middle_control_bonus if side controls the middle else 0)) / TICK_RATE(%s); trickle_rate starts at BASE_TRICKLE_PER_SEC=%s and += GAS_TRICKLE_BONUS_PER_SEC=%s per gas (max %s gases, costs %s); MIDDLE_CONTROL_BONUS_PER_SEC=%s to whichever side has more units on the enemy half of the lane; UNIT_COST=%s; STARTING_MINERALS=%s; BUILD_PHASE_TICKS=%s. Per studio/REFERENCE.md divergence #1 (owner ruling 2026-10-14) — real rates undocumented, these are demo tuning." % [Host.TICK_RATE, Host.BASE_TRICKLE_PER_SEC, Host.GAS_TRICKLE_BONUS_PER_SEC, Host.MAX_GASES, Host.GAS_COSTS, Host.MIDDLE_CONTROL_BONUS_PER_SEC, Host.UNIT_COST, Host.STARTING_MINERALS, Host.BUILD_PHASE_TICKS],
 		"assertions": assertions,
 		"all_pass": _all_pass(),
 		"event_log": events,

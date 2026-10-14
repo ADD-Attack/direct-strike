@@ -58,12 +58,12 @@ offset_right = 420.0
 offset_bottom = 152.0
 text = "Minerals A: 50   Queued: 0"
 
-[node name="IncomeLabel" type="Label" parent="HUDLayer/HUD"]
+[node name="TrickleLabel" type="Label" parent="HUDLayer/HUD"]
 offset_left = 16.0
 offset_top = 156.0
 offset_right = 420.0
 offset_bottom = 180.0
-text = "Total spent A: 0   Next income: 10"
+text = "Trickle A: 3.0/s   Gases: 0/4   Middle control: —"
 
 [node name="BuildTimerLabel" type="Label" parent="HUDLayer/HUD"]
 offset_left = 16.0
@@ -77,4 +77,11 @@ offset_left = 16.0
 offset_top = 220.0
 offset_right = 240.0
 offset_bottom = 260.0
-text = "Buy Unit — 10 minerals (B)"
+text = "Buy Unit — 10 minerals (U)"
+
+[node name="BuyGasButton" type="Button" parent="HUDLayer/HUD"]
+offset_left = 250.0
+offset_top = 220.0
+offset_right = 470.0
+offset_bottom = 260.0
+text = "Buy Gas — 60 minerals (G)"

@@ -103,3 +103,79 @@ including buys/income) replayed into a fresh host reproduces an identical
 godot --headless --path ds3d -s playtest/run_playtest_slice1.gd
 cd ds3d && godot --headless --path . --export-release "Web" index.html
 ```
+
+## Rework: pivot to the real Direct Strike economy (same-day)
+
+Everything above this line describes the **first** Slice 1 build
+(commit `e3c7ed7`, income-on-spend). While it was in flight, the producer
+researched the real SC2 Direct Strike mod and found the signed plan's
+economy ("income scales with total minerals spent") doesn't match it —
+written up in `studio/REFERENCE.md`, escalated as DECISION PENDING, and
+ruled on by the owner same day: **pivot to the real system, income-on-spend
+dropped** (`studio/SLICE-PLAN.md`, divergence #1, DECIDED). I only learned
+of this by checking git in response to a producer status prod, since no
+dispatch for the rework had reached this session directly — see that
+prod's reply in the session transcript for the full account. Everything
+below replaces the formula and assertions above; the rest of Slice 1 (buy
+command interface, wave-from-purchases, command-log determinism) was
+already built correctly and didn't need touching.
+
+**New formula** (real rates are undocumented per REFERENCE.md — these are
+stated demo tuning):
+- **Fixed trickle.** Continuous, not paid per-wave:
+  `minerals[side] += trickle_rate[side] / TICK_RATE(30)` every single
+  tick. `trickle_rate` starts at `BASE_TRICKLE_PER_SEC = 3.0`/s.
+- **Up to 4 gases**, escalating cost `GAS_COSTS = [60, 120, 240, 480]`;
+  each successful `BUY_GAS` adds `GAS_TRICKLE_BONUS_PER_SEC = 1.5`/s to
+  that side's trickle permanently. A 5th attempt is rejected
+  (`reason: "max_gases_reached"`), not just unaffordable.
+- **Middle-control bonus**, `MIDDLE_CONTROL_BONUS_PER_SEC = 3.0`/s (set to
+  `2 × GAS_TRICKLE_BONUS_PER_SEC`, matching REFERENCE.md's cited forum-guide
+  estimate of "worth ~2 gases"). Recomputed every tick, authoritatively, by
+  counting each side's alive units on the *enemy* half of the lane
+  (`pos > LANE_LENGTH/2` for A, `pos < LANE_LENGTH/2` for B); whichever
+  side has strictly more gets the bonus added to its per-tick accrual that
+  tick, the other gets none. A `middle_control_changed` event is emitted
+  only when the controller actually changes (ledger breadcrumb, not the
+  authoritative source — the host recomputes fresh every tick).
+- **`PAY_INCOME` is gone.** Income is no longer a discrete per-wave
+  command; it's continuous state mutation alongside unit movement, gated
+  the same way (`not match_over`), and — importantly — **not** gated
+  behind `auto_source_enabled`, so it still runs correctly during
+  deterministic replay (it's not an externally-sourced command, just a
+  pure function of tick/state, same category as combat resolution).
+- **Enemy script extended**: still 3 unit buys/phase at fixed offsets, plus
+  one `BUY_GAS` every 3rd phase at a fixed offset — still fully
+  deterministic, no RNG, so it doesn't out-economy the player (and the
+  player's AI opponent in Slice 3 will need real tuning, not this).
+- **Unaffordable rejection** unchanged in spirit: checked authoritatively
+  against the live balance at application time, two reasons now
+  (`insufficient_minerals`, `max_gases_reached`).
+
+**Verifying "trickle accrues at the stated rate" + "middle control...pays
+only the controlling side" together.** Rather than spot-sampling a quiet
+window, the playtest **reconstructs the entire match's minerals from the
+public ledger alone** — walking every `unit_purchased` / `gas_purchased` /
+`middle_control_changed` / `match_restarted` event in tick order, applying
+the stated formula tick-by-tick between events — and asserts the
+reconstruction matches the host's actual final `minerals` state (within
+0.01, for float accumulation). This is a stronger proof than a sampled
+window: it's the whole match's economy, independently re-derived from
+nothing but what a real client could observe, matching exactly. It passed
+on the first run of the new formula.
+
+**HUD/buy menu changes to match:** "Total spent / Next income" replaced
+with "Trickle A: X/s · Gases: N/4 · Middle control: —/A (you)/B (enemy)";
+added a second buy button for gas. Keybinds: unit buy is `U`, gas buy is
+`G`, restart stays `R`. No other presentation work, per the order.
+
+**Playtest result (rework):** all 22 assertions PASS — the prior 20 minus
+`income_per_wave_matches_formula` (removed, the mechanic it tested no
+longer exists) plus five new ones: the ledger-reconstruction match, gas
+cost/trickle-bonus correctness, middle-control flip correctness, the
+updated `buy_commands_debit_minerals_and_join_next_wave` (unit-purchase
+path, unchanged logic), and `restart_resets_match` adjusted to expect
+~50.5 minerals (not exactly 50) after the 5 post-restart ticks the
+playtest steps before sampling — trickle is continuous now, so a few
+ticks of accrual between the reset and the sample is correct, not a bug.
+Determinism replay still holds with the new commands in the log.
