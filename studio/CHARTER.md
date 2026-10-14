@@ -77,21 +77,63 @@ one gate neither had: **the playtest**.
   A slice whose playtest cannot run is a failed slice, not a skipped
   step.
 
-## Architecture rules (multiplayer kept in mind)
+## Architecture rules — the multiplayer foundation is BUILT, not intended
 
-These bind every slice, so the demo never paints itself into a
-single-player corner:
+Amended 2026-10-14 at the owner's direction: retrofitting multiplayer
+onto a finished single-player game is a known disaster, so the demo
+stops short of full multiplayer but **builds its foundation from
+Slice 0**. The network model is decided now: **deterministic lockstep**
+(the model StarCraft itself uses) — every participant runs the same
+simulation; only player commands cross the wire, stamped with a tick
+and a player id.
 
-1. **Command-log simulation.** All game-changing inputs are commands in
-   a log; the simulation consumes commands and nothing else. A replay of
-   the log must reproduce the match.
-2. **Fixed-timestep simulation**, independent of rendering frame rate.
-3. **Sim/render separation.** Game state lives in the simulation;
-   rendering only reads it. No gameplay state in scene/UI code.
-4. **One authoritative sim.** Even single-player runs the architecture
-   that a host would run; the local player is just a command source.
+1. **Host/client split, even in single player.** The simulation is an
+   authoritative host module. The UI is a client that talks to it
+   through a defined message interface (commands in, state/events
+   out). Single player = a local loopback host. There is no code path
+   where the UI touches the simulation directly.
+2. **Command-log simulation.** All game-changing inputs are commands
+   (player id + tick + action) in a log; the sim consumes commands and
+   nothing else. Every participant in a match — local human, AI,
+   future remote peer — is a *command source* behind this same
+   interface.
+3. **Determinism, asserted every slice.** Fixed-timestep simulation,
+   independent of rendering. Every slice's playtest runs its match
+   **twice from the same command log and asserts identical event
+   ledgers**. A determinism failure is a slice failure, from Slice 0
+   on — not a Slice 4 surprise.
+4. **Sim/render separation.** Game state lives in the simulation;
+   rendering only reads it. No gameplay state in scene/UI code, no
+   globals that assume exactly one local player.
 5. Engine: **Godot 4** (the house engine — Eden's pipeline, web export,
    3D-capable). Every slice publishes a web build.
+
+Still out of scope (the "full-fledged" part): matchmaking, lobby UI,
+internet play / NAT traversal, anti-cheat, and saved meta-progression.
+The foundation means: when those are wanted, they attach to the
+host/client seam and the command interface — nothing gets rewritten.
+
+## Checkpoints — the process STOPS for human review
+
+Amended 2026-10-14 at the owner's direction. The Studio never crosses
+a checkpoint on its own:
+
+1. **Plan checkpoint.** No slice is ordered before the owner signs the
+   slice plan (and any amendment to it).
+2. **Slice checkpoint (every slice).** When a slice's playtest passes
+   and the build publishes, **the process halts**. The Builder does not
+   start the next slice, and no receipt is written, until the owner
+   plays the build and records a verdict: approve (receipt issues,
+   next slice may be ordered), request changes (the slice returns to
+   Building with the owner's notes as its order), or kill/redirect.
+3. **Failure checkpoint.** A second playtest failure on one slice
+   (already in the lifecycle below) is a checkpoint, not a retry loop.
+
+Waiting at a checkpoint is a first-class board state — "awaiting
+owner" — visibly different from a stall: the work is done, the ball is
+named, and the process is *supposed* to be stopped there. The watchdog
+does not escalate checkpoints; it reports them once, as designed
+stops.
 
 ## What The Studio refuses
 

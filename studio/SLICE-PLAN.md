@@ -18,11 +18,20 @@ spent · unit purchasing with a roster of distinct roles · tier unlocks ·
 wave spawning and marching · automatic combat with counters · base HP
 and base-destruction win · an AI opponent that buys and adapts ·
 full match loop (menu → battle → victory/defeat → restart) · HUD and
-camera control · command-log replay.
+camera control · command-log replay · **the multiplayer foundation:
+host/client split with a loopback host in single player, deterministic
+lockstep simulation, every player (human or AI) acting only through
+the command interface** (amended 2026-10-14, owner's direction).
 
-Out (demo): real multiplayer · matchmaking/ladder · hero/commander
-units · cosmetics · saving/meta-progression. Anything the owner wants
-moved "in" amends this plan in writing before work starts on it.
+Out (demo): live multiplayer over a network · matchmaking/ladder ·
+hero/commander units · cosmetics · saving/meta-progression. Anything
+the owner wants moved "in" amends this plan in writing before work
+starts on it.
+
+Every slice also ends at a **human checkpoint** (charter, amended
+2026-10-14): playtest passes → build publishes → the process STOPS
+until the owner plays it and approves, requests changes, or redirects.
+No slice auto-advances.
 
 ## The slices
 
@@ -37,7 +46,10 @@ the enemy base; base HP reaches zero → victory/defeat → restart.
 - Playtest asserts: build boots headless; ≥2 waves spawn per side;
   first-contact combat event fires; unit deaths recorded; base HP
   strictly decreases once survivors arrive; a win event fires and the
-  match state resets on restart command.
+  match state resets on restart command; **the sim runs in the host
+  module with the client connected over the message interface (no
+  direct UI→sim calls in the architecture checklist); the same match
+  run twice from its command log produces identical event ledgers.**
 - Playable: watch a full auto-battle to a conclusion.
 
 ### Slice 1 — The economy (size: M)
@@ -67,18 +79,25 @@ The enemy becomes a real AI buyer: build orders, composition reactions
   conclusion inside a time bound at each difficulty; AI spend/income
   ledgers obey the same economy rules as the player's; higher
   difficulty measurably changes AI income efficiency or composition
-  quality (not just HP cheats).
+  quality (not just HP cheats); **the AI plays exclusively through the
+  player command interface — its command log is indistinguishable in
+  kind from a human's (this is the seam a remote player will occupy).**
 - Playable: a real game against an opponent, start to finish.
 
-### Slice 4 — Replay & determinism (size: S)
-The multiplayer-readiness proof. A recorded match's command log is
-replayed into a fresh simulation.
-- Playtest asserts: replay produces an identical event-ledger hash to
-  the original match; simulation advances on fixed timesteps
-  independent of render rate; no gameplay state is found outside the
-  sim (architecture checklist in the slice file).
-- Playable: unchanged game — plus a working "watch replay" of your
-  last match.
+### Slice 4 — Lockstep over loopback: two clients, one host (size: M)
+The multiplayer foundation's proof. The match runs as it would
+networked, minus the network: one authoritative host simulation, TWO
+clients connected over localhost, each issuing commands for its own
+side — plus the standing replay check.
+- Playtest asserts: a full match completes with both clients driving
+  their own sides through the message interface; both clients' event
+  ledgers are identical to the host's at match end (lockstep held);
+  a recorded command log replayed into a fresh host reproduces the
+  identical ledger hash; simulation advances on fixed timesteps
+  independent of render rate.
+- Playable: the same game, now demonstrably running in its networked
+  shape on one machine — plus a working "watch replay" of your last
+  match.
 
 ### Slice 5 — Presentation & demo finish (size: M)
 HUD (minerals, income, wave timer, both base HP bars), camera
