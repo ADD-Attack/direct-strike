@@ -1,0 +1,83 @@
+{
+  "_comment": "Single source of truth for Slice 2 roster rigs. ds3d/units/roster_visuals.gd loads this to build the live Node3D rig; studio/builds/slice-2-warmup/render_contact_sheet.py loads the same file to render the contact sheet, so the model and the preview can never drift apart.",
+  "colors": {
+    "team_a": [0.25, 0.55, 0.95],
+    "team_b": [0.92, 0.32, 0.26],
+    "metal": [0.12, 0.12, 0.14]
+  },
+  "role_order": ["frontline_tank", "line_dps", "ranged", "splash", "fast_flanker", "siege"],
+  "roles": {
+    "frontline_tank": {
+      "label": "Frontline Tank",
+      "note": "Widest, lowest silhouette; frontal shield plate reads as 'absorbs hits' at a glance.",
+      "parts": [
+        {"size": [0.20, 0.40, 0.20], "pos": [-0.26, 0.20, 0.00], "color": "team_dark2"},
+        {"size": [0.20, 0.40, 0.20], "pos": [0.26, 0.20, 0.00], "color": "team_dark2"},
+        {"size": [0.90, 0.50, 0.50], "pos": [0.00, 0.65, 0.00], "color": "team"},
+        {"size": [0.95, 0.55, 0.12], "pos": [0.00, 0.68, 0.30], "color": "team_dark1"},
+        {"size": [0.26, 0.22, 0.26], "pos": [0.00, 1.00, 0.00], "color": "team_dark2"},
+        {"size": [0.10, 0.10, 0.30], "pos": [0.35, 0.68, 0.22], "color": "metal"}
+      ]
+    },
+    "line_dps": {
+      "label": "Line DPS",
+      "note": "The baseline silhouette (Slice 0/1's rig) — every other role reads as a variation on this one.",
+      "parts": [
+        {"size": [0.14, 0.50, 0.14], "pos": [-0.14, 0.25, 0.00], "color": "team_dark2"},
+        {"size": [0.14, 0.50, 0.14], "pos": [0.14, 0.25, 0.00], "color": "team_dark2"},
+        {"size": [0.50, 0.56, 0.34], "pos": [0.00, 0.78, 0.00], "color": "team"},
+        {"size": [0.26, 0.24, 0.26], "pos": [0.00, 1.18, 0.00], "color": "team_dark1"},
+        {"size": [0.10, 0.10, 0.62], "pos": [0.32, 0.82, 0.14], "color": "metal"},
+        {"size": [0.13, 0.13, 0.08], "pos": [0.00, 0.80, 0.19], "color": "emissive"}
+      ]
+    },
+    "ranged": {
+      "label": "Ranged",
+      "note": "Tall and thin with a long rifle barrel — smallest body mass, longest reach weapon.",
+      "parts": [
+        {"size": [0.12, 0.56, 0.12], "pos": [-0.11, 0.28, 0.00], "color": "team_dark2"},
+        {"size": [0.12, 0.56, 0.12], "pos": [0.11, 0.28, 0.00], "color": "team_dark2"},
+        {"size": [0.36, 0.66, 0.26], "pos": [0.00, 0.92, 0.00], "color": "team"},
+        {"size": [0.20, 0.20, 0.20], "pos": [0.00, 1.38, 0.00], "color": "team_dark1"},
+        {"size": [0.04, 0.30, 0.04], "pos": [0.00, 1.60, 0.00], "color": "metal"},
+        {"size": [0.07, 0.07, 0.95], "pos": [0.22, 0.95, 0.30], "color": "metal"}
+      ]
+    },
+    "splash": {
+      "label": "Splash",
+      "note": "A bulbous launcher pod on the back is the tell — area-damage units silhouette as 'carrying something big'.",
+      "parts": [
+        {"size": [0.16, 0.46, 0.16], "pos": [-0.17, 0.23, 0.00], "color": "team_dark2"},
+        {"size": [0.16, 0.46, 0.16], "pos": [0.17, 0.23, 0.00], "color": "team_dark2"},
+        {"size": [0.52, 0.50, 0.36], "pos": [0.00, 0.71, 0.00], "color": "team"},
+        {"size": [0.24, 0.22, 0.24], "pos": [0.00, 1.08, 0.00], "color": "team_dark1"},
+        {"size": [0.50, 0.42, 0.42], "pos": [0.00, 0.95, -0.32], "color": "team_dark1"},
+        {"size": [0.08, 0.08, 0.30], "pos": [-0.14, 1.10, -0.42], "color": "metal"},
+        {"size": [0.08, 0.08, 0.30], "pos": [0.14, 1.10, -0.42], "color": "metal"}
+      ]
+    },
+    "fast_flanker": {
+      "label": "Fast Flanker",
+      "note": "Low and horizontally elongated with side blades — reads as fast/low to the ground, not infantry-shaped.",
+      "parts": [
+        {"size": [0.70, 0.26, 0.30], "pos": [0.00, 0.22, 0.00], "color": "team"},
+        {"size": [0.18, 0.16, 0.20], "pos": [0.30, 0.30, 0.00], "color": "team_dark1"},
+        {"size": [0.50, 0.06, 0.08], "pos": [0.00, 0.10, 0.18], "color": "metal"},
+        {"size": [0.50, 0.06, 0.08], "pos": [0.00, 0.10, -0.18], "color": "metal"},
+        {"size": [0.10, 0.30, 0.06], "pos": [-0.32, 0.32, 0.00], "color": "team_dark2"}
+      ]
+    },
+    "siege": {
+      "label": "Siege",
+      "note": "Biggest footprint, vehicle-like tracked chassis, longest cannon — unmistakably the heavy-hitter.",
+      "parts": [
+        {"size": [1.00, 0.40, 0.70], "pos": [0.00, 0.20, 0.00], "color": "team_dark2"},
+        {"size": [0.70, 0.50, 0.55], "pos": [0.00, 0.65, 0.00], "color": "team"},
+        {"size": [0.40, 0.30, 0.40], "pos": [0.00, 0.95, 0.00], "color": "team_dark1"},
+        {"size": [0.14, 0.14, 1.30], "pos": [0.00, 0.98, 0.60], "color": "metal"},
+        {"size": [0.08, 0.20, 0.08], "pos": [-0.30, 0.95, -0.25], "color": "metal"},
+        {"size": [0.08, 0.20, 0.08], "pos": [0.30, 0.95, -0.25], "color": "metal"}
+      ]
+    }
+  }
+}
