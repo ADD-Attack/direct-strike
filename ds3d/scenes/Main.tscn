@@ -72,16 +72,35 @@ offset_right = 420.0
 offset_bottom = 208.0
 text = "Next wave in: 21.7s"
 
-[node name="BuyButton" type="Button" parent="HUDLayer/HUD"]
+[node name="RoleLabel" type="Label" parent="HUDLayer/HUD"]
 offset_left = 16.0
 offset_top = 220.0
-offset_right = 240.0
-offset_bottom = 260.0
-text = "Buy Unit — 10 minerals (U)"
+offset_right = 420.0
+offset_bottom = 240.0
+text = "Buy unit:"
+
+[node name="RoleButtons" type="HBoxContainer" parent="HUDLayer/HUD"]
+offset_left = 16.0
+offset_top = 244.0
+offset_right = 760.0
+offset_bottom = 280.0
+
+[node name="RowLabel" type="Label" parent="HUDLayer/HUD"]
+offset_left = 16.0
+offset_top = 288.0
+offset_right = 420.0
+offset_bottom = 308.0
+text = "Place new buys in row:"
+
+[node name="RowButtons" type="HBoxContainer" parent="HUDLayer/HUD"]
+offset_left = 16.0
+offset_top = 312.0
+offset_right = 420.0
+offset_bottom = 348.0
 
 [node name="BuyGasButton" type="Button" parent="HUDLayer/HUD"]
-offset_left = 250.0
-offset_top = 220.0
-offset_right = 470.0
-offset_bottom = 260.0
+offset_left = 16.0
+offset_top = 356.0
+offset_right = 260.0
+offset_bottom = 392.0
 text = "Buy Gas — 60 minerals (G)"

@@ -31,8 +31,13 @@ var base_b
 @onready var minerals_label: Label = $HUDLayer/HUD/MineralsLabel
 @onready var trickle_label: Label = $HUDLayer/HUD/TrickleLabel
 @onready var build_timer_label: Label = $HUDLayer/HUD/BuildTimerLabel
-@onready var buy_button: Button = $HUDLayer/HUD/BuyButton
+@onready var role_buttons_container: HBoxContainer = $HUDLayer/HUD/RoleButtons
+@onready var row_buttons_container: HBoxContainer = $HUDLayer/HUD/RowButtons
 @onready var buy_gas_button: Button = $HUDLayer/HUD/BuyGasButton
+
+var role_buttons: Dictionary = {} # role -> Button
+var row_buttons: Array = [] # Button, index = row
+var selected_row: int = 1 # default centered row — matches Host's default placement
 
 func _ready() -> void:
 	client = MatchClient.new(true)
@@ -41,12 +46,46 @@ func _ready() -> void:
 	_build_bases()
 	_configure_camera()
 	_configure_lighting()
-	buy_button.pressed.connect(_on_buy_unit_pressed)
+	_build_role_buttons()
+	_build_row_buttons()
 	buy_gas_button.pressed.connect(_on_buy_gas_pressed)
 	_update_hud()
 
-func _on_buy_unit_pressed() -> void:
-	client.submit_command("A", "BUY_UNIT", {})
+func _build_role_buttons() -> void:
+	for role in Host.ROLE_ORDER:
+		var spec: Dictionary = Host.ROLE_STATS[role]
+		var b := Button.new()
+		b.name = "Buy_%s" % role
+		b.text = "%s (%d)" % [role.capitalize(), int(spec["cost"])]
+		b.pressed.connect(_on_buy_role_pressed.bind(role))
+		role_buttons_container.add_child(b)
+		role_buttons[role] = b
+
+func _build_row_buttons() -> void:
+	var labels := ["Front", "Mid", "Back"]
+	for row in range(Host.STAGING_ROWS):
+		var b := Button.new()
+		b.toggle_mode = true
+		b.button_pressed = row == selected_row
+		b.text = labels[row] if row < labels.size() else "Row %d" % row
+		b.pressed.connect(_on_row_selected.bind(row))
+		row_buttons_container.add_child(b)
+		row_buttons.append(b)
+
+func _on_row_selected(row: int) -> void:
+	selected_row = row
+	for i in range(row_buttons.size()):
+		row_buttons[i].button_pressed = i == row
+
+## Buying and placing are two separate commands through the same interface,
+## issued back-to-back: the buy queues the unit, the placement assigns it a
+## formation cell before it ever spawns. queue_index is read from state
+## BEFORE submitting the buy, since that's the ordinal the new purchase will
+## land on in this side's queue (see Host._do_buy_unit/_do_place_unit).
+func _on_buy_role_pressed(role: String) -> void:
+	var queue_index: int = client.get_state()["queued_units"]["A"]
+	client.submit_command("A", "BUY_UNIT", {"role": role})
+	client.submit_command("A", "PLACE_UNIT", {"queue_index": queue_index, "row": selected_row})
 
 func _on_buy_gas_pressed() -> void:
 	client.submit_command("A", "BUY_GAS", {})
@@ -201,7 +240,7 @@ func _spawn_unit_visual(id: int, u: Dictionary) -> void:
 	var rig = UnitVisualScript.new()
 	units_container.add_child(rig)
 	var color := COLOR_A if u["side"] == "A" else COLOR_B
-	rig.build(color, float(id % 7))
+	rig.build(u["role"], color, float(id % 7))
 	unit_nodes[id] = rig
 
 func _remove_unit_visual(id: int) -> void:
@@ -229,7 +268,18 @@ func _update_hud() -> void:
 	trickle_label.text = "Trickle A: %.1f/s   Gases: %d/%d   Middle control: %s" % [state["trickle_rate"]["A"], state["gas_count"]["A"], Host.MAX_GASES, control_text]
 	var seconds_left: float = max(0.0, state["ticks_until_next_wave"]) / 30.0
 	build_timer_label.text = "Next wave in: %.1fs" % seconds_left
-	buy_button.disabled = state["minerals"]["A"] < Host.UNIT_COST
+
+	var tier2_unlocked: bool = state["tier2_unlocked"]["A"]
+	for role in Host.ROLE_ORDER:
+		var spec: Dictionary = Host.ROLE_STATS[role]
+		var b: Button = role_buttons[role]
+		if spec["tier"] == 2 and not tier2_unlocked:
+			b.disabled = true
+			b.text = "%s (%d) [tier 2 @ %d spend]" % [role.capitalize(), int(spec["cost"]), int(Host.TIER2_UNLOCK_THRESHOLD)]
+		else:
+			b.disabled = state["minerals"]["A"] < spec["cost"]
+			b.text = "%s (%d)" % [role.capitalize(), int(spec["cost"])]
+
 	var gas_idx: int = state["gas_count"]["A"]
 	if gas_idx >= Host.MAX_GASES:
 		buy_gas_button.disabled = true
@@ -243,7 +293,5 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R:
 			client.submit_command("owner", "RESTART", {})
-		elif event.keycode == KEY_U:
-			client.submit_command("A", "BUY_UNIT", {})
 		elif event.keycode == KEY_G:
 			client.submit_command("A", "BUY_GAS", {})

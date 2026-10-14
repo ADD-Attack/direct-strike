@@ -6,11 +6,6 @@ extends RefCounted
 ## Everything else (state reads, events) is read-only output.
 
 const LANE_LENGTH := 40.0
-const UNIT_SPEED_PER_TICK := 0.12
-const UNIT_HP := 30.0
-const UNIT_DAMAGE := 6.0
-const UNIT_ATTACK_RANGE := 1.2
-const UNIT_ATTACK_COOLDOWN_TICKS := 20
 const BASE_DAMAGE_PER_UNIT := 25.0
 const BASE_HP := 200.0
 const SIDES := ["A", "B"]
@@ -20,7 +15,6 @@ const SIDES := ["A", "B"]
 ## bonus. Real rates are undocumented; these are demo tuning. ---
 const TICK_RATE := 30
 const STARTING_MINERALS := 50.0
-const UNIT_COST := 10.0
 const BASE_TRICKLE_PER_SEC := 3.0
 const MAX_GASES := 4
 const GAS_COSTS := [60.0, 120.0, 240.0, 480.0] ## escalating cost per successive gas
@@ -29,26 +23,71 @@ const GAS_TRICKLE_BONUS_PER_SEC := 1.5 ## each gas raises trickle by this much
 ## REFERENCE.md cites a forum guide calling it "worth ~2 gases"; set to match.
 const MIDDLE_CONTROL_BONUS_PER_SEC := 2.0 * GAS_TRICKLE_BONUS_PER_SEC
 const MID_X := LANE_LENGTH * 0.5
-const BUILD_PHASE_TICKS := 650 ## countdown length; wave spawns at each boundary (kept from Slice 0/1a tuning, per REFERENCE.md divergence #5)
+const BUILD_PHASE_TICKS := 650 ## countdown length; wave spawns at each boundary (kept from Slice 0/1 tuning, per REFERENCE.md divergence #5)
 ## Fixed, deterministic enemy (side B) buy schedule: tick offsets from the
-## start of each build phase at which B issues one BUY_UNIT command each.
+## start of each build phase at which B issues one BUY_UNIT command each,
+## cycling through this fixed role list (no RNG, no adaptation — Slice 3).
 const ENEMY_BUY_OFFSETS := [30, 90, 150]
+const ENEMY_BUY_ROLES := ["line_dps", "frontline_tank", "ranged"]
 ## Enemy also buys gas, slower and later, so it doesn't out-economy the
 ## player every single phase: one BUY_GAS every 3rd phase, at this offset.
 const ENEMY_GAS_EVERY_N_PHASES := 3
 const ENEMY_GAS_OFFSET := 200
+## And once unlocked, one tier-2 unit every 4th phase — still fixed/scripted.
+const ENEMY_TIER2_EVERY_N_PHASES := 4
+const ENEMY_TIER2_OFFSET := 400
+const ENEMY_TIER2_ROLE := "siege"
 
-## --- Formation staging (Slice 2 warm-up prototype) ---
-## A queued-but-unspawned purchase can be assigned a cell {row, col} in a
-## staging grid behind the base via PLACE_UNIT. row controls lateral spread
-## (lane_offset, cosmetic/formation axis only — does not affect combat
-## resolution, which still runs on the 1D lane "pos" scalar); col controls
-## depth-of-stagger along the lane axis, the same role Slice 0/1's queue
-## index played. Default (no PLACE_UNIT issued) reproduces Slice 0/1's exact
-## single-file spawn: row defaults to the centered row (lane_offset 0), col
-## defaults to the unit's queue index.
+## --- Roster & tiers (Slice 2, per studio/SLICE-PLAN.md + studio/REFERENCE.md)
+## Six roles, one race. Tier 1 is available from the start; tier 2 unlocks
+## once a side's lifetime spend crosses TIER2_UNLOCK_THRESHOLD (demo tuning —
+## real unlock costs are undocumented per REFERENCE.md). Stats are demo
+## tuning too, chosen to make the counters below real, not just flavor text.
+const TIER2_UNLOCK_THRESHOLD := 35.0
+
+## Per-role stats:
+##  tier          1 or 2 (gates on TIER2_UNLOCK_THRESHOLD)
+##  cost          minerals
+##  hp            max hit points
+##  damage        base damage per hit
+##  range         own detection/attack range (the "outranges" mechanic: a
+##                unit can start attacking as soon as an enemy is within ITS
+##                OWN range, even if the enemy's range hasn't reached back —
+##                see _simulate_units)
+##  cooldown      ticks between attacks
+##  speed         lane position per tick while marching/closing distance
+##  splash_radius >0 means every attack also damages other enemies within
+##                this radius of the primary target (answers swarms of
+##                cheap units with one hit)
+##  bonus_vs      {role: multiplier} extra damage multiplier vs that role
+##  avoid_roles   roles this unit will not voluntarily target if any other
+##                enemy is in range (it still fights one if that's all
+##                there is) — the "bypasses the front" mechanic
+const ROLE_STATS := {
+	"frontline_tank": {"tier": 1, "cost": 10.0, "hp": 50.0, "damage": 4.0, "range": 1.0, "cooldown": 20, "speed": 0.10, "splash_radius": 0.0, "bonus_vs": {}, "avoid_roles": []},
+	"line_dps": {"tier": 1, "cost": 10.0, "hp": 30.0, "damage": 6.0, "range": 1.2, "cooldown": 20, "speed": 0.12, "splash_radius": 0.0, "bonus_vs": {}, "avoid_roles": []},
+	"ranged": {"tier": 1, "cost": 10.0, "hp": 20.0, "damage": 8.0, "range": 2.4, "cooldown": 20, "speed": 0.11, "splash_radius": 0.0, "bonus_vs": {"frontline_tank": 1.5}, "avoid_roles": []},
+	"splash": {"tier": 2, "cost": 20.0, "hp": 26.0, "damage": 6.0, "range": 1.4, "cooldown": 20, "speed": 0.10, "splash_radius": 2.0, "bonus_vs": {}, "avoid_roles": []},
+	"fast_flanker": {"tier": 2, "cost": 15.0, "hp": 18.0, "damage": 5.0, "range": 1.1, "cooldown": 18, "speed": 0.20, "splash_radius": 0.0, "bonus_vs": {"siege": 1.3}, "avoid_roles": ["frontline_tank"]},
+	"siege": {"tier": 2, "cost": 25.0, "hp": 20.0, "damage": 14.0, "range": 1.8, "cooldown": 36, "speed": 0.08, "splash_radius": 0.0, "bonus_vs": {"frontline_tank": 1.5}, "avoid_roles": []},
+}
+const ROLE_ORDER := ["frontline_tank", "line_dps", "ranged", "splash", "fast_flanker", "siege"]
+const DEFAULT_ROLE := "line_dps"
+
+## --- Formation staging (Slice 2) ---
+## A queued-but-unspawned purchase can be assigned a cell {row, col} via
+## PLACE_UNIT. col is depth-of-stagger along the lane axis (same role Slice
+## 0/1's queue index played — and still the default when col is omitted).
+## row is now ALSO an engagement-order axis, per the Slice 2 order: row 0 is
+## the front rank and spawns closest to the enemy, row (STAGING_ROWS-1) is
+## the back rank and spawns furthest away — so front-row units simply reach
+## the enemy and engage first as a natural consequence of position, with no
+## separate "wait your turn" logic needed. The centered row (no PLACE_UNIT
+## issued) maps to zero extra depth offset, so an unplaced wave reproduces
+## Slice 0/1's exact spawn positions.
 const STAGING_ROWS := 3
-const STAGING_ROW_SPACING := 0.6
+const STAGING_ROW_SPACING := 0.6 ## lateral offset per row step (cosmetic)
+const ROW_DEPTH_SPACING := 3.0 ## forward/back offset per row step (engagement order)
 const STAGING_COL_SPACING := 0.5
 
 var tick: int = 0
@@ -67,11 +106,11 @@ var first_contact_fired: bool = false
 
 var minerals: Dictionary = {}
 var total_spent: Dictionary = {}
-var queued_units: Dictionary = {}
+var queued_purchases: Dictionary = {} ## side -> Array[{"role": String}], index = queue_index
 var trickle_rate: Dictionary = {}
 var gas_count: Dictionary = {}
 var middle_controller: String = "" ## "" (none), "A", or "B"
-var queued_placements: Dictionary = {}
+var queued_placements: Dictionary = {} ## side -> {queue_index: {"row": int, "col": int}}
 var phase_start_tick: int = 0
 var next_phase_tick: int = 0
 var enemy_phase_count: int = 0
@@ -95,7 +134,7 @@ func reset_match(auto_source: bool) -> void:
 	first_contact_fired = false
 	minerals = {"A": STARTING_MINERALS, "B": STARTING_MINERALS}
 	total_spent = {"A": 0.0, "B": 0.0}
-	queued_units = {"A": 0, "B": 0}
+	queued_purchases = {"A": [], "B": []}
 	trickle_rate = {"A": BASE_TRICKLE_PER_SEC, "B": BASE_TRICKLE_PER_SEC}
 	gas_count = {"A": 0, "B": 0}
 	middle_controller = ""
@@ -118,11 +157,15 @@ func submit_command(cmd: Dictionary) -> void:
 func step() -> void:
 	_consume_scheduled_commands()
 	if auto_source_enabled and not match_over:
-		for offset in ENEMY_BUY_OFFSETS:
-			if tick == phase_start_tick + offset:
-				_apply_command({"tick": tick, "player_id": "B", "action": "BUY_UNIT", "params": {}})
-		if enemy_phase_count % ENEMY_GAS_EVERY_N_PHASES == 0 and tick == phase_start_tick + ENEMY_GAS_OFFSET:
+		var since_phase: int = tick - phase_start_tick
+		for i in range(ENEMY_BUY_OFFSETS.size()):
+			if since_phase == ENEMY_BUY_OFFSETS[i]:
+				var role: String = ENEMY_BUY_ROLES[i % ENEMY_BUY_ROLES.size()]
+				_apply_command({"tick": tick, "player_id": "B", "action": "BUY_UNIT", "params": {"role": role}})
+		if enemy_phase_count % ENEMY_GAS_EVERY_N_PHASES == 0 and since_phase == ENEMY_GAS_OFFSET:
 			_apply_command({"tick": tick, "player_id": "B", "action": "BUY_GAS", "params": {}})
+		if enemy_phase_count % ENEMY_TIER2_EVERY_N_PHASES == 0 and since_phase == ENEMY_TIER2_OFFSET:
+			_apply_command({"tick": tick, "player_id": "B", "action": "BUY_UNIT", "params": {"role": ENEMY_TIER2_ROLE}})
 		if tick >= next_phase_tick:
 			for side in SIDES:
 				_apply_command({"tick": tick, "player_id": side, "action": "SPAWN_WAVE", "params": {}})
@@ -174,7 +217,7 @@ func _apply_command(cmd: Dictionary) -> void:
 		"RESTART":
 			_do_restart()
 		"BUY_UNIT":
-			_do_buy_unit(cmd["player_id"])
+			_do_buy_unit(cmd["player_id"], cmd.get("params", {}))
 		"BUY_GAS":
 			_do_buy_gas(cmd["player_id"])
 		"PLACE_UNIT":
@@ -182,14 +225,28 @@ func _apply_command(cmd: Dictionary) -> void:
 		_:
 			_emit_event("unknown_command", {"action": cmd.get("action", "")})
 
-func _do_buy_unit(side: String) -> void:
-	if minerals[side] >= UNIT_COST:
-		minerals[side] -= UNIT_COST
-		total_spent[side] += UNIT_COST
-		queued_units[side] += 1
-		_emit_event("unit_purchased", {"side": side, "cost": UNIT_COST, "minerals_remaining": minerals[side], "total_spent": total_spent[side], "queued_units": queued_units[side]})
-	else:
-		_emit_event("buy_rejected", {"side": side, "reason": "insufficient_minerals", "minerals": minerals[side], "cost": UNIT_COST})
+## params: {role: String}. Tier-2 roles are rejected (reason "tier_locked")
+## until total_spent[side] crosses TIER2_UNLOCK_THRESHOLD — checked
+## authoritatively here, exactly like the affordability check, never trusted
+## from the submitter.
+func _do_buy_unit(side: String, params: Dictionary) -> void:
+	var role: String = params.get("role", DEFAULT_ROLE)
+	if not ROLE_STATS.has(role):
+		_emit_event("buy_rejected", {"side": side, "role": role, "reason": "unknown_role"})
+		return
+	var spec: Dictionary = ROLE_STATS[role]
+	if spec["tier"] == 2 and total_spent[side] < TIER2_UNLOCK_THRESHOLD:
+		_emit_event("buy_rejected", {"side": side, "role": role, "reason": "tier_locked", "total_spent": total_spent[side], "threshold": TIER2_UNLOCK_THRESHOLD})
+		return
+	var cost: float = spec["cost"]
+	if minerals[side] < cost:
+		_emit_event("buy_rejected", {"side": side, "role": role, "reason": "insufficient_minerals", "minerals": minerals[side], "cost": cost})
+		return
+	minerals[side] -= cost
+	total_spent[side] += cost
+	queued_purchases[side].append({"role": role})
+	var queue_index: int = queued_purchases[side].size() - 1
+	_emit_event("unit_purchased", {"side": side, "role": role, "cost": cost, "minerals_remaining": minerals[side], "total_spent": total_spent[side], "queue_index": queue_index, "queued_units": queued_purchases[side].size()})
 
 func _do_buy_gas(side: String) -> void:
 	if gas_count[side] >= MAX_GASES:
@@ -206,15 +263,13 @@ func _do_buy_gas(side: String) -> void:
 	_emit_event("gas_purchased", {"side": side, "cost": cost, "gas_count": gas_count[side], "new_trickle_rate": trickle_rate[side]})
 
 ## params: {queue_index: int, row: int, col: int}. queue_index addresses a
-## purchase already queued (not yet spawned) this build phase for `side` —
-## the same ordinal SPAWN_WAVE uses to size the wave, so a placement always
-## refers to a unit that will actually exist. row/col are optional; the
-## defaults applied at spawn time reproduce the pre-placement single-file
-## formation exactly (see _do_spawn_wave).
+## purchase already queued (not yet spawned) this build phase for `side`.
+## row/col are optional; the defaults applied at spawn time reproduce the
+## pre-placement single-file formation exactly (see _do_spawn_wave).
 func _do_place_unit(side: String, params: Dictionary) -> void:
 	var idx: int = params.get("queue_index", -1)
-	if idx < 0 or idx >= queued_units[side]:
-		_emit_event("placement_rejected", {"side": side, "queue_index": idx, "reason": "no_such_queued_unit", "queued_units": queued_units[side]})
+	if idx < 0 or idx >= queued_purchases[side].size():
+		_emit_event("placement_rejected", {"side": side, "queue_index": idx, "reason": "no_such_queued_unit", "queued_units": queued_purchases[side].size()})
 		return
 	var row: int = params.get("row", (STAGING_ROWS - 1) / 2)
 	if row < 0 or row >= STAGING_ROWS:
@@ -226,34 +281,47 @@ func _do_place_unit(side: String, params: Dictionary) -> void:
 
 func _do_spawn_wave(side: String) -> void:
 	wave_count[side] += 1
-	var count: int = queued_units[side]
+	var purchases: Array = queued_purchases[side]
+	var count: int = purchases.size()
 	var ids: Array = []
 	var start_pos: float = 0.0 if side == "A" else LANE_LENGTH
 	var dir: float = 1.0 if side == "A" else -1.0
 	var placements: Dictionary = queued_placements[side]
 	var formation: Array = []
+	var center_row: float = (STAGING_ROWS - 1) / 2.0
 	for i in range(count):
 		var id := next_unit_id
-		var cell: Dictionary = placements.get(i, {"row": (STAGING_ROWS - 1) / 2, "col": i})
+		var role: String = purchases[i]["role"]
+		var spec: Dictionary = ROLE_STATS[role]
+		var cell: Dictionary = placements.get(i, {"row": int(center_row), "col": i})
 		var row: int = cell["row"]
 		var col: int = cell["col"]
-		var lane_offset: float = (row - (STAGING_ROWS - 1) / 2.0) * STAGING_ROW_SPACING
+		var lane_offset: float = (row - center_row) * STAGING_ROW_SPACING
+		var depth_offset: float = (row - center_row) * ROW_DEPTH_SPACING
 		units[id] = {
 			"id": id,
 			"side": side,
-			"pos": start_pos - dir * (col * STAGING_COL_SPACING),
+			"role": role,
+			"pos": start_pos - dir * (col * STAGING_COL_SPACING) - dir * depth_offset,
 			"lane_offset": lane_offset,
 			"formation_cell": {"row": row, "col": col},
-			"hp": UNIT_HP,
-			"max_hp": UNIT_HP,
+			"hp": spec["hp"],
+			"max_hp": spec["hp"],
+			"damage": spec["damage"],
+			"range": spec["range"],
+			"cooldown_max": spec["cooldown"],
+			"speed": spec["speed"],
+			"splash_radius": spec["splash_radius"],
+			"bonus_vs": spec["bonus_vs"],
+			"avoid_roles": spec["avoid_roles"],
 			"state": "marching",
 			"target_id": -1,
 			"cooldown": 0,
 		}
 		ids.append(id)
-		formation.append({"unit_id": id, "row": row, "col": col, "lane_offset": lane_offset})
+		formation.append({"unit_id": id, "role": role, "row": row, "col": col, "lane_offset": lane_offset, "hp": spec["hp"], "damage": spec["damage"], "range": spec["range"], "cooldown": spec["cooldown"], "speed": spec["speed"]})
 		next_unit_id += 1
-	queued_units[side] = 0
+	queued_purchases[side] = []
 	queued_placements[side] = {}
 	_emit_event("wave_spawned", {"side": side, "wave_number": wave_count[side], "unit_ids": ids, "purchased_count": count, "formation": formation})
 
@@ -266,7 +334,7 @@ func _do_restart() -> void:
 	first_contact_fired = false
 	minerals = {"A": STARTING_MINERALS, "B": STARTING_MINERALS}
 	total_spent = {"A": 0.0, "B": 0.0}
-	queued_units = {"A": 0, "B": 0}
+	queued_purchases = {"A": [], "B": []}
 	trickle_rate = {"A": BASE_TRICKLE_PER_SEC, "B": BASE_TRICKLE_PER_SEC}
 	gas_count = {"A": 0, "B": 0}
 	middle_controller = ""
@@ -276,6 +344,16 @@ func _do_restart() -> void:
 	enemy_phase_count = 0
 	_emit_event("match_restarted", {})
 
+## A unit either has a target (acquired by scanning when it had none) or it
+## doesn't. With a target: if currently within ITS OWN range, attack; if
+## not yet in range, close the distance (move toward the target specifically,
+## not just a generic forward march) — this is what makes a longer-range
+## role (ranged) actually able to land hits before a shorter-range role
+## (frontline_tank) can reach back, instead of range only changing when
+## combat starts. Without a target: scan for one within range, honoring
+## avoid_roles (the "bypasses the front" mechanic — prefer a non-avoided
+## enemy if one is in range, otherwise fight whatever is there); if none,
+## march straight toward the enemy base.
 func _simulate_units() -> void:
 	var ids: Array = units.keys()
 	ids.sort()
@@ -283,47 +361,83 @@ func _simulate_units() -> void:
 		if not units.has(id):
 			continue
 		var u: Dictionary = units[id]
-		if u["state"] == "marching":
+		var dir: float = 1.0 if u["side"] == "A" else -1.0
+
+		if u["target_id"] == -1 or not units.has(u["target_id"]):
+			u["target_id"] = -1
 			var enemy_id := _find_engageable_enemy(u)
 			if enemy_id != -1:
-				u["state"] = "fighting"
 				u["target_id"] = enemy_id
 				var other: Dictionary = units[enemy_id]
-				if other["state"] == "marching":
-					other["state"] = "fighting"
+				if other["target_id"] == -1:
 					other["target_id"] = id
 				if not first_contact_fired:
 					first_contact_fired = true
 					_emit_event("first_contact", {"unit_a": id, "unit_b": enemy_id})
-			else:
-				var dir: float = 1.0 if u["side"] == "A" else -1.0
-				u["pos"] += dir * UNIT_SPEED_PER_TICK
-		elif u["state"] == "fighting":
+
+		if u["target_id"] == -1:
+			u["state"] = "marching"
+			u["pos"] += dir * u["speed"]
+			continue
+
+		var target: Dictionary = units[u["target_id"]]
+		var dist: float = absf(target["pos"] - u["pos"])
+		if dist <= u["range"]:
+			if u["state"] != "fighting":
+				u["state"] = "fighting"
+				_emit_event("unit_engaged", {"unit_id": id, "side": u["side"], "role": u["role"], "target_id": u["target_id"]})
 			if u["cooldown"] > 0:
 				u["cooldown"] -= 1
 			else:
-				var target_id: int = u["target_id"]
-				if units.has(target_id):
-					var target: Dictionary = units[target_id]
-					target["hp"] -= UNIT_DAMAGE
-					u["cooldown"] = UNIT_ATTACK_COOLDOWN_TICKS
-					if target["hp"] <= 0.0:
-						_emit_event("unit_death", {"unit_id": target_id, "side": target["side"], "killer_id": id})
-						units.erase(target_id)
-						u["state"] = "marching"
-						u["target_id"] = -1
-				else:
-					u["state"] = "marching"
-					u["target_id"] = -1
+				_resolve_attack(id, u)
+		else:
+			u["state"] = "marching"
+			u["pos"] += signf(target["pos"] - u["pos"]) * u["speed"]
+
+func _resolve_attack(attacker_id: int, u: Dictionary) -> void:
+	var target_id: int = u["target_id"]
+	if not units.has(target_id):
+		u["target_id"] = -1
+		return
+	var target: Dictionary = units[target_id]
+	var multiplier: float = u["bonus_vs"].get(target["role"], 1.0)
+	target["hp"] -= u["damage"] * multiplier
+	u["cooldown"] = u["cooldown_max"]
+	var killed: Array = []
+	if target["hp"] <= 0.0:
+		killed.append(target_id)
+	if u["splash_radius"] > 0.0:
+		var ids: Array = units.keys()
+		ids.sort()
+		for other_id in ids:
+			if other_id == target_id or not units.has(other_id):
+				continue
+			var other: Dictionary = units[other_id]
+			if other["side"] == target["side"] and absf(other["pos"] - target["pos"]) <= u["splash_radius"]:
+				other["hp"] -= u["damage"] * u["bonus_vs"].get(other["role"], 1.0)
+				if other["hp"] <= 0.0 and not killed.has(other_id):
+					killed.append(other_id)
+	for dead_id in killed:
+		var dead: Dictionary = units[dead_id]
+		_emit_event("unit_death", {"unit_id": dead_id, "side": dead["side"], "role": dead["role"], "killer_id": attacker_id})
+		units.erase(dead_id)
+		if u["target_id"] == dead_id:
+			u["target_id"] = -1
 
 func _find_engageable_enemy(u: Dictionary) -> int:
 	var ids: Array = units.keys()
 	ids.sort()
+	var avoid: Array = u["avoid_roles"]
+	var fallback_id := -1
 	for id in ids:
 		var other: Dictionary = units[id]
-		if other["side"] != u["side"] and absf(other["pos"] - u["pos"]) <= UNIT_ATTACK_RANGE:
-			return id
-	return -1
+		if other["side"] != u["side"] and absf(other["pos"] - u["pos"]) <= u["range"]:
+			if avoid.has(other["role"]):
+				if fallback_id == -1:
+					fallback_id = id
+			else:
+				return id
+	return fallback_id
 
 func _resolve_base_damage() -> void:
 	var ids: Array = units.keys()
@@ -365,12 +479,13 @@ func get_state() -> Dictionary:
 		"wave_count": wave_count.duplicate(true),
 		"minerals": minerals.duplicate(true),
 		"total_spent": total_spent.duplicate(true),
-		"queued_units": queued_units.duplicate(true),
+		"queued_units": {"A": queued_purchases["A"].size(), "B": queued_purchases["B"].size()},
 		"trickle_rate": trickle_rate.duplicate(true),
 		"gas_count": gas_count.duplicate(true),
 		"middle_controller": middle_controller,
 		"ticks_until_next_wave": next_phase_tick - tick,
 		"build_phase_ticks": BUILD_PHASE_TICKS,
+		"tier2_unlocked": {"A": total_spent["A"] >= TIER2_UNLOCK_THRESHOLD, "B": total_spent["B"] >= TIER2_UNLOCK_THRESHOLD},
 	}
 
 func get_event_log() -> Array:
