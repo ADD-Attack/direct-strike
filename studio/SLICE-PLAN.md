@@ -11,6 +11,17 @@ without a rewrite.
 
 Engine: Godot 4, 3D, web export per slice (playable in a browser).
 
+**THE REFERENCE (owner checkpoint ruling, 2026-10-14):** the visual and
+structural reference is **StarCraft II's Direct Strike** — a real 3D
+RTS battlefield: modeled 3D units and substantial base structures,
+terrain with depth, team colors, an angled RTS camera, lighting and
+shadows. It is **not** the 2D Direct Strike game's look, and not
+diagrams of primitives. The glance test for every slice: a screenshot
+reads as a 3D RTS tug-of-war. (Slice 0's first build passed every sim
+assertion but read as the 2D version; the owner redirected at the
+checkpoint and a presentation revision was ordered — sim untouched.
+That is the checkpoint working as designed.)
+
 ## Feature bar — what "all features" means for this demo
 
 In: timed build phase · mineral economy · income-per-wave tied to total
@@ -51,6 +62,11 @@ the enemy base; base HP reaches zero → victory/defeat → restart.
   direct UI→sim calls in the architecture checklist); the same match
   run twice from its command log produces identical event ledgers.**
 - Playable: watch a full auto-battle to a conclusion.
+- **Progress:** built + playtest 16/16 PASS 2026-10-14 (commit
+  `4f0ab342`). Owner checkpoint verdict 2026-10-14: **CHANGES
+  REQUESTED** — presentation reads as the 2D game, not SC2 Direct
+  Strike (see THE REFERENCE). Presentation revision ordered; sim and
+  playtest stand. Awaiting the revised build at the checkpoint.
 
 ### Slice 1 — The economy (size: M)
 Build phase with a countdown; minerals; a buy menu for the player
