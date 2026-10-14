@@ -97,6 +97,13 @@ Builder's build notes.
   only the controlling side; unaffordable buys are rejected; wave
   timer cycles build → spawn → build.
 - Playable: you play the economy; your purchases visibly change waves.
+- **Progress:** original build (income-on-spend, commit `e3c7ed7`)
+  superseded before the gate by the owner's economy pivot ruling;
+  rework built same day (commit `4b00fd0`): trickle 3.0/s, gases
+  60/120/240/480 at +1.5/s each, middle-control bonus 3.0/s. Playtest
+  23/23 PASS incl. determinism, producer-verified. Owner checkpoint
+  verdict 2026-10-14: **APPROVED — "Wow perfect."** **Receipt
+  written:** `studio/receipts/slice-1.json`. Slice closed.
 
 ### Slice 2 — Roster & tiers (size: L)
 Six unit types across roles (frontline tank, line DPS, ranged,
