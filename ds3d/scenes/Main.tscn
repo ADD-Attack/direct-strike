@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/main.gd" id="1"]
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1")
+
+[node name="Cam" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.8574929, 0.5144958, 0, -0.5144958, 0.8574929, 20, 18, 24)
+current = true
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.8213938, -0.4545195, 0.3420201, 0, 0.6040227, 0.7969421, -0.5700288, -0.6545085, 0.4961918, 0, 10, 0)
+shadow_enabled = true
+
+[node name="UnitsContainer" type="Node3D" parent="."]
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+
+[node name="HUD" type="Control" parent="HUDLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="BaseALabel" type="Label" parent="HUDLayer/HUD"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 260.0
+offset_top = 16.0
+offset_bottom = 40.0
+text = "Base A HP: 200"
+
+[node name="BaseBLabel" type="Label" parent="HUDLayer/HUD"]
+offset_left = 16.0
+offset_top = 44.0
+offset_right = 260.0
+offset_bottom = 68.0
+text = "Base B HP: 200"
+
+[node name="WaveLabel" type="Label" parent="HUDLayer/HUD"]
+offset_left = 16.0
+offset_top = 72.0
+offset_right = 320.0
+offset_bottom = 96.0
+text = "Waves — A: 0   B: 0"
+
+[node name="StatusLabel" type="Label" parent="HUDLayer/HUD"]
+offset_left = 16.0
+offset_top = 100.0
+offset_right = 420.0
+offset_bottom = 124.0
+text = "Tick: 0"

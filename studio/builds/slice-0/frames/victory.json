@@ -1,0 +1,24 @@
+{
+	"state": {
+		"base_hp": {
+			"A": 200.0,
+			"B": 0.0
+		},
+		"match_over": true,
+		"tick": 3097,
+		"units": {},
+		"wave_count": {
+			"A": 4,
+			"B": 4
+		},
+		"winner": "A"
+	},
+	"triggering_event": {
+		"data": {
+			"loser": "B",
+			"winner": "A"
+		},
+		"tick": 3096,
+		"type": "match_won"
+	}
+}

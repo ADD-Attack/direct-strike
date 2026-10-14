@@ -1,0 +1,1057 @@
+{
+	"all_pass": true,
+	"assertions": [
+		{
+			"detail": "SceneTree playtest executed under --headless with no display/window/GPU context",
+			"id": "boots_headless",
+			"pass": true
+		},
+		{
+			"detail": "first scripted match reached a win within 20000 ticks (took 3097)",
+			"id": "first_match_concludes",
+			"pass": true
+		},
+		{
+			"detail": "pre-restart: match_over=true base_hp={ \"A\": 200.0, \"B\": 0.0 } -> post-restart: match_over=false base_hp={ \"A\": 200.0, \"B\": 200.0 } units=0",
+			"id": "restart_resets_match",
+			"pass": true
+		},
+		{
+			"detail": "second match (post-restart) also reached a win, proving the match is fully replayable after restart",
+			"id": "second_match_concludes_after_restart",
+			"pass": true
+		},
+		{
+			"detail": "host.gd (sim) and match_client.gd (client) exist as separate files",
+			"id": "sim_and_client_are_separate_modules",
+			"pass": true
+		},
+		{
+			"detail": "MatchClient exposes submit_command()/step()/get_state()/drain_new_events() as its only public surface",
+			"id": "client_exposes_message_interface",
+			"pass": true
+		},
+		{
+			"detail": "Host.step() advances exactly one fixed tick per call, independent of real time",
+			"id": "host_has_fixed_tick_step",
+			"pass": true
+		},
+		{
+			"detail": "scenes/main.gd contains no '.host.' access — the UI only calls MatchClient's public methods, never Host directly",
+			"id": "no_direct_ui_to_sim_calls",
+			"pass": true
+		},
+		{
+			"detail": "render loop steps the sim on a fixed-duration accumulator (TICK_DT), decoupled from render framerate",
+			"id": "fixed_timestep_sim_in_render_loop",
+			"pass": true
+		},
+		{
+			"detail": "wave counts: A=8 B=8",
+			"id": "waves_spawn_ge_2_per_side",
+			"pass": true
+		},
+		{
+			"detail": "first_contact combat event observed",
+			"id": "first_contact_fires",
+			"pass": true
+		},
+		{
+			"detail": "48 unit_death events recorded",
+			"id": "unit_deaths_recorded",
+			"pass": true
+		},
+		{
+			"detail": "base_damage sequences (per match segment, reset on restart): { \"A\": [], \"B\": [175.0, 150.0, 125.0, 100.0, 75.0, 50.0, 25.0, 0.0, 175.0, 150.0, 125.0, 100.0, 75.0, 50.0, 25.0, 0.0] }",
+			"id": "base_hp_strictly_decreases_once_survivors_arrive",
+			"pass": true
+		},
+		{
+			"detail": "2 match_won event(s) fired: [{ \"tick\": 3096, \"type\": \"match_won\", \"data\": { \"winner\": \"A\", \"loser\": \"B\" } }, { \"tick\": 6193, \"type\": \"match_won\", \"data\": { \"winner\": \"A\", \"loser\": \"B\" } }]",
+			"id": "win_event_fires",
+			"pass": true
+		},
+		{
+			"detail": "1 match_restarted event(s) recorded",
+			"id": "restart_event_recorded_in_ledger",
+			"pass": true
+		},
+		{
+			"detail": "replayed the exact recorded command log (17 commands) into a fresh host for 6194 ticks: 85 vs 85 events, identical=true",
+			"id": "determinism_same_log_identical_ledgers",
+			"pass": true
+		}
+	],
+	"command_log": [
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 650
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 650
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 1300
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 1300
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 1950
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 1950
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 2600
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 2600
+		},
+		{
+			"action": "RESTART",
+			"params": {},
+			"player_id": "owner",
+			"tick": 3097
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 3747
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 3747
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 4397
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 4397
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 5047
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 5047
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 5697
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 5697
+		}
+	],
+	"engine_version": {
+		"build": "official",
+		"hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+		"hex": 263938,
+		"major": 4,
+		"minor": 7,
+		"patch": 2,
+		"status": "stable",
+		"string": "4.7.2-stable (official)",
+		"timestamp": 0
+	},
+	"event_log": [
+		{
+			"data": {
+				"side": "A",
+				"unit_ids": [
+					1,
+					2,
+					3,
+					4
+				],
+				"wave_number": 1
+			},
+			"tick": 650,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"side": "B",
+				"unit_ids": [
+					5,
+					6,
+					7,
+					8
+				],
+				"wave_number": 1
+			},
+			"tick": 650,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"unit_a": 1,
+				"unit_b": 5
+			},
+			"tick": 812,
+			"type": "first_contact"
+		},
+		{
+			"data": {
+				"killer_id": 5,
+				"side": "A",
+				"unit_id": 1
+			},
+			"tick": 833,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 2,
+				"side": "B",
+				"unit_id": 5
+			},
+			"tick": 838,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 6,
+				"side": "A",
+				"unit_id": 2
+			},
+			"tick": 881,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 3,
+				"side": "B",
+				"unit_id": 6
+			},
+			"tick": 886,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 4,
+				"side": "B",
+				"unit_id": 8
+			},
+			"tick": 932,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 3,
+				"side": "B",
+				"unit_id": 7
+			},
+			"tick": 971,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 175.0,
+				"side": "B",
+				"unit_id": 3
+			},
+			"tick": 1142,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 150.0,
+				"side": "B",
+				"unit_id": 4
+			},
+			"tick": 1146,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"side": "A",
+				"unit_ids": [
+					9,
+					10,
+					11,
+					12
+				],
+				"wave_number": 2
+			},
+			"tick": 1300,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"side": "B",
+				"unit_ids": [
+					13,
+					14,
+					15,
+					16
+				],
+				"wave_number": 2
+			},
+			"tick": 1300,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"killer_id": 13,
+				"side": "A",
+				"unit_id": 9
+			},
+			"tick": 1483,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 10,
+				"side": "B",
+				"unit_id": 13
+			},
+			"tick": 1488,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 14,
+				"side": "A",
+				"unit_id": 10
+			},
+			"tick": 1531,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 11,
+				"side": "B",
+				"unit_id": 14
+			},
+			"tick": 1536,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 12,
+				"side": "B",
+				"unit_id": 16
+			},
+			"tick": 1582,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 11,
+				"side": "B",
+				"unit_id": 15
+			},
+			"tick": 1621,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 125.0,
+				"side": "B",
+				"unit_id": 11
+			},
+			"tick": 1792,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 100.0,
+				"side": "B",
+				"unit_id": 12
+			},
+			"tick": 1796,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"side": "A",
+				"unit_ids": [
+					17,
+					18,
+					19,
+					20
+				],
+				"wave_number": 3
+			},
+			"tick": 1950,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"side": "B",
+				"unit_ids": [
+					21,
+					22,
+					23,
+					24
+				],
+				"wave_number": 3
+			},
+			"tick": 1950,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"killer_id": 21,
+				"side": "A",
+				"unit_id": 17
+			},
+			"tick": 2133,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 18,
+				"side": "B",
+				"unit_id": 21
+			},
+			"tick": 2138,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 22,
+				"side": "A",
+				"unit_id": 18
+			},
+			"tick": 2181,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 19,
+				"side": "B",
+				"unit_id": 22
+			},
+			"tick": 2186,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 20,
+				"side": "B",
+				"unit_id": 24
+			},
+			"tick": 2232,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 19,
+				"side": "B",
+				"unit_id": 23
+			},
+			"tick": 2271,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 75.0,
+				"side": "B",
+				"unit_id": 19
+			},
+			"tick": 2442,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 50.0,
+				"side": "B",
+				"unit_id": 20
+			},
+			"tick": 2446,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"side": "A",
+				"unit_ids": [
+					25,
+					26,
+					27,
+					28
+				],
+				"wave_number": 4
+			},
+			"tick": 2600,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"side": "B",
+				"unit_ids": [
+					29,
+					30,
+					31,
+					32
+				],
+				"wave_number": 4
+			},
+			"tick": 2600,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"killer_id": 29,
+				"side": "A",
+				"unit_id": 25
+			},
+			"tick": 2783,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 26,
+				"side": "B",
+				"unit_id": 29
+			},
+			"tick": 2788,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 30,
+				"side": "A",
+				"unit_id": 26
+			},
+			"tick": 2831,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 27,
+				"side": "B",
+				"unit_id": 30
+			},
+			"tick": 2836,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 28,
+				"side": "B",
+				"unit_id": 32
+			},
+			"tick": 2882,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 27,
+				"side": "B",
+				"unit_id": 31
+			},
+			"tick": 2921,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 25.0,
+				"side": "B",
+				"unit_id": 27
+			},
+			"tick": 3092,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 0.0,
+				"side": "B",
+				"unit_id": 28
+			},
+			"tick": 3096,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"loser": "B",
+				"winner": "A"
+			},
+			"tick": 3096,
+			"type": "match_won"
+		},
+		{
+			"data": {},
+			"tick": 3097,
+			"type": "match_restarted"
+		},
+		{
+			"data": {
+				"side": "A",
+				"unit_ids": [
+					33,
+					34,
+					35,
+					36
+				],
+				"wave_number": 1
+			},
+			"tick": 3747,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"side": "B",
+				"unit_ids": [
+					37,
+					38,
+					39,
+					40
+				],
+				"wave_number": 1
+			},
+			"tick": 3747,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"unit_a": 33,
+				"unit_b": 37
+			},
+			"tick": 3909,
+			"type": "first_contact"
+		},
+		{
+			"data": {
+				"killer_id": 37,
+				"side": "A",
+				"unit_id": 33
+			},
+			"tick": 3930,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 34,
+				"side": "B",
+				"unit_id": 37
+			},
+			"tick": 3935,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 38,
+				"side": "A",
+				"unit_id": 34
+			},
+			"tick": 3978,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 35,
+				"side": "B",
+				"unit_id": 38
+			},
+			"tick": 3983,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 36,
+				"side": "B",
+				"unit_id": 40
+			},
+			"tick": 4029,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 35,
+				"side": "B",
+				"unit_id": 39
+			},
+			"tick": 4068,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 175.0,
+				"side": "B",
+				"unit_id": 35
+			},
+			"tick": 4239,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 150.0,
+				"side": "B",
+				"unit_id": 36
+			},
+			"tick": 4243,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"side": "A",
+				"unit_ids": [
+					41,
+					42,
+					43,
+					44
+				],
+				"wave_number": 2
+			},
+			"tick": 4397,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"side": "B",
+				"unit_ids": [
+					45,
+					46,
+					47,
+					48
+				],
+				"wave_number": 2
+			},
+			"tick": 4397,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"killer_id": 45,
+				"side": "A",
+				"unit_id": 41
+			},
+			"tick": 4580,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 42,
+				"side": "B",
+				"unit_id": 45
+			},
+			"tick": 4585,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 46,
+				"side": "A",
+				"unit_id": 42
+			},
+			"tick": 4628,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 43,
+				"side": "B",
+				"unit_id": 46
+			},
+			"tick": 4633,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 44,
+				"side": "B",
+				"unit_id": 48
+			},
+			"tick": 4679,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 43,
+				"side": "B",
+				"unit_id": 47
+			},
+			"tick": 4718,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 125.0,
+				"side": "B",
+				"unit_id": 43
+			},
+			"tick": 4889,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 100.0,
+				"side": "B",
+				"unit_id": 44
+			},
+			"tick": 4893,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"side": "A",
+				"unit_ids": [
+					49,
+					50,
+					51,
+					52
+				],
+				"wave_number": 3
+			},
+			"tick": 5047,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"side": "B",
+				"unit_ids": [
+					53,
+					54,
+					55,
+					56
+				],
+				"wave_number": 3
+			},
+			"tick": 5047,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"killer_id": 53,
+				"side": "A",
+				"unit_id": 49
+			},
+			"tick": 5230,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 50,
+				"side": "B",
+				"unit_id": 53
+			},
+			"tick": 5235,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 54,
+				"side": "A",
+				"unit_id": 50
+			},
+			"tick": 5278,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 51,
+				"side": "B",
+				"unit_id": 54
+			},
+			"tick": 5283,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 52,
+				"side": "B",
+				"unit_id": 56
+			},
+			"tick": 5329,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 51,
+				"side": "B",
+				"unit_id": 55
+			},
+			"tick": 5368,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 75.0,
+				"side": "B",
+				"unit_id": 51
+			},
+			"tick": 5539,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 50.0,
+				"side": "B",
+				"unit_id": 52
+			},
+			"tick": 5543,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"side": "A",
+				"unit_ids": [
+					57,
+					58,
+					59,
+					60
+				],
+				"wave_number": 4
+			},
+			"tick": 5697,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"side": "B",
+				"unit_ids": [
+					61,
+					62,
+					63,
+					64
+				],
+				"wave_number": 4
+			},
+			"tick": 5697,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"killer_id": 61,
+				"side": "A",
+				"unit_id": 57
+			},
+			"tick": 5880,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 58,
+				"side": "B",
+				"unit_id": 61
+			},
+			"tick": 5885,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 62,
+				"side": "A",
+				"unit_id": 58
+			},
+			"tick": 5928,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 59,
+				"side": "B",
+				"unit_id": 62
+			},
+			"tick": 5933,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 60,
+				"side": "B",
+				"unit_id": 64
+			},
+			"tick": 5979,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 59,
+				"side": "B",
+				"unit_id": 63
+			},
+			"tick": 6018,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 25.0,
+				"side": "B",
+				"unit_id": 59
+			},
+			"tick": 6189,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 0.0,
+				"side": "B",
+				"unit_id": 60
+			},
+			"tick": 6193,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"loser": "B",
+				"winner": "A"
+			},
+			"tick": 6193,
+			"type": "match_won"
+		}
+	],
+	"generated_utc": "2026-10-14T19:47:30",
+	"slice": "Slice 0 — Walking Skeleton"
+}
