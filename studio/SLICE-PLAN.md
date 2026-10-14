@@ -118,10 +118,11 @@ truth about what a slice actually cost.
 
 ## Sign-off
 
-- [ ] Owner approves this plan (Christopher — reply in chat is enough;
-      the producer records it here with the date).
-- [ ] Builder assignment named (role exists in the charter; the
-      specific agent/session is the owner's call, with the producer's
-      recommendation on request).
+- [x] Owner approves this plan — **approved by Christopher in chat,
+      2026-10-14** ("yeah new builder and let's ship it"), including the
+      multiplayer-foundation and human-checkpoint amendments.
+- [x] Builder assignment named — **a new dedicated agent,
+      `studio-builder`**, created for this project (not one of Cadre's
+      fifteen). Provisioning ordered 2026-10-14.
 - [ ] Then: Slice 0 is ordered under Step 0 discipline, and the board
       goes up.
