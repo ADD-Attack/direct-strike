@@ -31,8 +31,10 @@ That is the checkpoint working as designed.)
 
 ## Feature bar — what "all features" means for this demo
 
-In: timed build phase · mineral economy · income-per-wave tied to total
-spent · unit purchasing with a roster of distinct roles · tier unlocks ·
+In: timed build phase · mineral economy (fixed trickle + purchasable
+gases + middle-control bonus, per `studio/REFERENCE.md`; the original
+income-on-spend line was corrected by research and an owner ruling,
+2026-10-14) · unit purchasing with a roster of distinct roles · tier unlocks ·
 wave spawning and marching · automatic combat with counters · base HP
 and base-destruction win · an AI opponent that buys and adapts ·
 full match loop (menu → battle → victory/defeat → restart) · HUD and
@@ -81,12 +83,19 @@ the enemy base; base HP reaches zero → victory/defeat → restart.
 
 ### Slice 1 — The economy (size: M)
 Build phase with a countdown; minerals; a buy menu for the player
-(units queue for the next wave); income paid each wave, scaling with
-total minerals spent; the enemy buys from a fixed script.
+(units queue for the next wave); the **real Direct Strike economy**
+(per `studio/REFERENCE.md`, owner ruling 2026-10-14): a fixed mineral
+trickle, up to 4 purchasable gases that raise the trickle (escalating
+cost), and a middle-control bonus paid to the side holding more units
+on the enemy half. The enemy buys from a fixed script. Rates are demo
+tuning (the real numbers are undocumented) and are stated in the
+Builder's build notes.
 - Playtest asserts: buy commands debit minerals and appear in the next
-  wave's composition; income per wave equals the plan's formula for the
-  recorded spend; unaffordable buys are rejected; wave timer cycles
-  build → spawn → build.
+  wave's composition; the trickle accrues at the stated rate; a gas
+  purchase debits its escalating price and raises the trickle by the
+  stated bonus; middle control flips with unit distribution and pays
+  only the controlling side; unaffordable buys are rejected; wave
+  timer cycles build → spawn → build.
 - Playable: you play the economy; your purchases visibly change waves.
 
 ### Slice 2 — Roster & tiers (size: L)

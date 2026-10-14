@@ -79,12 +79,12 @@ minerals, tiers, counters, base-destruction win, full match loop.
 
 Divergences — each is either decided or flagged for the owner:
 
-1. **Economy — DECISION PENDING (owner, 2026-10-14).** The signed
-   plan's "income scales with total spent" is **not** the real mod.
-   Real: fixed trickle + gases + middle-control bonus. Slice 1 was
-   ordered with the plan's version before this research landed; the
-   owner rules whether Slice 1 pivots to the real system or keeps
-   income-on-spend as a deliberate house adaptation.
+1. **Economy — DECIDED (owner, 2026-10-14): pivot to the real
+   system.** The signed plan's "income scales with total spent" is
+   **not** the real mod and is dropped. Slice 1 implements: fixed
+   mineral trickle + up to 4 gases (escalating cost) + middle-control
+   bonus. The real rates are undocumented, so the Builder's chosen
+   numbers are demo tuning, stated in its build notes as such.
 2. **Win chain — ADAPT at Slice 5 or earlier slice gate.** Real:
    bunker first (bounty, first-gas trigger), then base. Our Slice 0
    has one base HP pool. Adding the bunker as a front structure is
