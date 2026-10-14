@@ -23,6 +23,7 @@ const PLAYER_ROLE_CYCLE := ["line_dps", "frontline_tank", "ranged", "splash", "f
 const PLAYER_GAS_OFFSET := 20
 
 var assertions: Array = []
+var sell_unit_result: Dictionary = {}
 
 func _assert(id: String, passed: bool, detail: String) -> void:
 	assertions.append({"id": id, "pass": passed, "detail": detail})
@@ -41,12 +42,91 @@ func _init() -> void:
 	_assert_economy(events, total_ticks, final_minerals)
 	_assert_roster_stats(events)
 	_assert_tier_gating(events)
+	_assert_sell_unit_command()
 	_assert_determinism(command_log, events, total_ticks)
 	_assert_counter_compositions()
 	_assert_placement_changes_engagement_order()
 
 	_write_ledger(events, command_log)
 	_report_and_quit()
+
+## SELL_UNIT is driven through the public MatchClient command surface, not
+## Host internals. It sells one queued frontline_tank (cost 10), preserves
+## the placed line_dps behind it as queue index 0, then proves that both a
+## deployed index and an out-of-range index reject without changing gameplay
+## state. Its exact command log is replayed into a fresh client as the
+## sell-specific deterministic-lockstep check.
+func _assert_sell_unit_command() -> void:
+	var client := MatchClient.new(false)
+	client.submit_command("A", "BUY_UNIT", {"role": "frontline_tank"})
+	client.submit_command("A", "BUY_UNIT", {"role": "line_dps"})
+	client.submit_command("A", "PLACE_UNIT", {"queue_index": 1, "row": 0, "col": 3})
+	client.submit_command("A", "SELL_UNIT", {"queue_index": 0})
+	client.submit_command("A", "SPAWN_WAVE", {})
+	client.step()
+	var state_after_spawn: Dictionary = client.get_state()
+	client.submit_command("A", "SELL_UNIT", {"queue_index": 0}) # already deployed
+	client.submit_command("A", "SELL_UNIT", {"queue_index": 99}) # invalid
+	client.step()
+	var state_after_rejections: Dictionary = client.get_state()
+	var events: Array = client.get_full_event_log()
+	var log: Array = client.get_command_log()
+
+	var buys: Array = []
+	var sold: Dictionary = {}
+	var rejected: Array = []
+	var spawned: Dictionary = {}
+	for e in events:
+		match e["type"]:
+			"unit_purchased":
+				buys.append(e)
+			"unit_sold":
+				sold = e
+			"sell_rejected":
+				rejected.append(e)
+			"wave_spawned":
+				if e["data"]["side"] == "A":
+					spawned = e
+
+	var purchase_cost: float = buys[0]["data"]["cost"] if buys.size() == 2 else -1.0
+	var refund_exact: bool = not sold.is_empty() \
+		and sold["data"]["cost"] == purchase_cost \
+		and sold["data"]["minerals_remaining"] == buys[1]["data"]["minerals_remaining"] + purchase_cost \
+		and sold["data"]["total_spent"] == buys[1]["data"]["total_spent"] - purchase_cost
+	_assert("sell_unit_refunds_exact_purchase_cost", refund_exact, "bought %s for %.1f; SELL_UNIT refunded %.1f (minerals %.1f -> %.1f, total_spent=%.1f)" % [buys[0]["data"].get("role", "missing"), purchase_cost, sold.get("data", {}).get("cost", -1.0), buys[1]["data"].get("minerals_remaining", -1.0), sold.get("data", {}).get("minerals_remaining", -1.0), sold.get("data", {}).get("total_spent", -1.0)])
+
+	var formation: Array = spawned.get("data", {}).get("formation", [])
+	var sold_absent: bool = formation.size() == 1 \
+		and formation[0]["role"] == "line_dps" \
+		and formation[0]["row"] == 0 and formation[0]["col"] == 3
+	_assert("sold_unit_does_not_appear_in_next_wave", sold_absent, "next wave formation after selling queue index 0: %s" % [formation])
+
+	var rejection_ok: bool = rejected.size() == 2 \
+		and rejected[0]["data"]["queue_index"] == 0 \
+		and rejected[1]["data"]["queue_index"] == 99 \
+		and rejected[0]["data"]["reason"] == "no_such_queued_unit" \
+		and rejected[1]["data"]["reason"] == "no_such_queued_unit" \
+		and state_after_rejections["total_spent"]["A"] == state_after_spawn["total_spent"]["A"] \
+		and state_after_rejections["queued_units"]["A"] == state_after_spawn["queued_units"]["A"] \
+		and state_after_rejections["units"].keys() == state_after_spawn["units"].keys() \
+		and state_after_rejections["base_hp"] == state_after_spawn["base_hp"] \
+		and absf(state_after_rejections["minerals"]["A"] - state_after_spawn["minerals"]["A"] - Host.BASE_TRICKLE_PER_SEC / float(Host.TICK_RATE)) < 0.001
+	_assert("sell_invalid_or_deployed_index_rejected_without_state_change", rejection_ok, "SELL_UNIT queue_index=0 after spawn and queue_index=99 both emitted sell_rejected; queued=%d total_spent=%.1f, unit ids and base HP unchanged (only the normal %.1f mineral tick elapsed)" % [state_after_rejections["queued_units"]["A"], state_after_rejections["total_spent"]["A"], Host.BASE_TRICKLE_PER_SEC / float(Host.TICK_RATE)])
+
+	var replay := MatchClient.new(false)
+	replay.load_replay_log(log)
+	for i in range(2):
+		replay.step()
+	var replay_events: Array = replay.get_full_event_log()
+	var deterministic: bool = _events_equal(events, replay_events)
+	_assert("sell_unit_same_log_replays_identically", deterministic, "replayed exact SELL_UNIT command log (%d commands) into a fresh host: %d vs %d events, identical=%s" % [log.size(), events.size(), replay_events.size(), deterministic])
+
+	sell_unit_result = {
+		"command_log": log,
+		"event_log": events,
+		"state_after_spawn": state_after_spawn,
+		"state_after_rejections": state_after_rejections,
+	}
 
 ## Drives one match to a conclusion (buying a rotating mix of all 6 roles for
 ## side A every build phase — enough to cross the tier-2 threshold partway
@@ -434,6 +514,10 @@ func _assert_architecture() -> void:
 	var placement_via_command_interface := main_src.find("PLACE_UNIT") != -1
 	_assert("placement_uses_command_interface", placement_via_command_interface, "scenes/main.gd issues PLACE_UNIT via client.submit_command(), the same interface every other command uses")
 
+	var host_src := _read_text("res://sim/host.gd")
+	var sell_via_command_dispatch := host_src.find('"SELL_UNIT":') != -1 and host_src.find("_do_sell_unit") != -1
+	_assert("sell_unit_rides_existing_command_log_dispatch", sell_via_command_dispatch, "host.gd dispatches SELL_UNIT through the same action match as BUY_UNIT, BUY_GAS, and PLACE_UNIT; MatchClient needs no new public method")
+
 func _assert_determinism(command_log: Array, events_run1: Array, total_ticks: int) -> void:
 	var client2 := MatchClient.new(false)
 	client2.load_replay_log(command_log)
@@ -470,13 +554,16 @@ func _write_ledger(events: Array, command_log: Array) -> void:
 	for role in Host.ROLE_ORDER:
 		stat_table[role] = Host.ROLE_STATS[role]
 	var ledger := {
-		"slice": "Slice 2 — Roster & tiers",
+		"slice": "Slice 2 — Roster & tiers + SELL_UNIT command extension",
 		"generated_utc": Time.get_datetime_string_from_system(true),
 		"engine_version": Engine.get_version_info(),
 		"roster_stats": stat_table,
 		"tier2_unlock_threshold": Host.TIER2_UNLOCK_THRESHOLD,
+		"sell_unit_command_shape": "{tick, player_id, action: \"SELL_UNIT\", params: {queue_index}}",
 		"assertions": assertions,
+		"assertion_count": assertions.size(),
 		"all_pass": _all_pass(),
+		"sell_unit_result": sell_unit_result,
 		"event_log": events,
 		"command_log": command_log,
 	}

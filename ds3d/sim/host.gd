@@ -222,6 +222,8 @@ func _apply_command(cmd: Dictionary) -> void:
 			_do_buy_gas(cmd["player_id"])
 		"PLACE_UNIT":
 			_do_place_unit(cmd["player_id"], cmd.get("params", {}))
+		"SELL_UNIT":
+			_do_sell_unit(cmd["player_id"], cmd.get("params", {}))
 		_:
 			_emit_event("unknown_command", {"action": cmd.get("action", "")})
 
@@ -278,6 +280,35 @@ func _do_place_unit(side: String, params: Dictionary) -> void:
 	var col: int = params.get("col", idx)
 	queued_placements[side][idx] = {"row": row, "col": col}
 	_emit_event("unit_placed", {"side": side, "queue_index": idx, "row": row, "col": col})
+
+## params: {queue_index: int}. Only purchases still waiting in this build
+## phase are sellable. The unit is removed before the next wave and refunds
+## its full role cost; total_spent follows the net investment so a buy/sell
+## cycle cannot unlock tiers for free. Queue indices above the removed entry
+## compact, and their placement records follow their purchased unit.
+func _do_sell_unit(side: String, params: Dictionary) -> void:
+	var idx: int = params.get("queue_index", -1)
+	if idx < 0 or idx >= queued_purchases[side].size():
+		_emit_event("sell_rejected", {"side": side, "queue_index": idx, "reason": "no_such_queued_unit", "queued_units": queued_purchases[side].size()})
+		return
+	var purchase: Dictionary = queued_purchases[side][idx]
+	var role: String = purchase["role"]
+	var cost: float = ROLE_STATS[role]["cost"]
+	queued_purchases[side].remove_at(idx)
+	minerals[side] += cost
+	total_spent[side] -= cost
+	_reindex_queued_placements_after_sale(side, idx)
+	_emit_event("unit_sold", {"side": side, "queue_index": idx, "role": role, "cost": cost, "minerals_remaining": minerals[side], "total_spent": total_spent[side], "queued_units": queued_purchases[side].size()})
+
+func _reindex_queued_placements_after_sale(side: String, removed_index: int) -> void:
+	var reindexed: Dictionary = {}
+	for key in queued_placements[side]:
+		var old_index: int = int(key)
+		if old_index < removed_index:
+			reindexed[old_index] = queued_placements[side][key]
+		elif old_index > removed_index:
+			reindexed[old_index - 1] = queued_placements[side][key]
+	queued_placements[side] = reindexed
 
 func _do_spawn_wave(side: String) -> void:
 	wave_count[side] += 1

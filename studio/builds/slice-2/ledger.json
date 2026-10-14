@@ -1,5 +1,6 @@
 {
 	"all_pass": true,
+	"assertion_count": 35,
 	"assertions": [
 		{
 			"detail": "SceneTree playtest executed under --headless with no display/window/GPU context",
@@ -54,6 +55,11 @@
 		{
 			"detail": "scenes/main.gd issues PLACE_UNIT via client.submit_command(), the same interface every other command uses",
 			"id": "placement_uses_command_interface",
+			"pass": true
+		},
+		{
+			"detail": "host.gd dispatches SELL_UNIT through the same action match as BUY_UNIT, BUY_GAS, and PLACE_UNIT; MatchClient needs no new public method",
+			"id": "sell_unit_rides_existing_command_log_dispatch",
 			"pass": true
 		},
 		{
@@ -124,6 +130,26 @@
 		{
 			"detail": "8 tier_locked rejections, 16 tier-2 purchases accepted once total_spent crossed TIER2_UNLOCK_THRESHOLD=35.0 (violations=none)",
 			"id": "tier2_rejected_before_accepted_after_threshold",
+			"pass": true
+		},
+		{
+			"detail": "bought frontline_tank for 10.0; SELL_UNIT refunded 10.0 (minerals 30.0 -> 40.0, total_spent=10.0)",
+			"id": "sell_unit_refunds_exact_purchase_cost",
+			"pass": true
+		},
+		{
+			"detail": "next wave formation after selling queue index 0: [{ \"unit_id\": 1, \"role\": \"line_dps\", \"row\": 0, \"col\": 3, \"lane_offset\": -0.6, \"hp\": 30.0, \"damage\": 6.0, \"range\": 1.2, \"cooldown\": 20, \"speed\": 0.12 }]",
+			"id": "sold_unit_does_not_appear_in_next_wave",
+			"pass": true
+		},
+		{
+			"detail": "SELL_UNIT queue_index=0 after spawn and queue_index=99 both emitted sell_rejected; queued=0 total_spent=10.0, unit ids and base HP unchanged (only the normal 0.1 mineral tick elapsed)",
+			"id": "sell_invalid_or_deployed_index_rejected_without_state_change",
+			"pass": true
+		},
+		{
+			"detail": "replayed exact SELL_UNIT command log (7 commands) into a fresh host: 7 vs 7 events, identical=true",
+			"id": "sell_unit_same_log_replays_identically",
 			"pass": true
 		},
 		{
@@ -4173,7 +4199,7 @@
 			"type": "match_won"
 		}
 	],
-	"generated_utc": "2026-10-14T22:58:41",
+	"generated_utc": "2026-10-14T23:49:13",
 	"roster_stats": {
 		"fast_flanker": {
 			"avoid_roles": [
@@ -4256,6 +4282,294 @@
 			"tier": 2
 		}
 	},
-	"slice": "Slice 2 — Roster & tiers",
+	"sell_unit_command_shape": "{tick, player_id, action: \"SELL_UNIT\", params: {queue_index}}",
+	"sell_unit_result": {
+		"command_log": [
+			{
+				"action": "BUY_UNIT",
+				"params": {
+					"role": "frontline_tank"
+				},
+				"player_id": "A",
+				"tick": 0
+			},
+			{
+				"action": "BUY_UNIT",
+				"params": {
+					"role": "line_dps"
+				},
+				"player_id": "A",
+				"tick": 0
+			},
+			{
+				"action": "PLACE_UNIT",
+				"params": {
+					"col": 3,
+					"queue_index": 1,
+					"row": 0
+				},
+				"player_id": "A",
+				"tick": 0
+			},
+			{
+				"action": "SELL_UNIT",
+				"params": {
+					"queue_index": 0
+				},
+				"player_id": "A",
+				"tick": 0
+			},
+			{
+				"action": "SPAWN_WAVE",
+				"params": {},
+				"player_id": "A",
+				"tick": 0
+			},
+			{
+				"action": "SELL_UNIT",
+				"params": {
+					"queue_index": 0
+				},
+				"player_id": "A",
+				"tick": 1
+			},
+			{
+				"action": "SELL_UNIT",
+				"params": {
+					"queue_index": 99
+				},
+				"player_id": "A",
+				"tick": 1
+			}
+		],
+		"event_log": [
+			{
+				"data": {
+					"cost": 10.0,
+					"minerals_remaining": 40.0,
+					"queue_index": 0,
+					"queued_units": 1,
+					"role": "frontline_tank",
+					"side": "A",
+					"total_spent": 10.0
+				},
+				"tick": 0,
+				"type": "unit_purchased"
+			},
+			{
+				"data": {
+					"cost": 10.0,
+					"minerals_remaining": 30.0,
+					"queue_index": 1,
+					"queued_units": 2,
+					"role": "line_dps",
+					"side": "A",
+					"total_spent": 20.0
+				},
+				"tick": 0,
+				"type": "unit_purchased"
+			},
+			{
+				"data": {
+					"col": 3,
+					"queue_index": 1,
+					"row": 0,
+					"side": "A"
+				},
+				"tick": 0,
+				"type": "unit_placed"
+			},
+			{
+				"data": {
+					"cost": 10.0,
+					"minerals_remaining": 40.0,
+					"queue_index": 0,
+					"queued_units": 1,
+					"role": "frontline_tank",
+					"side": "A",
+					"total_spent": 10.0
+				},
+				"tick": 0,
+				"type": "unit_sold"
+			},
+			{
+				"data": {
+					"formation": [
+						{
+							"col": 3,
+							"cooldown": 20,
+							"damage": 6.0,
+							"hp": 30.0,
+							"lane_offset": -0.6,
+							"range": 1.2,
+							"role": "line_dps",
+							"row": 0,
+							"speed": 0.12,
+							"unit_id": 1
+						}
+					],
+					"purchased_count": 1,
+					"side": "A",
+					"unit_ids": [
+						1
+					],
+					"wave_number": 1
+				},
+				"tick": 0,
+				"type": "wave_spawned"
+			},
+			{
+				"data": {
+					"queue_index": 0,
+					"queued_units": 0,
+					"reason": "no_such_queued_unit",
+					"side": "A"
+				},
+				"tick": 1,
+				"type": "sell_rejected"
+			},
+			{
+				"data": {
+					"queue_index": 99,
+					"queued_units": 0,
+					"reason": "no_such_queued_unit",
+					"side": "A"
+				},
+				"tick": 1,
+				"type": "sell_rejected"
+			}
+		],
+		"state_after_rejections": {
+			"base_hp": {
+				"A": 200.0,
+				"B": 200.0
+			},
+			"build_phase_ticks": 650,
+			"gas_count": {
+				"A": 0,
+				"B": 0
+			},
+			"match_over": false,
+			"middle_controller": "",
+			"minerals": {
+				"A": 40.2,
+				"B": 50.2
+			},
+			"queued_units": {
+				"A": 0,
+				"B": 0
+			},
+			"tick": 2,
+			"ticks_until_next_wave": 648,
+			"tier2_unlocked": {
+				"A": false,
+				"B": false
+			},
+			"total_spent": {
+				"A": 10.0,
+				"B": 0.0
+			},
+			"trickle_rate": {
+				"A": 3.0,
+				"B": 3.0
+			},
+			"units": {
+				"1": {
+					"avoid_roles": [],
+					"bonus_vs": {},
+					"cooldown": 0,
+					"cooldown_max": 20,
+					"damage": 6.0,
+					"formation_cell": {
+						"col": 3,
+						"row": 0
+					},
+					"hp": 30.0,
+					"id": 1,
+					"lane_offset": -0.6,
+					"max_hp": 30.0,
+					"pos": 1.74,
+					"range": 1.2,
+					"role": "line_dps",
+					"side": "A",
+					"speed": 0.12,
+					"splash_radius": 0.0,
+					"state": "marching",
+					"target_id": -1
+				}
+			},
+			"wave_count": {
+				"A": 1,
+				"B": 0
+			},
+			"winner": ""
+		},
+		"state_after_spawn": {
+			"base_hp": {
+				"A": 200.0,
+				"B": 200.0
+			},
+			"build_phase_ticks": 650,
+			"gas_count": {
+				"A": 0,
+				"B": 0
+			},
+			"match_over": false,
+			"middle_controller": "",
+			"minerals": {
+				"A": 40.1,
+				"B": 50.1
+			},
+			"queued_units": {
+				"A": 0,
+				"B": 0
+			},
+			"tick": 1,
+			"ticks_until_next_wave": 649,
+			"tier2_unlocked": {
+				"A": false,
+				"B": false
+			},
+			"total_spent": {
+				"A": 10.0,
+				"B": 0.0
+			},
+			"trickle_rate": {
+				"A": 3.0,
+				"B": 3.0
+			},
+			"units": {
+				"1": {
+					"avoid_roles": [],
+					"bonus_vs": {},
+					"cooldown": 0,
+					"cooldown_max": 20,
+					"damage": 6.0,
+					"formation_cell": {
+						"col": 3,
+						"row": 0
+					},
+					"hp": 30.0,
+					"id": 1,
+					"lane_offset": -0.6,
+					"max_hp": 30.0,
+					"pos": 1.62,
+					"range": 1.2,
+					"role": "line_dps",
+					"side": "A",
+					"speed": 0.12,
+					"splash_radius": 0.0,
+					"state": "marching",
+					"target_id": -1
+				}
+			},
+			"wave_count": {
+				"A": 1,
+				"B": 0
+			},
+			"winner": ""
+		}
+	},
+	"slice": "Slice 2 — Roster & tiers + SELL_UNIT command extension",
 	"tier2_unlock_threshold": 35.0
 }

@@ -167,3 +167,44 @@ reproduces an identical 240-event ledger.
 godot --headless --path ds3d -s playtest/run_playtest_slice2.gd
 cd ds3d && godot --headless --path . --export-release "Web" index.html
 ```
+
+---
+
+## SELL_UNIT bake-off extension — 2026-10-14
+
+### What changed
+
+- Added `{tick, player_id, action: "SELL_UNIT", params: {queue_index}}`
+  to `sim/host.gd`'s existing action dispatch, alongside `BUY_UNIT`,
+  `BUY_GAS`, and `PLACE_UNIT`; the `MatchClient` public surface is
+  unchanged.
+- A valid sale removes only a queued (not yet spawned) purchase, refunds
+  its exact role cost, reverses the net `total_spent` contribution, and
+  compacts later queue indices while retaining their placement records.
+- Invalid and already-deployed indices emit `sell_rejected` and make no
+  command-caused state change.
+- Extended `playtest/run_playtest_slice2.gd`; the generated JSON ledger is
+  `studio/builds/slice-2/ledger.json` and includes the SELL_UNIT command
+  log, event log, resulting state snapshots, and assertion evidence.
+
+### Assertion result
+
+`godot --headless --path ds3d -s playtest/run_playtest_slice2.gd`:
+**35/35 PASS**. This includes all **30/30 pre-existing assertions** plus:
+
+1. SELL_UNIT is on the existing command-log dispatch.
+2. Exact full-cost refund (10.0 minerals in the exercised roster case).
+3. The sold unit is absent from the next wave; the surviving placed unit
+   retained its placement after queue compaction.
+4. Deployed and invalid indices reject without command-caused state change.
+5. The same seven-command log including SELL_UNIT replayed identically
+   (7 events in each run).
+
+### Rework and rerun record
+
+The first extension run did not start assertions: GDScript could not infer
+three boolean predicate types in the new test. Added explicit `bool` types
+and reran. The next run exposed that comparing full unit dictionaries across
+two ticks incorrectly treated normal marching as a rejected-command state
+change; the assertion now compares command-relevant state and explicitly
+accounts for the normal 0.1 mineral tick. Final rerun passed 35/35.
