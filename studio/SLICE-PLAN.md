@@ -65,8 +65,12 @@ the enemy base; base HP reaches zero → victory/defeat → restart.
 - **Progress:** built + playtest 16/16 PASS 2026-10-14 (commit
   `4f0ab342`). Owner checkpoint verdict 2026-10-14: **CHANGES
   REQUESTED** — presentation reads as the 2D game, not SC2 Direct
-  Strike (see THE REFERENCE). Presentation revision ordered; sim and
-  playtest stand. Awaiting the revised build at the checkpoint.
+  Strike (see THE REFERENCE). Presentation revision built same day
+  (commit `b2ad68c`, playtest re-verified 16/16 incl. determinism,
+  rendered screenshots in `studio/builds/slice-0/screenshots/`).
+  Owner verdict on revision 1, 2026-10-14: **APPROVED as the
+  foundation** — the look matures at Slice 5. **Receipt written:**
+  `studio/receipts/slice-0.json`. Slice closed.
 
 ### Slice 1 — The economy (size: M)
 Build phase with a countdown; minerals; a buy menu for the player
