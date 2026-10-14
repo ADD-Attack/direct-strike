@@ -38,6 +38,19 @@ const ENEMY_BUY_OFFSETS := [30, 90, 150]
 const ENEMY_GAS_EVERY_N_PHASES := 3
 const ENEMY_GAS_OFFSET := 200
 
+## --- Formation staging (Slice 2 warm-up prototype) ---
+## A queued-but-unspawned purchase can be assigned a cell {row, col} in a
+## staging grid behind the base via PLACE_UNIT. row controls lateral spread
+## (lane_offset, cosmetic/formation axis only — does not affect combat
+## resolution, which still runs on the 1D lane "pos" scalar); col controls
+## depth-of-stagger along the lane axis, the same role Slice 0/1's queue
+## index played. Default (no PLACE_UNIT issued) reproduces Slice 0/1's exact
+## single-file spawn: row defaults to the centered row (lane_offset 0), col
+## defaults to the unit's queue index.
+const STAGING_ROWS := 3
+const STAGING_ROW_SPACING := 0.6
+const STAGING_COL_SPACING := 0.5
+
 var tick: int = 0
 var base_hp: Dictionary = {}
 var units: Dictionary = {}
@@ -58,6 +71,7 @@ var queued_units: Dictionary = {}
 var trickle_rate: Dictionary = {}
 var gas_count: Dictionary = {}
 var middle_controller: String = "" ## "" (none), "A", or "B"
+var queued_placements: Dictionary = {}
 var phase_start_tick: int = 0
 var next_phase_tick: int = 0
 var enemy_phase_count: int = 0
@@ -85,6 +99,7 @@ func reset_match(auto_source: bool) -> void:
 	trickle_rate = {"A": BASE_TRICKLE_PER_SEC, "B": BASE_TRICKLE_PER_SEC}
 	gas_count = {"A": 0, "B": 0}
 	middle_controller = ""
+	queued_placements = {"A": {}, "B": {}}
 	phase_start_tick = 0
 	next_phase_tick = BUILD_PHASE_TICKS
 	enemy_phase_count = 0
@@ -162,6 +177,8 @@ func _apply_command(cmd: Dictionary) -> void:
 			_do_buy_unit(cmd["player_id"])
 		"BUY_GAS":
 			_do_buy_gas(cmd["player_id"])
+		"PLACE_UNIT":
+			_do_place_unit(cmd["player_id"], cmd.get("params", {}))
 		_:
 			_emit_event("unknown_command", {"action": cmd.get("action", "")})
 
@@ -188,18 +205,45 @@ func _do_buy_gas(side: String) -> void:
 	trickle_rate[side] += GAS_TRICKLE_BONUS_PER_SEC
 	_emit_event("gas_purchased", {"side": side, "cost": cost, "gas_count": gas_count[side], "new_trickle_rate": trickle_rate[side]})
 
+## params: {queue_index: int, row: int, col: int}. queue_index addresses a
+## purchase already queued (not yet spawned) this build phase for `side` —
+## the same ordinal SPAWN_WAVE uses to size the wave, so a placement always
+## refers to a unit that will actually exist. row/col are optional; the
+## defaults applied at spawn time reproduce the pre-placement single-file
+## formation exactly (see _do_spawn_wave).
+func _do_place_unit(side: String, params: Dictionary) -> void:
+	var idx: int = params.get("queue_index", -1)
+	if idx < 0 or idx >= queued_units[side]:
+		_emit_event("placement_rejected", {"side": side, "queue_index": idx, "reason": "no_such_queued_unit", "queued_units": queued_units[side]})
+		return
+	var row: int = params.get("row", (STAGING_ROWS - 1) / 2)
+	if row < 0 or row >= STAGING_ROWS:
+		_emit_event("placement_rejected", {"side": side, "queue_index": idx, "reason": "row_out_of_range", "row": row})
+		return
+	var col: int = params.get("col", idx)
+	queued_placements[side][idx] = {"row": row, "col": col}
+	_emit_event("unit_placed", {"side": side, "queue_index": idx, "row": row, "col": col})
+
 func _do_spawn_wave(side: String) -> void:
 	wave_count[side] += 1
 	var count: int = queued_units[side]
 	var ids: Array = []
 	var start_pos: float = 0.0 if side == "A" else LANE_LENGTH
 	var dir: float = 1.0 if side == "A" else -1.0
+	var placements: Dictionary = queued_placements[side]
+	var formation: Array = []
 	for i in range(count):
 		var id := next_unit_id
+		var cell: Dictionary = placements.get(i, {"row": (STAGING_ROWS - 1) / 2, "col": i})
+		var row: int = cell["row"]
+		var col: int = cell["col"]
+		var lane_offset: float = (row - (STAGING_ROWS - 1) / 2.0) * STAGING_ROW_SPACING
 		units[id] = {
 			"id": id,
 			"side": side,
-			"pos": start_pos - dir * (i * 0.5),
+			"pos": start_pos - dir * (col * STAGING_COL_SPACING),
+			"lane_offset": lane_offset,
+			"formation_cell": {"row": row, "col": col},
 			"hp": UNIT_HP,
 			"max_hp": UNIT_HP,
 			"state": "marching",
@@ -207,9 +251,11 @@ func _do_spawn_wave(side: String) -> void:
 			"cooldown": 0,
 		}
 		ids.append(id)
+		formation.append({"unit_id": id, "row": row, "col": col, "lane_offset": lane_offset})
 		next_unit_id += 1
 	queued_units[side] = 0
-	_emit_event("wave_spawned", {"side": side, "wave_number": wave_count[side], "unit_ids": ids, "purchased_count": count})
+	queued_placements[side] = {}
+	_emit_event("wave_spawned", {"side": side, "wave_number": wave_count[side], "unit_ids": ids, "purchased_count": count, "formation": formation})
 
 func _do_restart() -> void:
 	base_hp = {"A": BASE_HP, "B": BASE_HP}
@@ -224,6 +270,7 @@ func _do_restart() -> void:
 	trickle_rate = {"A": BASE_TRICKLE_PER_SEC, "B": BASE_TRICKLE_PER_SEC}
 	gas_count = {"A": 0, "B": 0}
 	middle_controller = ""
+	queued_placements = {"A": {}, "B": {}}
 	phase_start_tick = tick
 	next_phase_tick = tick + BUILD_PHASE_TICKS
 	enemy_phase_count = 0

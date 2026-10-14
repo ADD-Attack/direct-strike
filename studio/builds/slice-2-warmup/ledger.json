@@ -1,0 +1,1227 @@
+{
+	"all_pass": true,
+	"assertions": [
+		{
+			"detail": "SceneTree playtest executed under --headless with no display/window/GPU context",
+			"id": "boots_headless",
+			"pass": true
+		},
+		{
+			"detail": "side A's first wave spawned by tick 651",
+			"id": "first_wave_spawns",
+			"pass": true
+		},
+		{
+			"detail": "match reached a win within 20000 ticks (took 3584) with PLACE_UNIT commands mixed into the log",
+			"id": "match_still_concludes_with_placements_in_the_log",
+			"pass": true
+		},
+		{
+			"detail": "host.gd's _apply_command() match statement has a \"PLACE_UNIT\" case calling _do_place_unit(), the same dispatch table BUY_UNIT/SPAWN_WAVE/RESTART use",
+			"id": "place_unit_rides_the_same_command_dispatch_as_every_other_action",
+			"pass": true
+		},
+		{
+			"detail": "MatchClient's public surface is unchanged (submit_command/step/get_state/drain_new_events) — PLACE_UNIT is just another action string through the existing submit_command(), no placement-specific method was added",
+			"id": "no_new_client_surface_for_placement",
+			"pass": true
+		},
+		{
+			"detail": "first wave's formation: [{ \"unit_id\": 1, \"row\": 2, \"col\": 0, \"lane_offset\": 0.6 }, { \"unit_id\": 2, \"row\": 1, \"col\": 1, \"lane_offset\": 0.0 }, { \"unit_id\": 3, \"row\": 0, \"col\": 2, \"lane_offset\": -0.6 }, { \"unit_id\": 4, \"row\": 1, \"col\": 3, \"lane_offset\": 0.0 }, { \"unit_id\": 5, \"row\": 2, \"col\": 4, \"lane_offset\": 0.6 }] (violations: none)",
+			"id": "wave_spawns_in_the_commanded_formation",
+			"pass": true
+		},
+		{
+			"detail": "formation cells carry 3 distinct lane_offset values (a single-file spawn would have 1): [{ \"unit_id\": 1, \"row\": 2, \"col\": 0, \"lane_offset\": 0.6 }, { \"unit_id\": 2, \"row\": 1, \"col\": 1, \"lane_offset\": 0.0 }, { \"unit_id\": 3, \"row\": 0, \"col\": 2, \"lane_offset\": -0.6 }, { \"unit_id\": 4, \"row\": 1, \"col\": 3, \"lane_offset\": 0.0 }, { \"unit_id\": 5, \"row\": 2, \"col\": 4, \"lane_offset\": 0.6 }]",
+			"id": "formation_produces_lateral_spread",
+			"pass": true
+		},
+		{
+			"detail": "1 placement_rejected event(s), first: { \"side\": \"A\", \"queue_index\": 99, \"reason\": \"no_such_queued_unit\", \"queued_units\": 5 }",
+			"id": "invalid_placement_is_rejected_not_silently_dropped",
+			"pass": true
+		},
+		{
+			"detail": "replayed the exact recorded command log (49 commands, incl. PLACE_UNIT) into a fresh host for 3584 ticks: 67 vs 67 events, identical=true",
+			"id": "determinism_same_log_identical_ledgers",
+			"pass": true
+		},
+		{
+			"detail": "roster_models.json role_order has 6 entries: [\"frontline_tank\", \"line_dps\", \"ranged\", \"splash\", \"fast_flanker\", \"siege\"]",
+			"id": "roster_declares_six_roles",
+			"pass": true
+		},
+		{
+			"detail": "all 6 roles instantiated via RosterUnitVisual.build() with >=1 mesh part each (violations: none)",
+			"id": "every_roster_role_builds_a_nonempty_rig",
+			"pass": true
+		}
+	],
+	"command_log": [
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "PLACE_UNIT",
+			"params": {
+				"col": 0,
+				"queue_index": 0,
+				"row": 2
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "PLACE_UNIT",
+			"params": {
+				"col": 1,
+				"queue_index": 1,
+				"row": 1
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "PLACE_UNIT",
+			"params": {
+				"col": 2,
+				"queue_index": 2,
+				"row": 0
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "PLACE_UNIT",
+			"params": {
+				"col": 3,
+				"queue_index": 3,
+				"row": 1
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "PLACE_UNIT",
+			"params": {
+				"col": 4,
+				"queue_index": 4,
+				"row": 2
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "PLACE_UNIT",
+			"params": {
+				"col": 0,
+				"queue_index": 99,
+				"row": 0
+			},
+			"player_id": "A",
+			"tick": 0
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 30
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 90
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 150
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 650
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 650
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 650
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 650
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 680
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 740
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 800
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 1300
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 1300
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 1300
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 1300
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 1330
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 1390
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 1450
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 1950
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 1950
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 1950
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 1950
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 1980
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2040
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2100
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 2600
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 2600
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 2600
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 2600
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2630
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2690
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 2750
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "A",
+			"tick": 3250
+		},
+		{
+			"action": "PAY_INCOME",
+			"params": {},
+			"player_id": "B",
+			"tick": 3250
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "A",
+			"tick": 3250
+		},
+		{
+			"action": "SPAWN_WAVE",
+			"params": {},
+			"player_id": "B",
+			"tick": 3250
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 3280
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 3340
+		},
+		{
+			"action": "BUY_UNIT",
+			"params": {},
+			"player_id": "B",
+			"tick": 3400
+		}
+	],
+	"engine_version": {
+		"build": "official",
+		"hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+		"hex": 263938,
+		"major": 4,
+		"minor": 7,
+		"patch": 2,
+		"status": "stable",
+		"string": "4.7.2-stable (official)",
+		"timestamp": 0
+	},
+	"event_log": [
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 40.0,
+				"queued_units": 1,
+				"side": "A",
+				"total_spent": 10.0
+			},
+			"tick": 0,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 30.0,
+				"queued_units": 2,
+				"side": "A",
+				"total_spent": 20.0
+			},
+			"tick": 0,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 20.0,
+				"queued_units": 3,
+				"side": "A",
+				"total_spent": 30.0
+			},
+			"tick": 0,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 10.0,
+				"queued_units": 4,
+				"side": "A",
+				"total_spent": 40.0
+			},
+			"tick": 0,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 0.0,
+				"queued_units": 5,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 0,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"col": 0,
+				"queue_index": 0,
+				"row": 2,
+				"side": "A"
+			},
+			"tick": 0,
+			"type": "unit_placed"
+		},
+		{
+			"data": {
+				"col": 1,
+				"queue_index": 1,
+				"row": 1,
+				"side": "A"
+			},
+			"tick": 0,
+			"type": "unit_placed"
+		},
+		{
+			"data": {
+				"col": 2,
+				"queue_index": 2,
+				"row": 0,
+				"side": "A"
+			},
+			"tick": 0,
+			"type": "unit_placed"
+		},
+		{
+			"data": {
+				"col": 3,
+				"queue_index": 3,
+				"row": 1,
+				"side": "A"
+			},
+			"tick": 0,
+			"type": "unit_placed"
+		},
+		{
+			"data": {
+				"col": 4,
+				"queue_index": 4,
+				"row": 2,
+				"side": "A"
+			},
+			"tick": 0,
+			"type": "unit_placed"
+		},
+		{
+			"data": {
+				"queue_index": 99,
+				"queued_units": 5,
+				"reason": "no_such_queued_unit",
+				"side": "A"
+			},
+			"tick": 0,
+			"type": "placement_rejected"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 40.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 10.0
+			},
+			"tick": 30,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 30.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 20.0
+			},
+			"tick": 90,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 20.0,
+				"queued_units": 3,
+				"side": "B",
+				"total_spent": 30.0
+			},
+			"tick": 150,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 17.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 650,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 14.0,
+				"new_minerals": 34.0,
+				"side": "B",
+				"total_spent": 30.0
+			},
+			"tick": 650,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"formation": [
+					{
+						"col": 0,
+						"lane_offset": 0.6,
+						"row": 2,
+						"unit_id": 1
+					},
+					{
+						"col": 1,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 2
+					},
+					{
+						"col": 2,
+						"lane_offset": -0.6,
+						"row": 0,
+						"unit_id": 3
+					},
+					{
+						"col": 3,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 4
+					},
+					{
+						"col": 4,
+						"lane_offset": 0.6,
+						"row": 2,
+						"unit_id": 5
+					}
+				],
+				"purchased_count": 5,
+				"side": "A",
+				"unit_ids": [
+					1,
+					2,
+					3,
+					4,
+					5
+				],
+				"wave_number": 1
+			},
+			"tick": 650,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"formation": [
+					{
+						"col": 0,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 6
+					},
+					{
+						"col": 1,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 7
+					},
+					{
+						"col": 2,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 8
+					}
+				],
+				"purchased_count": 3,
+				"side": "B",
+				"unit_ids": [
+					6,
+					7,
+					8
+				],
+				"wave_number": 1
+			},
+			"tick": 650,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 24.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 40.0
+			},
+			"tick": 680,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 14.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 50.0
+			},
+			"tick": 740,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 4.0,
+				"queued_units": 3,
+				"side": "B",
+				"total_spent": 60.0
+			},
+			"tick": 800,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"unit_a": 1,
+				"unit_b": 6
+			},
+			"tick": 812,
+			"type": "first_contact"
+		},
+		{
+			"data": {
+				"killer_id": 5,
+				"side": "B",
+				"unit_id": 6
+			},
+			"tick": 830,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 8,
+				"side": "A",
+				"unit_id": 1
+			},
+			"tick": 842,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 5,
+				"side": "B",
+				"unit_id": 7
+			},
+			"tick": 852,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"killer_id": 2,
+				"side": "B",
+				"unit_id": 8
+			},
+			"tick": 884,
+			"type": "unit_death"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 175.0,
+				"side": "B",
+				"unit_id": 2
+			},
+			"tick": 1056,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 150.0,
+				"side": "B",
+				"unit_id": 3
+			},
+			"tick": 1060,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 125.0,
+				"side": "B",
+				"unit_id": 4
+			},
+			"tick": 1064,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 100.0,
+				"side": "B",
+				"unit_id": 5
+			},
+			"tick": 1067,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 34.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 1300,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 19.0,
+				"new_minerals": 23.0,
+				"side": "B",
+				"total_spent": 60.0
+			},
+			"tick": 1300,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"formation": [],
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 2
+			},
+			"tick": 1300,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"formation": [
+					{
+						"col": 0,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 9
+					},
+					{
+						"col": 1,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 10
+					},
+					{
+						"col": 2,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 11
+					}
+				],
+				"purchased_count": 3,
+				"side": "B",
+				"unit_ids": [
+					9,
+					10,
+					11
+				],
+				"wave_number": 2
+			},
+			"tick": 1300,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 13.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 70.0
+			},
+			"tick": 1330,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 3.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 80.0
+			},
+			"tick": 1390,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 3.0,
+				"reason": "insufficient_minerals",
+				"side": "B"
+			},
+			"tick": 1450,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 175.0,
+				"side": "A",
+				"unit_id": 9
+			},
+			"tick": 1633,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 150.0,
+				"side": "A",
+				"unit_id": 10
+			},
+			"tick": 1637,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 125.0,
+				"side": "A",
+				"unit_id": 11
+			},
+			"tick": 1641,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 51.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 1950,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 22.0,
+				"new_minerals": 25.0,
+				"side": "B",
+				"total_spent": 80.0
+			},
+			"tick": 1950,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"formation": [],
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 3
+			},
+			"tick": 1950,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"formation": [
+					{
+						"col": 0,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 12
+					},
+					{
+						"col": 1,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 13
+					}
+				],
+				"purchased_count": 2,
+				"side": "B",
+				"unit_ids": [
+					12,
+					13
+				],
+				"wave_number": 3
+			},
+			"tick": 1950,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 15.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 90.0
+			},
+			"tick": 1980,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 5.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 100.0
+			},
+			"tick": 2040,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 5.0,
+				"reason": "insufficient_minerals",
+				"side": "B"
+			},
+			"tick": 2100,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 100.0,
+				"side": "A",
+				"unit_id": 12
+			},
+			"tick": 2283,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 75.0,
+				"side": "A",
+				"unit_id": 13
+			},
+			"tick": 2287,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 68.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 2600,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 25.0,
+				"new_minerals": 30.0,
+				"side": "B",
+				"total_spent": 100.0
+			},
+			"tick": 2600,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"formation": [],
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 4
+			},
+			"tick": 2600,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"formation": [
+					{
+						"col": 0,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 14
+					},
+					{
+						"col": 1,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 15
+					}
+				],
+				"purchased_count": 2,
+				"side": "B",
+				"unit_ids": [
+					14,
+					15
+				],
+				"wave_number": 4
+			},
+			"tick": 2600,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 20.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 110.0
+			},
+			"tick": 2630,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 10.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 120.0
+			},
+			"tick": 2690,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 0.0,
+				"queued_units": 3,
+				"side": "B",
+				"total_spent": 130.0
+			},
+			"tick": 2750,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 50.0,
+				"side": "A",
+				"unit_id": 14
+			},
+			"tick": 2933,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 25.0,
+				"side": "A",
+				"unit_id": 15
+			},
+			"tick": 2937,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"amount": 17.0,
+				"new_minerals": 85.0,
+				"side": "A",
+				"total_spent": 50.0
+			},
+			"tick": 3250,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"amount": 29.0,
+				"new_minerals": 29.0,
+				"side": "B",
+				"total_spent": 130.0
+			},
+			"tick": 3250,
+			"type": "income_paid"
+		},
+		{
+			"data": {
+				"formation": [],
+				"purchased_count": 0,
+				"side": "A",
+				"unit_ids": [],
+				"wave_number": 5
+			},
+			"tick": 3250,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"formation": [
+					{
+						"col": 0,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 16
+					},
+					{
+						"col": 1,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 17
+					},
+					{
+						"col": 2,
+						"lane_offset": 0.0,
+						"row": 1,
+						"unit_id": 18
+					}
+				],
+				"purchased_count": 3,
+				"side": "B",
+				"unit_ids": [
+					16,
+					17,
+					18
+				],
+				"wave_number": 5
+			},
+			"tick": 3250,
+			"type": "wave_spawned"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 19.0,
+				"queued_units": 1,
+				"side": "B",
+				"total_spent": 140.0
+			},
+			"tick": 3280,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals_remaining": 9.0,
+				"queued_units": 2,
+				"side": "B",
+				"total_spent": 150.0
+			},
+			"tick": 3340,
+			"type": "unit_purchased"
+		},
+		{
+			"data": {
+				"cost": 10.0,
+				"minerals": 9.0,
+				"reason": "insufficient_minerals",
+				"side": "B"
+			},
+			"tick": 3400,
+			"type": "buy_rejected"
+		},
+		{
+			"data": {
+				"damage": 25.0,
+				"hp_remaining": 0.0,
+				"side": "A",
+				"unit_id": 16
+			},
+			"tick": 3583,
+			"type": "base_damage"
+		},
+		{
+			"data": {
+				"loser": "A",
+				"winner": "B"
+			},
+			"tick": 3583,
+			"type": "match_won"
+		}
+	],
+	"generated_utc": "2026-10-14T22:12:50",
+	"place_unit_command_shape": "{tick, player_id, action: \"PLACE_UNIT\", params: {queue_index, row, col}}",
+	"slice": "Slice 2 warm-up — formation placement prototype (op-studio-slice2-warmup-20261014-1701)",
+	"staging_constants": "STAGING_ROWS=3 STAGING_ROW_SPACING=0.6 STAGING_COL_SPACING=0.5"
+}
