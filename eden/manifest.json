@@ -1,57 +1,24 @@
 {
   "schema": "return-to-eden-artifact-manifest-v1",
-  "task_id": "T-008-66",
-  "verdict": "PASS_PRE_QA",
-  "created_at_utc": "2026-09-30T23:58:48.907351+00:00",
-  "artifact": "local frozen Web export; pre-QA and unpublished",
+  "task_id": "T-016",
+  "milestone": "M2 — Battle readability",
+  "verdict": "PASS_SCOPED_READABILITY",
+  "created_at_utc": "2026-10-14T00:25:35.042325+00:00",
+  "artifact": "Final Godot Web export; M2 readability scope",
   "pck": {
     "path": "index.pck",
-    "bytes": 23765616,
-    "sha256": "cf00cf59af0043659c1aff970990e76a29ada0d580ad8d3fc7fbe2dd07c8b6ce"
-  },
-  "source": {
-    "path": "/home/openclaw/.openclaw/builds/eden-f-t008-66-platform-cursor-20260930T235214Z/src",
-    "manifest": "/home/openclaw/.openclaw/builds/eden-f-t008-66-platform-cursor-20260930T235214Z/source-manifest.sha256",
-    "manifest_sha256": "e4531f2719dbf45d9722714a43bacabea1e48f8ab04b36fa3e7eccfc6f543ba9",
-    "entries": 529,
-    "parent_source": "/home/openclaw/.openclaw/builds/eden-f-t008-59-mouse-placement-20260930T1840Z/src",
-    "parent_source_manifest_sha256": "c52ba3b7cd60fd49af0bcf00596de7ad03fb39ce2eac3c8602f9fdd92445c4c9",
-    "parent_pck_sha256": "9155e252799b1ddc5807338d6ce7d14d300588a492cf2accddc0e7ffb05aa823",
-    "parent_pck_bytes": 23764484,
-    "lineage_parent_source": "/home/openclaw/.openclaw/builds/eden-f-t008-48-economy-replacement-20260929T2312Z/src",
-    "lineage_parent_manifest_sha256": "0e5fba96ed5cc30c0745d85ca2759336e3d04742b417ad8d6a9d78e7408c61e6",
-    "lineage_parent_pck_sha256": "65a43dfe57d5222fa9dfb4d0009d7079a66d80b3fe2cdee6d00ec0132d55d82e"
-  },
-  "approved_inputs": {
-    "requirements_sha256": "dff7c7a400211af1f1afadeb0c988408bdda1c4f7f47aa14bce39f65d6a9349d",
-    "design_v2_sha256": "d38c6f2b99f15642ebf7d4d3b1cf4c8fcde8762bcea59c421165b8d833c84f24",
-    "superseded_design_v1_sha256": "f5681482cc7f664fe475b1bc560f7a4afe9fa700398ae90629f8c2e318558f6e"
-  },
-  "source_delta": [
-    "src/scripts/battle_shell.gd",
-    "src/scripts/placement_feedback.gd",
-    "src/assets/ui/platform_arrow_cursor.png",
-    "src/assets/ui/platform_arrow_cursor.png.import"
-  ],
-  "cursor": {
-    "path": "assets/ui/platform_arrow_cursor.png",
-    "sha256": "6b4ed004d3e9b4893ac9c8bea0c1d54891c157da022707195b1ac943a6f59fe1",
-    "bytes": 692,
-    "width": 32,
-    "height": 32,
-    "format": "8-bit RGBA PNG",
-    "hotspot_xy": [
-      2,
-      2
-    ],
-    "visual": "new hand-authored white fill with dark-indigo outline and cyan/teal tip accent"
+    "bytes": 23791280,
+    "sha256": "19316bae4888518806e2e39e7fb6d19945e26afcf21c57be629a0f75768d0f57"
   },
   "export": {
-    "engine": "Godot 4.7.2",
-    "preset": "Web",
-    "pck_identity": "SHA-256 matches export-staging/index.pck from this source export",
-    "editor_import_exit_code": 0,
-    "web_export_exit_code": 0
+    "engine": "Godot 4.7.2.stable.official.ed1daf0bf",
+    "preset": "Web"
+  },
+  "verification": {
+    "producer_bundle_manifest_entries": 18,
+    "producer_bundle_manifest_verified": true,
+    "scruffy_async_readability_spot_check": "PASS",
+    "spot_check_scope": "Menu subtitle/controls, Enemy Bank readability, and Retry visibility only; not product-wide acceptance or release QA."
   },
   "payload_files": [
     {
@@ -71,8 +38,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 16148,
-      "sha256": "6ab01eee38f1acd841620096e94cffa4b740003aff245722e586399c49b0f833"
+      "bytes": 6277,
+      "sha256": "3faada7584e0cc4eef01a2c9dd9814c539bad1c09bfaab4dc85e808594f01672"
     },
     {
       "path": "index.icon.png",
@@ -86,8 +53,8 @@
     },
     {
       "path": "index.pck",
-      "bytes": 23765616,
-      "sha256": "cf00cf59af0043659c1aff970990e76a29ada0d580ad8d3fc7fbe2dd07c8b6ce"
+      "bytes": 23791280,
+      "sha256": "19316bae4888518806e2e39e7fb6d19945e26afcf21c57be629a0f75768d0f57"
     },
     {
       "path": "index.png",
@@ -98,17 +65,6 @@
       "path": "index.wasm",
       "bytes": 39514754,
       "sha256": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
-    },
-    {
-      "path": "loader_miner.gif",
-      "bytes": 201858,
-      "sha256": "25b7f9f8e413cb3f032e3f75caa947f6b0cc4d0725e6db814fb33da30056da3a"
-    },
-    {
-      "path": "loader_miner_poster.png",
-      "bytes": 68007,
-      "sha256": "e3360c593f07cbf8c12d27ca123b5b9045b797934547d20cf9b66958dba8aa9f"
     }
-  ],
-  "comparison": "Derived from exact T-008-59 frozen payload. Only index.pck and index.html differ from that package; index.html differs only in the embedded index.pck byte-count token. JS, WASM, worklets, icons, and miner loader assets are unchanged byte-for-byte."
+  ]
 }
