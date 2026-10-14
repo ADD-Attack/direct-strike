@@ -51,7 +51,7 @@ func _build_environment() -> void:
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_energy = 0.9
+	env.ambient_light_energy = 0.55
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.26, 0.28, 0.34)
 	env.fog_density = 0.012
@@ -70,20 +70,20 @@ func _build_terrain() -> void:
 
 	var plating := _box_node(Vector3(lane_len + 10.0, 0.3, 6.4))
 	plating.position = Vector3(center_x, -0.15, 0.0)
-	_apply_mat(plating, Color(0.12, 0.13, 0.16), 0.45, 0.55)
+	_apply_mat(plating, Color(0.16, 0.18, 0.22), 0.4, 0.6)
 
 	for i in range(int((lane_len + 10.0) / 3.0)):
 		var seam := _box_node(Vector3(0.06, 0.32, 6.4))
 		seam.position = Vector3(-5.0 + i * 3.0, -0.14, 0.0)
-		_apply_mat(seam, Color(0.22, 0.45, 0.6), 0.3, 0.1, true, 0.4)
+		_apply_mat(seam, Color(0.3, 0.6, 0.85), 0.3, 0.1, true, 0.9)
 
 	for side in [1.0, -1.0]:
 		var embank := _box_node(Vector3(lane_len + 14.0, 1.8, 4.2))
 		embank.position = Vector3(center_x, -0.9, side * 5.3)
-		_apply_mat(embank, Color(0.16, 0.14, 0.1), 0.95, 0.0)
+		_apply_mat(embank, Color(0.28, 0.22, 0.14), 0.95, 0.0)
 		var ridge := _box_node(Vector3(lane_len + 14.0, 0.5, 1.2))
 		ridge.position = Vector3(center_x, 0.05, side * 3.6)
-		_apply_mat(ridge, Color(0.2, 0.18, 0.13), 0.9, 0.0)
+		_apply_mat(ridge, Color(0.34, 0.28, 0.17), 0.9, 0.0)
 
 	var rock_offsets := [-4.0, 4.0, 11.0, 19.0, 27.0, 35.0, 42.0, 48.0]
 	for i in range(rock_offsets.size()):
@@ -130,22 +130,22 @@ func _build_bases() -> void:
 	base_b.build(COLOR_B, -1.0)
 
 func _configure_camera() -> void:
-	cam.fov = 50.0
-	cam.position = Vector3(-1.0, 8.5, 11.5)
-	cam.look_at(Vector3(Host.LANE_LENGTH * 0.62, 0.0, 0.0), Vector3.UP)
+	cam.fov = 55.0
+	cam.position = Vector3(-9.5, 10.0, 14.0)
+	cam.look_at(Vector3(Host.LANE_LENGTH * 0.5, 0.5, 0.0), Vector3.UP)
 
 func _configure_lighting() -> void:
-	sun.rotation = Vector3(deg_to_rad(-48.0), deg_to_rad(-35.0), 0.0)
-	sun.light_energy = 1.3
-	sun.light_color = Color(1.0, 0.96, 0.88)
+	sun.rotation = Vector3(deg_to_rad(-28.0), deg_to_rad(-50.0), 0.0)
+	sun.light_energy = 1.6
+	sun.light_color = Color(1.0, 0.94, 0.82)
 	sun.shadow_enabled = true
-	sun.directional_shadow_max_distance = 90.0
+	sun.directional_shadow_max_distance = 70.0
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 
 	var fill := DirectionalLight3D.new()
 	fill.rotation = Vector3(deg_to_rad(-20.0), deg_to_rad(150.0), 0.0)
-	fill.light_energy = 0.35
-	fill.light_color = Color(0.55, 0.65, 0.9)
+	fill.light_energy = 0.4
+	fill.light_color = Color(0.5, 0.62, 0.95)
 	add_child(fill)
 
 func _physics_process(delta: float) -> void:
