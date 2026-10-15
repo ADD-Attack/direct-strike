@@ -38,6 +38,7 @@ var base_b
 var role_buttons: Dictionary = {} # role -> Button
 var row_buttons: Array = [] # Button, index = row
 var selected_row: int = 1 # default centered row — matches Host's default placement
+var difficulty_picker: OptionButton
 
 func _ready() -> void:
 	client = MatchClient.new(true)
@@ -48,6 +49,7 @@ func _ready() -> void:
 	_configure_lighting()
 	_build_role_buttons()
 	_build_row_buttons()
+	_build_difficulty_picker()
 	buy_gas_button.pressed.connect(_on_buy_gas_pressed)
 	_update_hud()
 
@@ -71,6 +73,18 @@ func _build_row_buttons() -> void:
 		b.pressed.connect(_on_row_selected.bind(row))
 		row_buttons_container.add_child(b)
 		row_buttons.append(b)
+
+func _build_difficulty_picker() -> void:
+	difficulty_picker = OptionButton.new()
+	difficulty_picker.name = "AIDifficulty"
+	for label in ["Easy", "Normal", "Hard"]:
+		difficulty_picker.add_item("AI: " + label)
+	difficulty_picker.select(1)
+	difficulty_picker.item_selected.connect(_on_ai_difficulty_selected)
+	$HUDLayer/HUD.add_child(difficulty_picker)
+
+func _on_ai_difficulty_selected(index: int) -> void:
+	client.set_ai_difficulty(["easy", "normal", "hard"][index])
 
 func _on_row_selected(row: int) -> void:
 	selected_row = row

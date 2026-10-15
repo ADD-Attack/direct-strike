@@ -24,19 +24,6 @@ const GAS_TRICKLE_BONUS_PER_SEC := 1.5 ## each gas raises trickle by this much
 const MIDDLE_CONTROL_BONUS_PER_SEC := 2.0 * GAS_TRICKLE_BONUS_PER_SEC
 const MID_X := LANE_LENGTH * 0.5
 const BUILD_PHASE_TICKS := 650 ## countdown length; wave spawns at each boundary (kept from Slice 0/1 tuning, per REFERENCE.md divergence #5)
-## Fixed, deterministic enemy (side B) buy schedule: tick offsets from the
-## start of each build phase at which B issues one BUY_UNIT command each,
-## cycling through this fixed role list (no RNG, no adaptation — Slice 3).
-const ENEMY_BUY_OFFSETS := [30, 90, 150]
-const ENEMY_BUY_ROLES := ["line_dps", "frontline_tank", "ranged"]
-## Enemy also buys gas, slower and later, so it doesn't out-economy the
-## player every single phase: one BUY_GAS every 3rd phase, at this offset.
-const ENEMY_GAS_EVERY_N_PHASES := 3
-const ENEMY_GAS_OFFSET := 200
-## And once unlocked, one tier-2 unit every 4th phase — still fixed/scripted.
-const ENEMY_TIER2_EVERY_N_PHASES := 4
-const ENEMY_TIER2_OFFSET := 400
-const ENEMY_TIER2_ROLE := "siege"
 
 ## --- Roster & tiers (Slice 2, per studio/SLICE-PLAN.md + studio/REFERENCE.md)
 ## Six roles, one race. Tier 1 is available from the start; tier 2 unlocks
@@ -156,16 +143,14 @@ func submit_command(cmd: Dictionary) -> void:
 ## Advance the simulation by exactly one fixed tick.
 func step() -> void:
 	_consume_scheduled_commands()
-	if auto_source_enabled and not match_over:
-		var since_phase: int = tick - phase_start_tick
-		for i in range(ENEMY_BUY_OFFSETS.size()):
-			if since_phase == ENEMY_BUY_OFFSETS[i]:
-				var role: String = ENEMY_BUY_ROLES[i % ENEMY_BUY_ROLES.size()]
-				_apply_command({"tick": tick, "player_id": "B", "action": "BUY_UNIT", "params": {"role": role}})
-		if enemy_phase_count % ENEMY_GAS_EVERY_N_PHASES == 0 and since_phase == ENEMY_GAS_OFFSET:
-			_apply_command({"tick": tick, "player_id": "B", "action": "BUY_GAS", "params": {}})
-		if enemy_phase_count % ENEMY_TIER2_EVERY_N_PHASES == 0 and since_phase == ENEMY_TIER2_OFFSET:
-			_apply_command({"tick": tick, "player_id": "B", "action": "BUY_UNIT", "params": {"role": ENEMY_TIER2_ROLE}})
+	if auto_source_enabled and not match_over and tick >= next_phase_tick:
+		# Wave cadence is match timing, not an opponent decision. The AI's only
+		# decisions are BUY_UNIT / BUY_GAS / PLACE_UNIT through MatchClient.
+		for side in SIDES:
+			_apply_command({"tick": tick, "player_id": side, "action": "SPAWN_WAVE", "params": {}})
+		phase_start_tick = tick
+		next_phase_tick = tick + BUILD_PHASE_TICKS
+		enemy_phase_count += 1
 		if tick >= next_phase_tick:
 			for side in SIDES:
 				_apply_command({"tick": tick, "player_id": side, "action": "SPAWN_WAVE", "params": {}})
@@ -449,9 +434,13 @@ func _resolve_base_damage() -> void:
 		if u["side"] == "A" and u["pos"] >= LANE_LENGTH:
 			_deal_base_damage("B", id)
 			units.erase(id)
+			if base_hp["B"] <= 0.0:
+				break
 		elif u["side"] == "B" and u["pos"] <= 0.0:
 			_deal_base_damage("A", id)
 			units.erase(id)
+			if base_hp["A"] <= 0.0:
+				break
 
 func _deal_base_damage(target_side: String, unit_id: int) -> void:
 	base_hp[target_side] = maxf(0.0, base_hp[target_side] - BASE_DAMAGE_PER_UNIT)

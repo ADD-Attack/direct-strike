@@ -6,12 +6,22 @@ extends RefCounted
 ## local loopback for a real network transport later touches nothing upstream.
 
 const Host = preload("res://sim/host.gd")
+const AIBuyer = preload("res://sim/ai_buyer.gd")
 
 var host: Host
 var _event_cursor: int = 0
+var ai: AIBuyer
 
 func _init(auto_source: bool = true) -> void:
 	host = Host.new(auto_source)
+	if auto_source:
+		ai = AIBuyer.new("normal")
+
+func set_ai_difficulty(level: String) -> void:
+	if ai == null:
+		ai = AIBuyer.new(level)
+	else:
+		ai.set_difficulty(level)
 
 func load_replay_log(log: Array) -> void:
 	host.load_replay_log(log)
@@ -23,6 +33,9 @@ func submit_command(player_id: String, action: String, params: Dictionary = {}) 
 	host.submit_command({"tick": host.tick, "player_id": player_id, "action": action, "params": params})
 
 func step() -> void:
+	if ai != null and not host.match_over:
+		for cmd in ai.decide(host.get_state()):
+			host.submit_command(cmd)
 	host.step()
 
 ## State out: a read-only snapshot, never an internal reference.
