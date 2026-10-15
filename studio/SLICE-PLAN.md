@@ -114,6 +114,9 @@ unlock at a spend threshold.
   after; a counter-composed wave defeats an equal-cost mono wave in a
   scripted sim, repeatedly.
 - Playable: composition choices matter and are visible.
+- **Progress:** Owner-played **APPROVED** 2026-10-14 18:10 CDT —
+  “perfect. Great.” Commit `6ccf266`; playtest 31/31 PASS
+  (`all_pass=true`). Receipt: `studio/receipts/slice-2.json`. Slice closed.
 
 ### Slice 3 — The opponent (size: L)
 The enemy becomes a real AI buyer: build orders, composition reactions
@@ -126,6 +129,7 @@ The enemy becomes a real AI buyer: build orders, composition reactions
   player command interface — its command log is indistinguishable in
   kind from a human's (this is the seam a remote player will occupy).**
 - Playable: a real game against an opponent, start to finish.
+- **Progress:** in build (ordered 2026-10-14).
 
 ### Slice 4 — Lockstep over loopback: two clients, one host (size: M)
 The multiplayer foundation's proof. The match runs as it would

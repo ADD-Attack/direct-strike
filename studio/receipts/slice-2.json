@@ -1,0 +1,18 @@
+{
+  "builder": "studio-builder",
+  "builds": [
+    {
+      "commit": "6ccf266c6a72acc1431da763bd776d4f9e796121",
+      "owner_verdict": "APPROVED 2026-10-14 18:10 CDT — owner played the live build: 'perfect. Great.'",
+      "playtest": "31/31 PASS (assertions total=31, all_pass=true), including full Slice 0+1 regression, roster/tier/counter/placement acceptance, and determinism"
+    }
+  ],
+  "live_url": "https://add-attack.github.io/direct-strike/ds3d/",
+  "notes": "Producer rulings: formation ships; placement affects engagement. Builder 2 warm-up foundation merge: 51b0f68 (formation prototype plus roster models), retained in Slice 2.",
+  "ordered_at": "2026-10-14T17:40:00-05:00",
+  "owner_played_at": "2026-10-14T18:10:00-05:00",
+  "receipt_written": "2026-10-14",
+  "slice": 2,
+  "system": "the-studio",
+  "title": "Roster & tiers"
+}
