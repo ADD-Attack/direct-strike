@@ -94,9 +94,9 @@ func _assert_revision1_presentation() -> void:
 	var main := FileAccess.get_file_as_string("res://scenes/main.gd")
 	var visible_board := main.find("VisibleStagingBoard") != -1 and main.find("FRONT") != -1 and main.find("_refresh_staging_highlight") != -1
 	var immediate_marker := main.find("_sync_staging_previews") != -1 and main.find("queued_purchases") != -1
-	var overview_camera := main.find("Vector3(7.0, 27.0, 31.0)") != -1
+	var overview_camera := main.find("Vector3(15.615, 19.170, 23.232)") != -1 and main.find("cam.fov = 58.0") != -1 and main.find("cam.look_at(Vector3(18.0, 0.0, 0.0)") != -1 and main.find("staging_root.position = Vector3(7.0, -0.5, 9.5)") != -1
 	_assert("rev1_staging_grid_row_highlight_and_queued_marker", visible_board and immediate_marker, "player-visible 3x6 staging board has FRONT/MID/BACK labels, selected-row emissive highlight, and queued-unit markers")
-	_assert("rev1_camera_overview_framing", overview_camera, "raised/pulled-back normal camera frames lane and player staging half together")
+	_assert("rev2_owner_camera_framing", overview_camera, "owner-approved camera position, target and FOV; visual-only platform is off-lane")
 
 func _assert(id: String, passed: bool, detail: String) -> void:
 	assertions.append({"id": id, "pass": passed, "detail": detail})

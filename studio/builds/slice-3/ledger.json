@@ -52,8 +52,8 @@
 			"pass": true
 		},
 		{
-			"detail": "raised/pulled-back normal camera frames lane and player staging half together",
-			"id": "rev1_camera_overview_framing",
+			"detail": "owner-approved camera position, target and FOV; visual-only platform is off-lane",
+			"id": "rev2_owner_camera_framing",
 			"pass": true
 		}
 	],
@@ -3871,7 +3871,7 @@
 			"type": "match_won"
 		}
 	],
-	"generated_utc": "2026-10-15T01:55:42",
+	"generated_utc": "2026-10-15T19:16:11",
 	"matchup_results": {
 		"easy_win_rate": 0.0,
 		"hard_win_rate": 1.0,

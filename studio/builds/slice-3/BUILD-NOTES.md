@@ -55,3 +55,8 @@ The rules, economy, AI, and gameplay geometry are unchanged.
 Revision playtest adds explicit checks for the visible board/row highlight/
 queued marker and overview camera, alongside the full Slice 0–3 regression
 and deterministic replay.
+
+## Revision 2 — owner camera and off-lane staging (2026-10-15)
+
+Camera and staging presentation only; see [revision notes and renders](rev2/NOTES.md).
+Slice 3 playtest remains 11/11 PASS including same-log deterministic replay.
