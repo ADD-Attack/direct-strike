@@ -1,77 +1,76 @@
 {
-  "artifact": "Fresh Godot Web export; M5 producer publication scope",
-  "created_at_utc": "2026-10-14T11:31:47.644Z",
+  "schema": "return-to-eden-artifact-manifest-v1",
+  "task_id": "op-cadre-eden-menu-stars-rev2-20261015-1845",
+  "milestone": "M5 \u2014 Release-ready game experience",
+  "artifact": "Godot Web export; background-only Eden menu star-field update",
+  "created_at_utc": "2026-10-15T23:49:26.885406+00:00",
   "export": {
     "engine": "Godot Engine v4.7.2.stable.official.ed1daf0bf",
     "preset": "Web"
   },
-  "milestone": "M5 \u2014 Release-ready game experience",
+  "build_hash": "4278DFD2",
+  "pck": {
+    "path": "index.pck",
+    "bytes": 30426500,
+    "sha256": "4278dfd27ad0d9e8721f3f3ba1eaa7c9d892c70321fa235e89bacf5776586efb"
+  },
   "payload_files": [
     {
-      "bytes": 11944,
       "path": "index.apple-touch-icon.png",
+      "bytes": 11944,
       "sha256": "01d4f63e525941e06ce74f5187dad030d20a8d52a07ce365ae4e94af97a3b1f5"
     },
     {
-      "bytes": 2973,
       "path": "index.audio.position.worklet.js",
+      "bytes": 2973,
       "sha256": "be33985bc7160d6bf9646f259cd86b259cd67b02ccb297ee5c44f8ac84327bc8"
     },
     {
-      "bytes": 7298,
       "path": "index.audio.worklet.js",
+      "bytes": 7298,
       "sha256": "5b476a9c9ce642c0ee4256436d1bc31d9c38f868aca0f9a8e2a57c18d2dec2a3"
     },
     {
-      "bytes": 6277,
       "path": "index.html",
-      "sha256": "5e5263888abf5138433edcadff760e9065e5bbf1035c6d43aeca314459e691bc"
+      "bytes": 11834,
+      "sha256": "d0ddc80b9339895b58a5bf304df3f9c62a02cd52d94a5ebc1b318bb010af1961"
     },
     {
-      "bytes": 5700,
       "path": "index.icon.png",
+      "bytes": 5700,
       "sha256": "ad3c35ad0facf487c618204bd98db543034fc95224eadc7f08c7a9ff38d5b3b5"
     },
     {
-      "bytes": 279815,
       "path": "index.js",
+      "bytes": 279815,
       "sha256": "33c94cb3175f3333b82e2a3be5e8e86f77986f0aa2042b1631f6367a4e5bb6ba"
     },
     {
-      "bytes": 23791728,
       "path": "index.pck",
-      "sha256": "2ffb1d6794a81d63d903788d1072435923adc5550ebf4db93972d75c122ebaa2"
+      "bytes": 30426500,
+      "sha256": "4278dfd27ad0d9e8721f3f3ba1eaa7c9d892c70321fa235e89bacf5776586efb"
     },
     {
-      "bytes": 21443,
       "path": "index.png",
+      "bytes": 21443,
       "sha256": "3cb4495c0b98dfbe4b663cbf2b6836473572339beb66d902367893162a70be0e"
     },
     {
-      "bytes": 39514754,
       "path": "index.wasm",
+      "bytes": 39514754,
       "sha256": "fc74679e3b97f76878947fcd4fbe1268cbfa6188182a2e33bbc3f5dc9bfa57d0"
+    },
+    {
+      "path": "loader_miner.gif",
+      "bytes": 201858,
+      "sha256": "25b7f9f8e413cb3f032e3f75caa947f6b0cc4d0725e6db814fb33da30056da3a"
+    },
+    {
+      "path": "loader_miner_poster.png",
+      "bytes": 68007,
+      "sha256": "e3360c593f07cbf8c12d27ca123b5b9045b797934547d20cf9b66958dba8aa9f"
     }
   ],
-  "pck": {
-    "bytes": 23791728,
-    "path": "index.pck",
-    "sha256": "2ffb1d6794a81d63d903788d1072435923adc5550ebf4db93972d75c122ebaa2"
-  },
-  "producer_evidence": {
-    "independent_spot_check": "accepted/queued; pending, not a completed QA verdict",
-    "manifest_entries_verified": 13,
-    "manifest_sha256": "2983850521d9b2b3dccb1741e4f6db5a58f10ecd598e1234b998be0ee08a8bf1",
-    "report_sha256": "a348e91d557e65f379ffdb86bdb51665c24ecd4eefd2bfa7e2c50129e6717d0f"
-  },
-  "schema": "return-to-eden-artifact-manifest-v1",
-  "scope_caveats": [
-    "Player-view evidence covers menu, Battle 1 opening, and defeat/Retry only.",
-    "No reward/map/shop/encounter progression was reached; this is not product-wide acceptance or broad QA."
-  ],
-  "source_lineage": {
-    "source_diff_entries": 0,
-    "source_manifest_sha256": "c52dd86286c4737be587d463809ef444fc237929617e0caf5ac593d00f3f942d"
-  },
-  "task_id": "T-019"
+  "change_scope": "Menu background TextureRect resource only: denser stars and diagonal indigo/blue-violet Milky Way band. All menu composition, text, art, controls, and functionality remain from build 1F92C9BE.",
+  "producer_verification": "Pending producer visual verification."
 }
