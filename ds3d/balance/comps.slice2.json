@@ -1,0 +1,18 @@
+{
+  "label": "pre-approval sample data",
+  "seeds": [101, 202, 303, 404, 505],
+  "max_ticks": 12000,
+  "compositions": [
+    {"id": "tank_wall", "roles": ["frontline_tank", "frontline_tank", "frontline_tank", "frontline_tank", "frontline_tank", "frontline_tank"]},
+    {"id": "ranged_line", "roles": ["ranged", "ranged", "ranged", "ranged", "ranged", "ranged"]},
+    {"id": "splash_team", "roles": ["splash", "splash", "splash"]},
+    {"id": "dps_swarm", "roles": ["line_dps", "line_dps", "line_dps", "line_dps", "line_dps", "line_dps"]},
+    {"id": "flanker_pack", "roles": ["fast_flanker", "fast_flanker", "fast_flanker", "fast_flanker"]},
+    {"id": "siege_pair", "roles": ["siege", "siege"]}
+  ],
+  "pairings": [
+    ["ranged_line", "tank_wall"],
+    ["splash_team", "dps_swarm"],
+    ["flanker_pack", "siege_pair"]
+  ]
+}

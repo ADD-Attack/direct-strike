@@ -1,0 +1,184 @@
+{
+	"config_source": "res://balance/comps.slice2.json",
+	"engine_version": {
+		"build": "official",
+		"hash": "ed1daf0bf001b61586d9930840f2f1394092c079",
+		"hex": 263938,
+		"major": 4,
+		"minor": 7,
+		"patch": 2,
+		"status": "stable",
+		"string": "4.7.2-stable (official)",
+		"timestamp": 0
+	},
+	"generated_utc": "2026-10-15T09:58:08",
+	"label": "pre-approval sample data",
+	"results": [
+		{
+			"a": "ranged_line",
+			"average_match_length_ticks": 3081.6,
+			"b": "tank_wall",
+			"draws": 0,
+			"losses": 0,
+			"trials": [
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 101,
+					"ticks": 3075
+				},
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 202,
+					"ticks": 3088
+				},
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 303,
+					"ticks": 3082
+				},
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 404,
+					"ticks": 3075
+				},
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 505,
+					"ticks": 3088
+				}
+			],
+			"wins": 5
+		},
+		{
+			"a": "splash_team",
+			"average_match_length_ticks": 7001.2,
+			"b": "dps_swarm",
+			"draws": 2,
+			"losses": 3,
+			"trials": [
+				{
+					"base_hp": {
+						"A": 50.0,
+						"B": 200.0
+					},
+					"outcome": "draw",
+					"seed": 101,
+					"ticks": 12000
+				},
+				{
+					"base_hp": {
+						"A": 0.0,
+						"B": 200.0
+					},
+					"outcome": "B",
+					"seed": 202,
+					"ticks": 4006
+				},
+				{
+					"base_hp": {
+						"A": 0.0,
+						"B": 200.0
+					},
+					"outcome": "B",
+					"seed": 303,
+					"ticks": 2994
+				},
+				{
+					"base_hp": {
+						"A": 50.0,
+						"B": 200.0
+					},
+					"outcome": "draw",
+					"seed": 404,
+					"ticks": 12000
+				},
+				{
+					"base_hp": {
+						"A": 0.0,
+						"B": 200.0
+					},
+					"outcome": "B",
+					"seed": 505,
+					"ticks": 4006
+				}
+			],
+			"wins": 0
+		},
+		{
+			"a": "flanker_pack",
+			"average_match_length_ticks": 3234.0,
+			"b": "siege_pair",
+			"draws": 0,
+			"losses": 0,
+			"trials": [
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 101,
+					"ticks": 3843
+				},
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 202,
+					"ticks": 2830
+				},
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 303,
+					"ticks": 2824
+				},
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 404,
+					"ticks": 3843
+				},
+				{
+					"base_hp": {
+						"A": 150.0,
+						"B": 0.0
+					},
+					"outcome": "A",
+					"seed": 505,
+					"ticks": 2830
+				}
+			],
+			"wins": 5
+		}
+	],
+	"stats_source": "res://data/roster_stats.json"
+}

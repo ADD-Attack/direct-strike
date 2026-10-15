@@ -32,34 +32,23 @@ const BUILD_PHASE_TICKS := 650 ## countdown length; wave spawns at each boundary
 ## tuning too, chosen to make the counters below real, not just flavor text.
 const TIER2_UNLOCK_THRESHOLD := 35.0
 
-## Per-role stats:
-##  tier          1 or 2 (gates on TIER2_UNLOCK_THRESHOLD)
-##  cost          minerals
-##  hp            max hit points
-##  damage        base damage per hit
-##  range         own detection/attack range (the "outranges" mechanic: a
-##                unit can start attacking as soon as an enemy is within ITS
-##                OWN range, even if the enemy's range hasn't reached back —
-##                see _simulate_units)
-##  cooldown      ticks between attacks
-##  speed         lane position per tick while marching/closing distance
-##  splash_radius >0 means every attack also damages other enemies within
-##                this radius of the primary target (answers swarms of
-##                cheap units with one hit)
-##  bonus_vs      {role: multiplier} extra damage multiplier vs that role
-##  avoid_roles   roles this unit will not voluntarily target if any other
-##                enemy is in range (it still fights one if that's all
-##                there is) — the "bypasses the front" mechanic
-const ROLE_STATS := {
-	"frontline_tank": {"tier": 1, "cost": 10.0, "hp": 50.0, "damage": 4.0, "range": 1.0, "cooldown": 20, "speed": 0.10, "splash_radius": 0.0, "bonus_vs": {}, "avoid_roles": []},
-	"line_dps": {"tier": 1, "cost": 10.0, "hp": 30.0, "damage": 6.0, "range": 1.2, "cooldown": 20, "speed": 0.12, "splash_radius": 0.0, "bonus_vs": {}, "avoid_roles": []},
-	"ranged": {"tier": 1, "cost": 10.0, "hp": 20.0, "damage": 8.0, "range": 2.4, "cooldown": 20, "speed": 0.11, "splash_radius": 0.0, "bonus_vs": {"frontline_tank": 1.5}, "avoid_roles": []},
-	"splash": {"tier": 2, "cost": 20.0, "hp": 26.0, "damage": 6.0, "range": 1.4, "cooldown": 20, "speed": 0.10, "splash_radius": 2.0, "bonus_vs": {}, "avoid_roles": []},
-	"fast_flanker": {"tier": 2, "cost": 15.0, "hp": 18.0, "damage": 5.0, "range": 1.1, "cooldown": 18, "speed": 0.20, "splash_radius": 0.0, "bonus_vs": {"siege": 1.3}, "avoid_roles": ["frontline_tank"]},
-	"siege": {"tier": 2, "cost": 25.0, "hp": 20.0, "damage": 14.0, "range": 1.8, "cooldown": 36, "speed": 0.08, "splash_radius": 0.0, "bonus_vs": {"frontline_tank": 1.5}, "avoid_roles": []},
-}
-const ROLE_ORDER := ["frontline_tank", "line_dps", "ranged", "splash", "fast_flanker", "siege"]
+## Authoritative roster data lives in data/roster_stats.json. No unit combat
+## stat is duplicated in simulation code: balance changes are data-only.
+static var ROLE_STATS: Dictionary = _load_roster_data()["roles"]
+static var ROLE_ORDER: Array = _load_roster_data()["role_order"]
 const DEFAULT_ROLE := "line_dps"
+
+static func _load_roster_data() -> Dictionary:
+	var file := FileAccess.open("res://data/roster_stats.json", FileAccess.READ)
+	if file == null:
+		push_error("Missing authoritative roster data: res://data/roster_stats.json")
+		return {"role_order": [], "roles": {}}
+	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not (parsed is Dictionary) or not parsed.has("role_order") or not parsed.has("roles"):
+		push_error("Invalid authoritative roster data: expected role_order and roles")
+		return {"role_order": [], "roles": {}}
+	return parsed
 
 ## --- Formation staging (Slice 2) ---
 ## A queued-but-unspawned purchase can be assigned a cell {row, col} via
