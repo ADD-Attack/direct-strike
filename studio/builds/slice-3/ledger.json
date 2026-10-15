@@ -45,6 +45,16 @@
 			"detail": "host/client seam, command economy, waves/combat/win, and roster formations all exercised in the Slice 3 match",
 			"id": "slice0_2_regression_architecture_economy_combat_roster",
 			"pass": true
+		},
+		{
+			"detail": "player-visible 3x6 staging board has FRONT/MID/BACK labels, selected-row emissive highlight, and queued-unit markers",
+			"id": "rev1_staging_grid_row_highlight_and_queued_marker",
+			"pass": true
+		},
+		{
+			"detail": "raised/pulled-back normal camera frames lane and player staging half together",
+			"id": "rev1_camera_overview_framing",
+			"pass": true
 		}
 	],
 	"command_log": [
@@ -3861,7 +3871,7 @@
 			"type": "match_won"
 		}
 	],
-	"generated_utc": "2026-10-15T01:43:28",
+	"generated_utc": "2026-10-15T01:55:42",
 	"matchup_results": {
 		"easy_win_rate": 0.0,
 		"hard_win_rate": 1.0,

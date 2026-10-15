@@ -15,6 +15,10 @@ const COLOR_B := Color(0.92, 0.32, 0.26)
 var client: MatchClient
 var tick_accum: float = 0.0
 var unit_nodes: Dictionary = {}
+var staging_cells: Array = []
+var staging_previews: Dictionary = {}
+var staging_root: Node3D
+var staging_preview_root: Node3D
 # Untyped (Variant) on purpose: these hold script-attached Node3D instances
 # (BaseVisualScript / UnitVisualScript) whose custom methods (build(),
 # process_flash(), update()) aren't visible to Node3D's static type.
@@ -45,6 +49,7 @@ func _ready() -> void:
 	_build_environment()
 	_build_terrain()
 	_build_bases()
+	_build_staging_board()
 	_configure_camera()
 	_configure_lighting()
 	_build_role_buttons()
@@ -90,6 +95,7 @@ func _on_row_selected(row: int) -> void:
 	selected_row = row
 	for i in range(row_buttons.size()):
 		row_buttons[i].button_pressed = i == row
+	_refresh_staging_highlight()
 
 ## Buying and placing are two separate commands through the same interface,
 ## issued back-to-back: the buy queues the unit, the placement assigns it a
@@ -195,10 +201,83 @@ func _build_bases() -> void:
 	base_b.rotation.y = PI
 	base_b.build(COLOR_B, -1.0)
 
+## An explicit presentation board in the player's half. It is intentionally
+## larger/brighter than the simulation's spawn offsets: this is a readable
+## staging affordance, not gameplay geometry.
+func _build_staging_board() -> void:
+	staging_root = Node3D.new()
+	staging_root.name = "VisibleStagingBoard"
+	add_child(staging_root)
+	staging_preview_root = Node3D.new()
+	staging_root.add_child(staging_preview_root)
+	for row in range(Host.STAGING_ROWS):
+		var label := Label3D.new()
+		label.text = ["FRONT", "MID", "BACK"][row]
+		label.font_size = 48
+		label.outline_size = 8
+		label.modulate = Color(0.55, 0.8, 1.0)
+		label.position = Vector3(4.0, 0.18, _staging_z(row))
+		label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		staging_root.add_child(label)
+		for col in range(6):
+			var cell := MeshInstance3D.new()
+			var mesh := BoxMesh.new()
+			mesh.size = Vector3(1.0, 0.08, 1.15)
+			cell.mesh = mesh
+			cell.position = Vector3(_staging_x(col), 0.06, _staging_z(row))
+			staging_root.add_child(cell)
+			staging_cells.append({"row": row, "node": cell})
+	_refresh_staging_highlight()
+
+func _staging_x(col: int) -> float:
+	return 6.0 + col * 1.25
+
+func _staging_z(row: int) -> float:
+	return (row - 1) * 1.55
+
+func _refresh_staging_highlight() -> void:
+	for cell_data in staging_cells:
+		var row: int = cell_data["row"]
+		var mat := StandardMaterial3D.new()
+		var active := row == selected_row
+		mat.albedo_color = Color(0.08, 0.45, 0.9, 0.92) if active else Color(0.08, 0.14, 0.24, 0.72)
+		mat.metallic = 0.25
+		mat.roughness = 0.28
+		mat.emission_enabled = true
+		mat.emission = Color(0.15, 0.75, 1.0) if active else Color(0.06, 0.16, 0.3)
+		mat.emission_energy_multiplier = 3.0 if active else 0.6
+		cell_data["node"].material_override = mat
+
+func _sync_staging_previews(state: Dictionary) -> void:
+	var purchases: Array = state["queued_purchases"]["A"]
+	var placements: Dictionary = state["queued_placements"]["A"]
+	for idx in range(purchases.size()):
+		if staging_previews.has(idx):
+			continue
+		var cell: Dictionary = placements.get(idx, {"row": 1, "col": idx})
+		var marker := MeshInstance3D.new()
+		var capsule := CapsuleMesh.new()
+		capsule.radius = 0.28
+		capsule.height = 1.1
+		marker.mesh = capsule
+		marker.position = Vector3(_staging_x(int(cell["col"]) % 6), 0.62, _staging_z(int(cell["row"])))
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = COLOR_A
+		mat.emission_enabled = true
+		mat.emission = Color(0.2, 0.8, 1.0)
+		mat.emission_energy_multiplier = 4.0
+		marker.material_override = mat
+		staging_preview_root.add_child(marker)
+		staging_previews[idx] = marker
+	for idx in staging_previews.keys():
+		if idx >= purchases.size():
+			staging_previews[idx].queue_free()
+			staging_previews.erase(idx)
+
 func _configure_camera() -> void:
-	cam.fov = 55.0
-	cam.position = Vector3(-9.5, 10.0, 14.0)
-	cam.look_at(Vector3(Host.LANE_LENGTH * 0.5, 0.5, 0.0), Vector3.UP)
+	cam.fov = 58.0
+	cam.position = Vector3(7.0, 27.0, 31.0)
+	cam.look_at(Vector3(18.0, 0.0, 0.0), Vector3.UP)
 
 func _configure_lighting() -> void:
 	sun.rotation = Vector3(deg_to_rad(-28.0), deg_to_rad(-50.0), 0.0)
@@ -238,6 +317,7 @@ func _apply_events(events: Array) -> void:
 
 func _sync_visuals(delta: float) -> void:
 	var state := client.get_state()
+	_sync_staging_previews(state)
 	var units: Dictionary = state["units"]
 	for id in units.keys():
 		if not unit_nodes.has(id):

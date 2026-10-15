@@ -21,6 +21,7 @@ func _init() -> void:
 	_assert_determinism(runs["normal"][0])
 	_assert_difficulty_quality()
 	_assert_slice0_2_regression()
+	_assert_revision1_presentation()
 	_write_ledger(runs["normal"][0])
 	_report()
 
@@ -88,6 +89,14 @@ func _assert_slice0_2_regression() -> void:
 	for e in r["events"]:
 		if e["type"] == "wave_spawned" and e["data"]["formation"].size() > 0: roster = true
 	_assert("slice0_2_regression_architecture_economy_combat_roster", architecture and economy and combat and roster and state["match_over"], "host/client seam, command economy, waves/combat/win, and roster formations all exercised in the Slice 3 match")
+
+func _assert_revision1_presentation() -> void:
+	var main := FileAccess.get_file_as_string("res://scenes/main.gd")
+	var visible_board := main.find("VisibleStagingBoard") != -1 and main.find("FRONT") != -1 and main.find("_refresh_staging_highlight") != -1
+	var immediate_marker := main.find("_sync_staging_previews") != -1 and main.find("queued_purchases") != -1
+	var overview_camera := main.find("Vector3(7.0, 27.0, 31.0)") != -1
+	_assert("rev1_staging_grid_row_highlight_and_queued_marker", visible_board and immediate_marker, "player-visible 3x6 staging board has FRONT/MID/BACK labels, selected-row emissive highlight, and queued-unit markers")
+	_assert("rev1_camera_overview_framing", overview_camera, "raised/pulled-back normal camera frames lane and player staging half together")
 
 func _assert(id: String, passed: bool, detail: String) -> void:
 	assertions.append({"id": id, "pass": passed, "detail": detail})

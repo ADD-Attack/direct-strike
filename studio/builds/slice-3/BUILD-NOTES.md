@@ -37,3 +37,21 @@ command/event evidence and assertion list.
 godot --headless --path ds3d -s playtest/run_playtest_slice3.gd
 cd ds3d && godot --headless --path . --export-release "Web" index.html
 ```
+
+## Revision 1 — owner playtest presentation fixes (2026-10-14)
+
+The rules, economy, AI, and gameplay geometry are unchanged.
+
+- **Placement now reads at a glance:** a bright, labeled **FRONT / MID / BACK**
+  3×6 staging board is always visible in the player's half. Selecting a row
+  lights that entire row blue. Once a purchase is accepted it immediately
+  appears as a tall glowing blue staged marker in that row, until its wave
+  spawns.
+- **Camera now reads the battlefield:** it is raised and pulled back into an
+  overview that shows the full lane and the player’s staging board together,
+  rather than putting the near base in the foreground and compressing the far
+  end of the field.
+
+Revision playtest adds explicit checks for the visible board/row highlight/
+queued marker and overview camera, alongside the full Slice 0–3 regression
+and deterministic replay.

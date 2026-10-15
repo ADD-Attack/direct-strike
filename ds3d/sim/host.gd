@@ -469,6 +469,10 @@ func get_state() -> Dictionary:
 		"minerals": minerals.duplicate(true),
 		"total_spent": total_spent.duplicate(true),
 		"queued_units": {"A": queued_purchases["A"].size(), "B": queued_purchases["B"].size()},
+		# Presentation-only read model for the visible staging board. This is a
+		# deep copy; clients cannot alter purchases or placements through it.
+		"queued_purchases": queued_purchases.duplicate(true),
+		"queued_placements": queued_placements.duplicate(true),
 		"trickle_rate": trickle_rate.duplicate(true),
 		"gas_count": gas_count.duplicate(true),
 		"middle_controller": middle_controller,
