@@ -1,18 +1,18 @@
 {
   "schema": "return-to-eden-artifact-manifest-v1",
-  "task_id": "op-cadre-eden-menu-stars-rev2-20261015-1845",
+  "task_id": "op-cadre-eden-menu-tagline-rev3-20261015-1902",
   "milestone": "M5 \u2014 Release-ready game experience",
-  "artifact": "Godot Web export; background-only Eden menu star-field update",
-  "created_at_utc": "2026-10-15T23:49:26.885406+00:00",
+  "artifact": "Godot Web export; tagline outline and vertical position only",
+  "created_at_utc": "2026-10-16T00:03:45.745042+00:00",
   "export": {
     "engine": "Godot Engine v4.7.2.stable.official.ed1daf0bf",
     "preset": "Web"
   },
-  "build_hash": "4278DFD2",
+  "build_hash": "443149A6",
   "pck": {
     "path": "index.pck",
-    "bytes": 30426500,
-    "sha256": "4278dfd27ad0d9e8721f3f3ba1eaa7c9d892c70321fa235e89bacf5776586efb"
+    "bytes": 30426516,
+    "sha256": "443149a611e3e0444b3a834e6dce49ed34576c2eb42e62fad6ad84efe6525b7f"
   },
   "payload_files": [
     {
@@ -33,7 +33,7 @@
     {
       "path": "index.html",
       "bytes": 11834,
-      "sha256": "d0ddc80b9339895b58a5bf304df3f9c62a02cd52d94a5ebc1b318bb010af1961"
+      "sha256": "dab74b8d336d02bbb1d2bc1be0c945e749a1b7659a870af1b70de8f3b8db5505"
     },
     {
       "path": "index.icon.png",
@@ -47,8 +47,8 @@
     },
     {
       "path": "index.pck",
-      "bytes": 30426500,
-      "sha256": "4278dfd27ad0d9e8721f3f3ba1eaa7c9d892c70321fa235e89bacf5776586efb"
+      "bytes": 30426516,
+      "sha256": "443149a611e3e0444b3a834e6dce49ed34576c2eb42e62fad6ad84efe6525b7f"
     },
     {
       "path": "index.png",
@@ -71,6 +71,6 @@
       "sha256": "e3360c593f07cbf8c12d27ca123b5b9045b797934547d20cf9b66958dba8aa9f"
     }
   ],
-  "change_scope": "Menu background TextureRect resource only: denser stars and diagonal indigo/blue-violet Milky Way band. All menu composition, text, art, controls, and functionality remain from build 1F92C9BE.",
+  "change_scope": "Tagline label only: same font fill, black outline size 3, vertical offsets moved up 12 units. All other menu elements and functionality remain from build 4278DFD2.",
   "producer_verification": "Pending producer visual verification."
 }
