@@ -5,6 +5,7 @@ extends Node3D
 
 const Host = preload("res://sim/host.gd")
 const MatchClient = preload("res://client/match_client.gd")
+const NetSession = preload("res://net/net_session.gd")
 const UnitVisualScript = preload("res://scenes/unit_visual.gd")
 const BaseVisualScript = preload("res://scenes/base_visual.gd")
 
@@ -12,7 +13,19 @@ const TICK_DT := 1.0 / 30.0
 const COLOR_A := Color(0.25, 0.55, 0.95)
 const COLOR_B := Color(0.92, 0.32, 0.26)
 
-var client: MatchClient
+## Slice 4: the live match runs as a net session — an authoritative host
+## plus two clients (A = this UI, B = the AI buyer) over the loopback
+## transport. `client` is session.client_a; it exposes the same read API
+## as MatchClient, so everything below renders off the client's replica.
+var session: NetSession
+var client # NetClient (session.client_a)
+var replay_client: MatchClient # non-null while watching a replay
+var replay_ticks_left: int = 0
+var replay_finished: bool = false
+var last_match_log: Array = []
+var last_match_ticks: int = 0
+var ai_difficulty: String = "normal"
+var replay_button: Button
 var tick_accum: float = 0.0
 var unit_nodes: Dictionary = {}
 var staging_cells: Array = []
@@ -44,8 +57,13 @@ var row_buttons: Array = [] # Button, index = row
 var selected_row: int = 1 # default centered row — matches Host's default placement
 var difficulty_picker: OptionButton
 
+func _start_live_session() -> void:
+	session = NetSession.loopback(ai_difficulty)
+	session.wait_connected()
+	client = session.client_a
+
 func _ready() -> void:
-	client = MatchClient.new(true)
+	_start_live_session()
 	_build_environment()
 	_build_terrain()
 	_build_bases()
@@ -55,8 +73,64 @@ func _ready() -> void:
 	_build_role_buttons()
 	_build_row_buttons()
 	_build_difficulty_picker()
+	_build_replay_button()
 	buy_gas_button.pressed.connect(_on_buy_gas_pressed)
 	_update_hud()
+
+func _build_replay_button() -> void:
+	replay_button = Button.new()
+	replay_button.name = "WatchReplayButton"
+	replay_button.text = "Watch Replay"
+	replay_button.visible = false
+	replay_button.pressed.connect(_on_replay_pressed)
+	$HUDLayer/HUD.add_child(replay_button)
+
+## "Watch replay" of the last finished match: the host session's recorded
+## command log, replayed into a fresh host and rendered exactly like the
+## live game. Stopping the replay starts a fresh live session.
+func _on_replay_pressed() -> void:
+	if replay_client != null:
+		_stop_replay()
+		return
+	if last_match_log.is_empty():
+		return
+	replay_client = MatchClient.new(false)
+	replay_client.load_replay_log(last_match_log)
+	replay_ticks_left = last_match_ticks
+	replay_finished = false
+	_clear_all_unit_visuals()
+	replay_button.text = "Stop Replay"
+
+func _stop_replay() -> void:
+	replay_client = null
+	replay_ticks_left = 0
+	replay_finished = false
+	last_match_log = []
+	last_match_ticks = 0
+	_start_live_session()
+	_clear_all_unit_visuals()
+	replay_button.text = "Watch Replay"
+	replay_button.visible = false
+
+func _step_replay() -> void:
+	if replay_finished:
+		return
+	replay_client.step()
+	_apply_events(replay_client.drain_new_events())
+	replay_ticks_left -= 1
+	if replay_ticks_left <= 0:
+		replay_finished = true
+
+func _capture_finished_match() -> void:
+	if not last_match_log.is_empty():
+		return
+	if client.get_state()["match_over"]:
+		last_match_log = session.get_command_log()
+		last_match_ticks = session.host_tick()
+		replay_button.visible = true
+
+func _active_client():
+	return replay_client if replay_client != null else client
 
 func _build_role_buttons() -> void:
 	for role in Host.ROLE_ORDER:
@@ -89,7 +163,9 @@ func _build_difficulty_picker() -> void:
 	$HUDLayer/HUD.add_child(difficulty_picker)
 
 func _on_ai_difficulty_selected(index: int) -> void:
-	client.set_ai_difficulty(["easy", "normal", "hard"][index])
+	ai_difficulty = ["easy", "normal", "hard"][index]
+	if session != null:
+		session.set_ai_difficulty(ai_difficulty)
 
 func _on_row_selected(row: int) -> void:
 	selected_row = row
@@ -103,11 +179,15 @@ func _on_row_selected(row: int) -> void:
 ## BEFORE submitting the buy, since that's the ordinal the new purchase will
 ## land on in this side's queue (see Host._do_buy_unit/_do_place_unit).
 func _on_buy_role_pressed(role: String) -> void:
+	if replay_client != null:
+		return
 	var queue_index: int = client.get_state()["queued_units"]["A"]
 	client.submit_command("A", "BUY_UNIT", {"role": role})
 	client.submit_command("A", "PLACE_UNIT", {"queue_index": queue_index, "row": selected_row})
 
 func _on_buy_gas_pressed() -> void:
+	if replay_client != null:
+		return
 	client.submit_command("A", "BUY_GAS", {})
 
 func _build_environment() -> void:
@@ -297,8 +377,12 @@ func _physics_process(delta: float) -> void:
 	tick_accum += delta
 	while tick_accum >= TICK_DT:
 		tick_accum -= TICK_DT
-		client.step()
-		_apply_events(client.drain_new_events())
+		if replay_client != null:
+			_step_replay()
+		else:
+			session.pump()
+			_apply_events(client.drain_new_events())
+			_capture_finished_match()
 	_sync_visuals(delta)
 	base_a.process_flash(delta)
 	base_b.process_flash(delta)
@@ -316,7 +400,7 @@ func _apply_events(events: Array) -> void:
 				base_b.flash_damage()
 
 func _sync_visuals(delta: float) -> void:
-	var state := client.get_state()
+	var state: Dictionary = _active_client().get_state()
 	_sync_staging_previews(state)
 	var units: Dictionary = state["units"]
 	for id in units.keys():
@@ -348,11 +432,16 @@ func _clear_all_unit_visuals() -> void:
 	unit_nodes.clear()
 
 func _update_hud() -> void:
-	var state := client.get_state()
+	var state: Dictionary = _active_client().get_state()
 	base_a_label.text = "Base A HP: %d" % int(state["base_hp"]["A"])
 	base_b_label.text = "Base B HP: %d" % int(state["base_hp"]["B"])
 	wave_label.text = "Waves — A: %d   B: %d" % [state["wave_count"]["A"], state["wave_count"]["B"]]
-	if state["match_over"]:
+	if replay_client != null:
+		if replay_finished:
+			status_label.text = "REPLAY OVER — Winner: %s   (Stop Replay to play again)" % state["winner"]
+		else:
+			status_label.text = "REPLAY — Tick: %d / %d" % [state["tick"], last_match_ticks]
+	elif state["match_over"]:
 		status_label.text = "MATCH OVER — Winner: %s   (press R to restart)" % state["winner"]
 	else:
 		status_label.text = "Tick: %d   (press R to restart)" % state["tick"]
@@ -384,8 +473,14 @@ func _update_hud() -> void:
 		buy_gas_button.text = "Buy Gas — %d minerals (G)" % int(gas_cost)
 
 func _unhandled_input(event: InputEvent) -> void:
+	if replay_client != null:
+		return
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R:
 			client.submit_command("owner", "RESTART", {})
+			# A restarted match becomes the new "last match" when it ends.
+			last_match_log = []
+			last_match_ticks = 0
+			replay_button.visible = false
 		elif event.keycode == KEY_G:
 			client.submit_command("A", "BUY_GAS", {})
