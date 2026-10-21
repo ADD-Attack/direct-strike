@@ -148,12 +148,21 @@ side — plus the standing replay check.
 
 ### Slice 5 — Presentation & demo finish (size: M)
 HUD (minerals, income, wave timer, both base HP bars), camera
-pan/zoom along the lane, menu → match → victory/defeat screens, basic
-sound, a demo page that presents the game and its controls.
+pan/zoom along the lane, menu → match → victory/defeat screens, a demo
+page that presents the game and its controls — and **real audio, not
+placeholder sound** (amended 2026-10-20): an original music loop plus
+combat and UI sound effects produced with the producer's Python music
+studio (the music-process pipeline), mixed at game-appropriate levels
+with a mute control. Rationale: Star Swarm's value audit (2026-10-20)
+found sound is the single largest perceived-value gap in a shipped
+game; a demo meant to be shown — and a candidate future product —
+does not ship on beeps.
 - Playtest asserts: every HUD value matches the sim state it displays
   at sampled moments; menu → match → conclusion → restart loop
   completes via commands; the demo page serves the final build at a
-  stable URL.
+  stable URL; audio events fire on their game events (wave spawn,
+  first contact, base under attack, victory/defeat stingers) and the
+  music loop runs under the match.
 - Playable: the demo, whole — the thing the owner shows people.
 
 ## Order of work & rules
@@ -170,6 +179,20 @@ truth about what a slice actually cost.
       multiplayer-foundation and human-checkpoint amendments.
 - [x] Builder assignment named — **a new dedicated agent,
       `studio-builder`**, created for this project (not one of Cadre's
-      fifteen). Provisioning ordered 2026-10-14.
+      fifteen). Provisioning ordered 2026-10-14. *(Slices 0–3 were built
+      by that seat. AMENDED 2026-10-20: per Cadre Decision 22
+      (2026-10-16), Studio builds run producer-side with the producer's
+      own workers from Slice 4 onward; the fleet's studio builders are
+      not the bench. This line is superseded as operative text and kept
+      as history.)*
 - [ ] Then: Slice 0 is ordered under Step 0 discipline, and the board
       goes up.
+
+## Amendments
+
+- **2026-10-20 (owner-approved in chat):** (1) Builder assignment
+  superseded — Studio builds are producer-side from Slice 4 onward
+  (Cadre Decision 22); the original `studio-builder` line stands as
+  history. (2) Slice 5 audio expanded from "basic sound" to a real
+  music loop + SFX scope produced via the Python music studio, with a
+  matching playtest assert.
