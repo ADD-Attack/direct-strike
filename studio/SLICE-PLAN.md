@@ -129,7 +129,7 @@ The enemy becomes a real AI buyer: build orders, composition reactions
   player command interface — its command log is indistinguishable in
   kind from a human's (this is the seam a remote player will occupy).**
 - Playable: a real game against an opponent, start to finish.
-- **Progress:** in build (ordered 2026-10-14).
+- **Progress:** built (Slice 3 + rev1, commits `883971f`, `90893db`). Owner playtest 2026-10-20: played the live web build, beat Normal, found Hard genuinely hard. Owner checkpoint verdict 2026-10-20: **APPROVED** — Slice 3 CLOSED; Slice 4 dispatched the same minute (producer-side per Decision 22).
 
 ### Slice 4 — Lockstep over loopback: two clients, one host (size: M)
 The multiplayer foundation's proof. The match runs as it would
