@@ -287,13 +287,23 @@ func _build_bases() -> void:
 func _build_staging_board() -> void:
 	staging_root = Node3D.new()
 	staging_root.name = "VisibleStagingBoard"
+	# Presentation only: lowered side platform, entirely clear of lane/pathing.
+	staging_root.position = Vector3(7.0, -0.5, 9.5)
+	var deck := MeshInstance3D.new()
+	var deck_mesh := BoxMesh.new()
+	deck_mesh.size = Vector3(10.6, 0.35, 5.1)
+	deck.mesh = deck_mesh
+	deck.position = Vector3(8.0, -0.175, 0.0)
+	staging_root.add_child(deck)
+	_apply_mat(deck, Color(0.12, 0.17, 0.24), 0.55, 0.5)
 	add_child(staging_root)
 	staging_preview_root = Node3D.new()
 	staging_root.add_child(staging_preview_root)
 	for row in range(Host.STAGING_ROWS):
 		var label := Label3D.new()
 		label.text = ["FRONT", "MID", "BACK"][row]
-		label.font_size = 48
+		label.font_size = 64
+		label.pixel_size = 0.008
 		label.outline_size = 8
 		label.modulate = Color(0.55, 0.8, 1.0)
 		label.position = Vector3(4.0, 0.18, _staging_z(row))
@@ -356,7 +366,7 @@ func _sync_staging_previews(state: Dictionary) -> void:
 
 func _configure_camera() -> void:
 	cam.fov = 58.0
-	cam.position = Vector3(7.0, 27.0, 31.0)
+	cam.position = Vector3(15.615, 19.170, 23.232)
 	cam.look_at(Vector3(18.0, 0.0, 0.0), Vector3.UP)
 
 func _configure_lighting() -> void:
