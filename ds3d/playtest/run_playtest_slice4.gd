@@ -60,9 +60,7 @@ func _run_net_match(port: int, disturbed: bool) -> Dictionary:
 		ok = session.pump()
 		rounds += 1
 		guard += 1
-	hs.finish()
-	session.client_a.poll()
-	session.client_b.poll()
+	session.finish()
 	var host_events: Array = hs.get_event_log()
 	var result := {
 		"port": port,
@@ -96,7 +94,7 @@ func _assert_transport(run: Dictionary) -> void:
 func _assert_full_match_two_clients(run: Dictionary) -> void:
 	var a_cmds := 0
 	var b_cmds := 0
-	var provenance_ok := not run["provenance_misaligned"] and run["applied_sources"].size() == run["host_commands"].size()
+	var provenance_ok: bool = not run["provenance_misaligned"] and run["applied_sources"].size() == run["host_commands"].size()
 	for i in range(run["host_commands"].size()):
 		var cmd: Dictionary = run["host_commands"][i]
 		var src: String = run["applied_sources"][i]

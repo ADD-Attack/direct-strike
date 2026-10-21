@@ -70,6 +70,22 @@ func pump() -> bool:
 	round_idx += 1
 	return true
 
+## Broadcast match_end, then pump every endpoint until both clients have
+## received it: on the TCP transport, polling is what moves bytes, and
+## the final flush takes a few poll cycles to cross the wire — a session
+## isn't finished until the clients hold the host's closing message.
+func finish() -> void:
+	host_session.finish()
+	var spins := 0
+	while spins < 500:
+		host_session.poll_messages()
+		client_a.poll()
+		client_b.poll()
+		if not client_a.match_end_info.is_empty() and not client_b.match_end_info.is_empty():
+			return
+		spins += 1
+		OS.delay_msec(1)
+
 func set_ai_difficulty(level: String) -> void:
 	client_b.set_ai_difficulty(level)
 

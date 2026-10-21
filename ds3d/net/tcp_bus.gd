@@ -46,12 +46,14 @@ func send(to_id: String, msg: Dictionary) -> void:
 	if _peer != null:
 		if _peer.get_status() == StreamPeerTCP.STATUS_CONNECTED:
 			_peer.put_data(line.to_utf8_buffer())
+			_peer.poll() # put_data only buffers; poll() puts it on the wire
 		else:
 			_outbox.append(line)
 		return
 	var p: StreamPeerTCP = _peers.get(to_id, null)
 	if p != null and p.get_status() == StreamPeerTCP.STATUS_CONNECTED:
 		p.put_data(line.to_utf8_buffer())
+		p.poll() # put_data only buffers; poll() puts it on the wire
 
 func poll() -> Array:
 	if _server != null:
