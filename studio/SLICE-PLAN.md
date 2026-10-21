@@ -145,6 +145,15 @@ side — plus the standing replay check.
 - Playable: the same game, now demonstrably running in its networked
   shape on one machine — plus a working "watch replay" of your last
   match.
+- **Progress:** built 2026-10-20 (branch `slice-4-lockstep-loopback`,
+  commits `ff679f9`, `a28ea65`, `1a5dc83`, `3a71b6e`). Playtest 6/6
+  PASS: full match over real TCP on 127.0.0.1 with both clients
+  driving their own sides (provenance-verified), client ledgers
+  identical to the host's, replay hash identical, pacing-disturbed
+  rerun bit-identical — ledger hash `10ed8c7c49e324327b2bb4cfd835d6c8`,
+  the same hash as Slice 3's recorded Normal match. Web export
+  refreshed in `ds3d/`. **Awaiting owner checkpoint** — no receipt
+  until the owner plays it (charter).
 
 ### Slice 5 — Presentation & demo finish (size: M)
 HUD (minerals, income, wave timer, both base HP bars), camera
